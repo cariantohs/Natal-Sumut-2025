@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Pendaftaran Natal 2025</title>
+</head>
+<body>
+    <h1>Form Pendaftaran Acara Natal</h1>
+    <form id="regForm">
+        <input type="text" name="nama" placeholder="Nama Lengkap" required><br>
+        <input type="tel" name="whatsapp" placeholder="Nomor WhatsApp (628...)" required><br>
+        <input type="email" name="email" placeholder="Alamat Email" required><br>
+        <textarea name="namaDibawa" placeholder="Nama anggota keluarga/teman yang dibawa (pisahkan dengan koma)"></textarea><br>
+        <button type="submit">Daftar</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        const form = document.getElementById('regForm');
+        const resultDiv = document.getElementById('result');
+        // GANTI DENGAN URL WEB APP DARI GOOGLE APPS SCRIPT ANDA
+        const SCRIPT_URL = "URL_WEB_APP_ANDA";
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            resultDiv.innerHTML = "Mohon tunggu...";
+            
+            const formData = new FormData(form);
+            const data = {
+                nama: formData.get('nama'),
+                whatsapp: formData.get('whatsapp'),
+                email: formData.get('email'),
+                namaDibawa: formData.get('namaDibawa')
+            };
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(response => {
+                if(response.result === "success") {
+                    resultDiv.innerHTML = `
+                        <h2>Pendaftaran Berhasil! ✅</h2>
+                        <p>Silakan simpan QR Code di bawah ini untuk check-in di lokasi acara.</p>
+                        <img src="${response.qrUrl}" alt="QR Code Anda">
+                        <p>ID Pendaftaran Anda: ${response.id}</p>
+                    `;
+                    form.reset();
+                } else {
+                    resultDiv.innerHTML = "Terjadi kesalahan: " + response.message;
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML = "Terjadi kesalahan jaringan.";
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
