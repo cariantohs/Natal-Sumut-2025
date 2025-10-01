@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Rekapitulasi Pendaftaran</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header><h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1></header>
+    <main class="container">
+        <div class="content-section">
+            <h2>Data Pendaftar</h2>
+            <p>Berikut adalah data real-time dari peserta yang telah mendaftar.</p>
+            <div id="stats"></div>
+            <table class="recap-table">
+                <thead>
+                    <tr>
+                        <th>Nama Lengkap</th>
+                        <th>No. WhatsApp</th>
+                        <th>Email</th>
+                        <th>Yang Dibawa</th>
+                        <th>Status Hadir</th>
+                    </tr>
+                </thead>
+                <tbody id="dataTable">
+                    <tr><td colspan="5">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <footer><p>&copy; 2025 Panitia Natal.</p></footer>
+
+    <script>
+        const SCRIPT_URL = "URL_WEB_APP_ANDA_YANG_SUDAH_DI_DEPLOY";
+        const tableBody = document.getElementById('dataTable');
+        const statsDiv = document.getElementById('stats');
+
+        fetch(SCRIPT_URL)
+            .then(res => res.json())
+            .then(response => {
+                if (response.result === "success") {
+                    tableBody.innerHTML = ""; // Kosongkan tabel
+                    let totalHadir = 0;
+                    response.data.forEach(row => {
+                        const newRow = tableBody.insertRow();
+                        // Sesuaikan index kolom dengan struktur Google Sheet Anda
+                        // 1:Nama, 2:WA, 3:Email, 4:Yang Dibawa, 7:Status
+                        newRow.insertCell().textContent = row[1];
+                        newRow.insertCell().textContent = row[2];
+                        newRow.insertCell().textContent = row[3];
+                        newRow.insertCell().textContent = row[4];
+                        newRow.insertCell().textContent = row[7];
+                        
+                        if(row[7] === 'Hadir') {
+                            totalHadir++;
+                        }
+                    });
+                    
+                    statsDiv.innerHTML = `
+                        <h3>Total Pendaftar: ${response.data.length}</h3>
+                        <h3>Total Kehadiran: ${totalHadir}</h3>
+                    `;
+                }
+            })
+            .catch(error => {
+                tableBody.innerHTML = `<tr><td colspan="5">Gagal memuat data. Error: ${error}</td></tr>`;
+            });
+    </script>
+</body>
+</html>
