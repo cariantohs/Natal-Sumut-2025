@@ -2,61 +2,59 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Pendaftaran Natal 2025</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Acara Natal 2025</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <h1>Form Pendaftaran Acara Natal</h1>
-    <form id="regForm">
-        <input type="text" name="nama" placeholder="Nama Lengkap" required><br>
-        <input type="tel" name="whatsapp" placeholder="Nomor WhatsApp (628...)" required><br>
-        <input type="email" name="email" placeholder="Alamat Email" required><br>
-        <textarea name="namaDibawa" placeholder="Nama anggota keluarga/teman yang dibawa (pisahkan dengan koma)"></textarea><br>
-        <button type="submit">Daftar</button>
-    </form>
-    <div id="result"></div>
 
-    <script>
-        const form = document.getElementById('regForm');
-        const resultDiv = document.getElementById('result');
-        // GANTI DENGAN URL WEB APP DARI GOOGLE APPS SCRIPT ANDA
-        const SCRIPT_URL = "URL_WEB_APP_ANDA";
+    <header>
+        <div class="container">
+            <h1>🎄 Selamat Datang di Acara Natal 2025 🎄</h1>
+        </div>
+    </header>
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            resultDiv.innerHTML = "Mohon tunggu...";
-            
-            const formData = new FormData(form);
-            const data = {
-                nama: formData.get('nama'),
-                whatsapp: formData.get('whatsapp'),
-                email: formData.get('email'),
-                namaDibawa: formData.get('namaDibawa')
-            };
+    <main class="dashboard">
+        <div class="container">
+            <h2>Menu Utama</h2>
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <i class="fas fa-edit"></i>
+                    <h3>Pendaftaran</h3>
+                    <p>Daftarkan diri Anda dan keluarga untuk bergabung dalam kemeriahan Natal tahun ini.</p>
+                    <a href="pendaftaran.html">Mulai Mendaftar</a>
+                </div>
 
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(data),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(res => res.json())
-            .then(response => {
-                if(response.result === "success") {
-                    resultDiv.innerHTML = `
-                        <h2>Pendaftaran Berhasil! ✅</h2>
-                        <p>Silakan simpan QR Code di bawah ini untuk check-in di lokasi acara.</p>
-                        <img src="${response.qrUrl}" alt="QR Code Anda">
-                        <p>ID Pendaftaran Anda: ${response.id}</p>
-                    `;
-                    form.reset();
-                } else {
-                    resultDiv.innerHTML = "Terjadi kesalahan: " + response.message;
-                }
-            })
-            .catch(error => {
-                resultDiv.innerHTML = "Terjadi kesalahan jaringan.";
-                console.error('Error:', error);
-            });
-        });
-    </script>
+                <div class="menu-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h3>Akomodasi & Lokasi</h3>
+                    <p>Lihat informasi lokasi acara, petunjuk arah, dan detail akomodasi yang tersedia.</p>
+                    <a href="akomodasi.html">Lihat Info</a>
+                </div>
+
+                <div class="menu-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Rekapitulasi</h3>
+                    <p>Lihat data dan statistik pendaftar yang sudah masuk. (Khusus Panitia)</p>
+                    <a href="rekapitulasi.html">Lihat Data</a>
+                </div>
+
+                <div class="menu-card">
+                    <i class="fas fa-camera"></i>
+                    <h3>Dokumentasi</h3>
+                    <p>Kenang kembali momen-momen indah dari perayaan Natal tahun-tahun sebelumnya.</p>
+                    <a href="dokumentasi.html">Lihat Foto</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Panitia Natal. Hak Cipta Dilindungi.</p>
+        </div>
+    </footer>
+
 </body>
 </html>
