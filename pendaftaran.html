@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendaftaran & Update Data Peserta</title>
+    <title>Pendaftaran & Update Data Peserta Natal 2025</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .name-selection { margin-top: 1rem; }
-        .name-option {
-            padding: 0.8rem;
-            margin-bottom: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
+        .name-option { padding: 0.8rem; margin-bottom: 0.5rem; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; }
         .name-option:hover { background-color: #f0f0f0; }
-        /* Menambahkan style untuk select agar sama dengan input */
-        form select {
-            width: 100%;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            box-sizing: border-box;
-            background-color: white; /* Pastikan background putih */
+        form select, form input { width: 100%; padding: 1rem; margin-bottom: 1rem; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; background-color: white; }
+        .hidden-section { display: none; }
+        #familyTable { width: 100%; margin-top: 1rem; border-collapse: collapse; }
+        #familyTable th, #familyTable td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; vertical-align: top; }
+        #familyTable select, #familyTable input { padding: 0.5rem; width: 100%; margin-bottom: 0; }
+        .autocomplete-container { position: relative; }
+        .autocomplete-results {
+            position: absolute; border: 1px solid #ddd; border-top: none; z-index: 99;
+            top: 100%; left: 0; right: 0; background-color: white;
+            max-height: 150px; overflow-y: auto;
         }
+        .autocomplete-item { padding: 8px 12px; cursor: pointer; }
+        .autocomplete-item:hover { background-color: #e9e9e9; }
     </style>
 </head>
 <body>
-
     <header>
         <h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1>
     </header>
@@ -37,277 +32,262 @@
     <main class="container">
         <div class="form-container">
             <div id="checkNameSection">
-                <h2>Pendaftaran & Update Data</h2>
-                <p>Masukkan nama Anda (bisa nama depan/belakang) untuk mencari data.</p>
+                <h2>Pendaftaran & Update Data Kehadiran</h2>
+                <p>Masukkan nama Anda untuk memuat data dan mengonfirmasi kehadiran.</p>
                 <input type="text" id="searchName" placeholder="Ketik Nama Anda di Sini" required>
                 <button onclick="checkName()">Cari Nama Saya</button>
             </div>
-
             <div id="checkResult"></div>
 
             <form id="regForm" style="display:none;">
-                <h3 id="formTitle">Formulir Biodata</h3>
+                <h3 id="formTitle">Formulir Konfirmasi</h3>
                 <input type="hidden" id="rowIndex" name="rowIndex">
                 
-                <label for="KabupatenKota">Kabupaten / Kota</label>
-                <select id="KabupatenKota" name="KabupatenKota" required>
-                    <option value="" disabled selected>-- Pilih Kabupaten/Kota --</option>
-                    <option value="Asahan">Asahan</option>
-                    <option value="Batubara">Batubara</option>
-                    <option value="Binjai">Binjai (Kota)</option>
-                    <option value="Dairi">Dairi</option>
-                    <option value="Deli Serdang">Deli Serdang</option>
-                    <option value="Gunungsitoli">Gunungsitoli (Kota)</option>
-                    <option value="Humbang Hasundutan">Humbang Hasundutan</option>
-                    <option value="Karo">Karo</option>
-                    <option value="Labuhanbatu">Labuhanbatu</option>
-                    <option value="Labuhanbatu Selatan">Labuhanbatu Selatan</option>
-                    <option value="Labuhanbatu Utara">Labuhanbatu Utara</option>
-                    <option value="Langkat">Langkat</option>
-                    <option value="Mandailing Natal">Mandailing Natal</option>
-                    <option value="Medan">Medan (Kota)</option>
-                    <option value="Nias">Nias</option>
-                    <option value="Nias Barat">Nias Barat</option>
-                    <option value="Nias Selatan">Nias Selatan</option>
-                    <option value="Nias Utara">Nias Utara</option>
-                    <option value="Padang Lawas">Padang Lawas</option>
-                    <option value="Padang Lawas Utara">Padang Lawas Utara</option>
-                    <option value="Padangsidempuan">Padangsidempuan (Kota)</option>
-                    <option value="Pakpak Bharat">Pakpak Bharat</option>
-                    <option value="Pematangsiantar">Pematangsiantar (Kota)</option>
-                    <option value="Samosir">Samosir</option>
-                    <option value="Serdang Bedagai">Serdang Bedagai</option>
-                    <option value="Sibolga">Sibolga (Kota)</option>
-                    <option value="Simalungun">Simalungun</option>
-                    <option value="Tanjungbalai">Tanjungbalai (Kota)</option>
-                    <option value="Tapanuli Selatan">Tapanuli Selatan</option>
-                    <option value="Tapanuli Tengah">Tapanuli Tengah</option>
-                    <option value="Tapanuli Utara">Tapanuli Utara</option>
-                    <option value="Tebing Tinggi">Tebing Tinggi (Kota)</option>
-                    <option value="Toba">Toba</option>
-                </select>
+                <label for="Nama">Nama Lengkap (Peserta Utama)</label>
+                <input type="text" id="Nama" name="Nama" required readonly>
                 
-                <label for="Nama">Nama Lengkap</label>
-                <input type="text" id="Nama" name="Nama" required>
+                <hr style="margin: 2rem 0;">
                 
-                <label for="TTL">Tempat, Tanggal Lahir</label>
-                <input type="text" id="TTL" name="TTL" placeholder="Contoh: Jakarta, 25 Desember 1990" required>
-                
-                <label for="Agama">Agama</label>
-                <select id="Agama" name="Agama" required>
-                    <option value="Kristen Protestan">Kristen Protestan</option>
-                    <option value="Katolik">Katolik</option>
-                </select>
-                
-                <label for="Jabatan">Jabatan</label>
-                <select id="Jabatan" name="Jabatan" required>
-                    <option value="" disabled selected>-- Pilih Jabatan --</option>
-                    <option value="Kepala BPS Kabupaten/Kota">Kepala BPS Kabupaten/Kota</option>
-                    <option value="Kepala Bagian Umum">Kepala Bagian Umum</option>
-                    <option value="Kepala Subbagian Umum">Kepala Subbagian Umum</option>
-                    <option value="Penata Laksana Barang Mahir">Penata Laksana Barang Mahir</option>
-                    <option value="Penata Laksana Barang Terampil">Penata Laksana Barang Terampil</option>
-                    <option value="Analis Pengelola Keuangan APBN Ahli Madya">Analis Pengelola Keuangan APBN Ahli Madya</option>
-                    <option value="Analis Pengelola Keuangan APBN Ahli Muda">Analis Pengelola Keuangan APBN Ahli Muda</option>
-                    <option value="Analis Pengelola Keuangan APBN Ahli Pertama">Analis Pengelola Keuangan APBN Ahli Pertama</option>
-                    <option value="Pranata Keuangan APBN Penyelia">Pranata Keuangan APBN Penyelia</option>
-                    <option value="Pranata Keuangan APBN Mahir">Pranata Keuangan APBN Mahir</option>
-                    <option value="Pranata Keuangan APBN Terampil">Pranata Keuangan APBN Terampil</option>
-                    <option value="Analis Anggaran Ahli Madya">Analis Anggaran Ahli Madya</option>
-                    <option value="Analis Anggaran Ahli Muda">Analis Anggaran Ahli Muda</option>
-                    <option value="Analis Anggaran Ahli Pertama">Analis Anggaran Ahli Pertama</option>
-                    <option value="Analis SDM Aparatur Ahli Muda">Analis SDM Aparatur Ahli Muda</option>
-                    <option value="Analis SDM Aparatur Ahli Pertama">Analis SDM Aparatur Ahli Pertama</option>
-                    <option value="Pranata SDM Aparatur Penyelia">Pranata SDM Aparatur Penyelia</option>
-                    <option value="Pranata SDM Aparatur Mahir">Pranata SDM Aparatur Mahir</option>
-                    <option value="Pranata SDM Aparatur Terampil">Pranata SDM Aparatur Terampil</option>
-                    <option value="Arsiparis Ahli Madya">Arsiparis Ahli Madya</option>
-                    <option value="Arsiparis Ahli Muda">Arsiparis Ahli Muda</option>
-                    <option value="Arsiparis Ahli Pertama">Arsiparis Ahli Pertama</option>
-                    <option value="Arsiparis Terampil">Arsiparis Terampil</option>
-                    <option value="Penyuluh Hukum Ahli Muda">Penyuluh Hukum Ahli Muda</option>
-                    <option value="Penyuluh Hukum Ahli Pertama">Penyuluh Hukum Ahli Pertama</option>
-                    <option value="Pranata Humas Ahli Muda">Pranata Humas Ahli Muda</option>
-                    <option value="Pranata Humas Ahli Pertama">Pranata Humas Ahli Pertama</option>
-                    <option value="Pustakawan Penyelia">Pustakawan Penyelia</option>
-                    <option value="Pustakawan Mahir">Pustakawan Mahir</option>
-                    <option value="Pustakawan Terampil">Pustakawan Terampil</option>
-                    <option value="Pengolah Data">Pengolah Data</option>
-                    <option value="Verifikator Keuangan">Verifikator Keuangan</option>
-                    <option value="Pengelola Surat">Pengelola Surat</option>
-                    <option value="Pranata Kearsipan">Pranata Kearsipan</option>
-                    <option value="Pengelola Barang Milik Negara">Pengelola Barang Milik Negara</option>
-                    <option value="Teknisi Pemeliharaan Sarana dan Prasarana">Teknisi Pemeliharaan Sarana dan Prasarana</option>
-                    <option value="Pengemudi">Pengemudi</option>
-                    <option value="Statistisi Ahli Utama">Statistisi Ahli Utama</option>
-                    <option value="Statistisi Ahli Madya">Statistisi Ahli Madya</option>
-                    <option value="Statistisi Ahli Muda">Statistisi Ahli Muda</option>
-                    <option value="Statistisi Ahli Pertama">Statistisi Ahli Pertama</option>
-                    <option value="Statistisi Penyelia">Statistisi Penyelia</option>
-                    <option value="Statistisi Mahir">Statistisi Mahir</option>
-                    <option value="Statistisi Terampil">Statistisi Terampil</option>
-                    <option value="Pranata Komputer Ahli Utama">Pranata Komputer Ahli Utama</option>
-                    <option value="Pranata Komputer Ahli Madya">Pranata Komputer Ahli Madya</option>
-                    <option value="Pranata Komputer Ahli Muda">Pranata Komputer Ahli Muda</option>
-                    <option value="Pranata Komputer Ahli Pertama">Pranata Komputer Ahli Pertama</option>
-                    <option value="Pranata Komputer Penyelia">Pranata Komputer Penyelia</option>
-                    <option value="Pranata Komputer Mahir">Pranata Komputer Mahir</option>
-                    <option value="Pranata Komputer Terampil">Pranata Komputer Terampil</option>
-                    <option value="Pengolah Data">Pengolah Data</option>
-                    <option value="Sekretaris">Sekretaris</option>
+                <label for="konfirmasiKehadiran">Konfirmasi rencana kehadiran Natal 2025</label>
+                <select id="konfirmasiKehadiran" name="konfirmasiKehadiran" required>
+                    <option value="" disabled selected>-- Pilih Opsi --</option>
+                    <option value="Hadir">Hadir</option>
+                    <option value="Tidak Hadir">Tidak Hadir</option>
                 </select>
 
-                <label for="PangkatGolongan">Pangkat/Golongan</label>
-                <select id="PangkatGolongan" name="PangkatGolongan" required>
-                    <option value="" disabled selected>-- Pilih Pangkat/Golongan --</option>
-                    <option value="Juru Muda/Ia">Juru Muda/Ia</option>
-                    <option value="Juru Muda Tingkat/Ib">Juru Muda Tingkat/Ib</option>
-                    <option value="Juru/Ic">Juru/Ic</option>
-                    <option value="Juru Tingkat I/Id">Juru Tingkat I/Id</option>
-                    <option value="Pengatur Muda/IIa">Pengatur Muda/IIa</option>
-                    <option value="Pengatur Muda Tingkat I/IIb">Pengatur Muda Tingkat I/IIb</option>
-                    <option value="Pengatur/IIc">Pengatur/IIc</option>
-                    <option value="Pengatur Tingkat I/IId">Pengatur Tingkat I/IId</option>
-                    <option value="Penata Muda/IIIa">Penata Muda/IIIa</option>
-                    <option value="Penata Muda Tingkat I/IIIb">Penata Muda Tingkat I/IIIb</option>
-                    <option value="Penata/IIIc">Penata/IIIc</option>
-                    <option value="Penata Tingkat I/IIId">Penata Tingkat I/IIId</option>
-                    <option value="Pembina/IVa">Pembina/IVa</option>
-                    <option value="Pembina Tingkat I/IVb">Pembina Tingkat I/IVb</option>
-                    <option value="Pembina Muda/IVc">Pembina Muda/IVc</option>
-                    <option value="Pembina Madya/IVd">Pembina Madya/IVd</option>
-                    <option value="Pembina Utama/IVe">Pembina Utama/IVe</option>
-                </select>
+                <div id="jumlahKeluargaSection" class="hidden-section">
+                    <label for="jumlahKeluarga">Jumlah keluarga yang akan dibawa (selain Anda)</label>
+                    <select id="jumlahKeluarga" name="jumlahKeluarga">
+                        <option value="0">Tidak membawa keluarga</option>
+                        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                        <option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
+                    </select>
+                </div>
 
-                <label for="Grade">Grade</label>
-                <select id="Grade" name="Grade" required>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                </select>
+                <div id="tabelKeluargaSection" class="hidden-section">
+                    <h4>Detail Anggota Keluarga</h4>
+                    <table id="familyTable">
+                        <thead>
+                            <tr><th>Status</th><th>Nama</th><th>Jenis Kelamin</th><th>Bersekolah?</th><th>Kelas</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
 
-                <button type="submit" id="submitBtn">Daftar</button>
+                <hr style="margin: 2rem 0;">
+                <button type="submit" id="submitBtn">Update Data Kehadiran</button>
             </form>
             <div id="formResult"></div>
         </div>
     </main>
 
-    <footer>
-        <p>© 2025 Panitia Natal.</p>
-    </footer>
+    <template id="familyRowTemplate">
+        <tr>
+            <td><select class="statusKeluarga"><option value="Bukan Pegawai BPS" selected>Bukan Pegawai BPS</option><option value="Pegawai BPS">Pegawai BPS</option></select></td>
+            <td>
+                <div class="autocomplete-container">
+                    <input type="text" class="namaKeluarga" placeholder="Nama anggota keluarga">
+                    <div class="autocomplete-results"></div>
+                </div>
+            </td>
+            <td><select class="jenisKelaminKeluarga"><option value="Laki-Laki">Laki-Laki</option><option value="Perempuan">Perempuan</option></select></td>
+            <td><select class="bersekolah"><option value="Tidak" selected>Tidak</option><option value="Ya">Ya</option></select></td>
+            <td><select class="kelas" disabled><option value="" disabled selected>-- Pilih --</option><option value="SD Kelas 1">SD Kelas 1</option><option value="SD Kelas 2">SD Kelas 2</option><option value="SD Kelas 3">SD Kelas 3</option><option value="SD Kelas 4">SD Kelas 4</option><option value="SD Kelas 5">SD Kelas 5</option><option value="SD Kelas 6">SD Kelas 6</option><option value="SMP Keatas">SMP Keatas</option></select></td>
+        </tr>
+    </template>
 
     <script>
+        // PENTING: Ganti dengan URL Web App Anda yang benar
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzDbrJRBUZQrxSbPnEA3VUcdXMTPLsFfP0S3oHZy6VGiLcQrvDyTcOeJqaFsXuOUzF/exec";
-        
-        const checkResultDiv = document.getElementById('checkResult');
+        let employeeNames = [];
+
+        // --- Referensi Elemen ---
+        const konfirmasiSelect = document.getElementById('konfirmasiKehadiran');
+        const jumlahKeluargaSection = document.getElementById('jumlahKeluargaSection');
+        const jumlahKeluargaSelect = document.getElementById('jumlahKeluarga');
+        const tabelKeluargaSection = document.getElementById('tabelKeluargaSection');
+        const familyTableBody = document.querySelector('#familyTable tbody');
+        const familyRowTemplate = document.getElementById('familyRowTemplate');
         const regForm = document.getElementById('regForm');
+        const checkResultDiv = document.getElementById('checkResult');
         const formResultDiv = document.getElementById('formResult');
         const searchNameInput = document.getElementById('searchName');
 
-        function populateForm(dataToFill, isUpdate) {
-            regForm.style.display = 'block';
-            formResultDiv.innerHTML = '';
-            if (isUpdate) {
-                document.getElementById('formTitle').innerText = "Perbarui Biodata Anda";
-                document.getElementById('submitBtn').innerText = "Update Data";
-                document.getElementById('rowIndex').value = dataToFill.rowIndex;
-                document.getElementById('KabupatenKota').value = dataToFill.data.KabupatenKota;
-                document.getElementById('Nama').value = dataToFill.data.Nama;
-                document.getElementById('TTL').value = dataToFill.data.TTL || dataToFill.data['Tempat, Tanggal Lahir'];
-                document.getElementById('Agama').value = dataToFill.data.Agama;
-                document.getElementById('Jabatan').value = dataToFill.data.Jabatan;
-                document.getElementById('PangkatGolongan').value = dataToFill.data.PangkatGolongan;
-                document.getElementById('Grade').value = dataToFill.data.Grade;
-            } else {
-                document.getElementById('formTitle').innerText = "Formulir Pendaftaran Baru";
-                document.getElementById('submitBtn').innerText = "Daftar Baru";
-                regForm.reset();
-                document.getElementById('Nama').value = searchNameInput.value;
+        // --- Event Listeners untuk Tampilan Dinamis ---
+        konfirmasiSelect.addEventListener('change', function() {
+            jumlahKeluargaSection.style.display = (this.value === 'Hadir') ? 'block' : 'none';
+            if (this.value !== 'Hadir') {
+                jumlahKeluargaSelect.value = '0';
+                jumlahKeluargaSelect.dispatchEvent(new Event('change'));
             }
+        });
+
+        jumlahKeluargaSelect.addEventListener('change', function() {
+            const count = parseInt(this.value, 10);
+            tabelKeluargaSection.style.display = (count > 0) ? 'block' : 'none';
+            generateFamilyTable(count);
+        });
+
+        // --- Logika Autocomplete ---
+        async function loadEmployeeNames() {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getNames`);
+                const result = await response.json();
+                if (result.result === 'success') employeeNames = result.data;
+            } catch (error) { console.error("Gagal memuat nama pegawai:", error); }
+        }
+
+        function showAutocomplete(inputElement) {
+            const searchTerm = inputElement.value.toLowerCase();
+            const resultsContainer = inputElement.nextElementSibling;
+            resultsContainer.innerHTML = '';
+            if (searchTerm.length === 0) return;
+            const filteredNames = employeeNames.filter(name => name.toLowerCase().includes(searchTerm));
+            filteredNames.forEach(name => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.textContent = name;
+                item.onclick = () => {
+                    inputElement.value = name;
+                    resultsContainer.innerHTML = '';
+                };
+                resultsContainer.appendChild(item);
+            });
+        }
+        
+        // --- Fungsi Utama ---
+        function generateFamilyTable(count) {
+            familyTableBody.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const newRow = familyRowTemplate.content.cloneNode(true);
+                const statusSelect = newRow.querySelector('.statusKeluarga');
+                const namaInput = newRow.querySelector('.namaKeluarga');
+                const bersekolahSelect = newRow.querySelector('.bersekolah');
+                const kelasSelect = newRow.querySelector('.kelas');
+                
+                bersekolahSelect.addEventListener('change', function() {
+                    kelasSelect.disabled = (this.value !== 'Ya');
+                    if (this.value !== 'Ya') kelasSelect.value = '';
+                });
+                namaInput.addEventListener('input', function() {
+                    if (statusSelect.value === 'Pegawai BPS') showAutocomplete(this);
+                });
+                statusSelect.addEventListener('change', () => {
+                    namaInput.value = '';
+                    if (namaInput.nextElementSibling) {
+                        namaInput.nextElementSibling.innerHTML = '';
+                    }
+                });
+                familyTableBody.appendChild(newRow);
+            }
+        }
+
+        function populateFamilyTable(familyData) {
+            if (!familyData || familyData.length === 0) return;
+            generateFamilyTable(familyData.length);
+            const rows = familyTableBody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                const anggota = familyData[index];
+                row.querySelector('.statusKeluarga').value = anggota.status;
+                row.querySelector('.namaKeluarga').value = anggota.nama;
+                row.querySelector('.jenisKelaminKeluarga').value = anggota.jenisKelamin;
+                row.querySelector('.bersekolah').value = anggota.bersekolah;
+                if (anggota.bersekolah === 'Ya') {
+                    const kelasSelect = row.querySelector('.kelas');
+                    kelasSelect.disabled = false;
+                    kelasSelect.value = anggota.kelas;
+                }
+            });
         }
 
         async function checkName() {
             const nameToCheck = searchNameInput.value;
-            if (nameToCheck.trim().length < 3) {
-                checkResultDiv.innerHTML = `<p style="color: red;">Masukkan minimal 3 huruf.</p>`;
-                return;
-            }
+            if (nameToCheck.trim().length === 0) { checkResultDiv.innerHTML = `<p style="color: red;">Nama tidak boleh kosong.</p>`; return; }
             checkResultDiv.innerHTML = `<p>Mencari...</p>`;
             regForm.style.display = 'none';
+
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=search&nama=${encodeURIComponent(nameToCheck)}`);
                 const result = await response.json();
-                if (result.result === 'found_multiple') {
-                    checkResultDiv.innerHTML = `<h4>Ditemukan beberapa nama yang cocok. Apakah ini Anda?</h4><div class="name-selection"></div>`;
-                    const selectionDiv = checkResultDiv.querySelector('.name-selection');
-                    result.data.forEach(match => {
-                        const option = document.createElement('div');
-                        option.className = 'name-option';
-                        option.textContent = `${match.data.Nama} (${match.data.KabupatenKota})`;
-                        option.onclick = () => {
-                            checkResultDiv.innerHTML = `<p style="color: green;">Data untuk <b>${match.data.Nama}</b> dipilih. Silakan perbarui di bawah.</p>`;
-                            populateForm(match, true);
-                        };
-                        selectionDiv.appendChild(option);
-                    });
-                    const notMeOption = document.createElement('div');
-                    notMeOption.className = 'name-option';
-                    notMeOption.innerHTML = `<b>Bukan nama di atas? Daftar sebagai peserta baru.</b>`;
-                    notMeOption.onclick = () => {
-                        checkResultDiv.innerHTML = '';
-                        populateForm(null, false);
-                    };
-                    selectionDiv.appendChild(notMeOption);
-                } else if (result.result === 'not_found') {
-                    checkResultDiv.innerHTML = `<p style="color: blue;">Nama tidak ditemukan. Silakan isi formulir pendaftaran baru di bawah.</p>`;
-                    populateForm(null, false);
+
+                if (result.result === 'found') {
+                    const mainData = result.data.main;
+                    const familyData = result.data.family;
+
+                    checkResultDiv.innerHTML = `<p style="color: green;">Selamat datang, <b>${mainData.nama}</b>. Silakan perbarui data kehadiran Anda.</p>`;
+                    regForm.style.display = 'block';
+                    document.getElementById('Nama').value = mainData.nama;
+                    document.getElementById('rowIndex').value = mainData.rowIndex;
+
+                    konfirmasiSelect.value = mainData.konfirmasi || "";
+                    konfirmasiSelect.dispatchEvent(new Event('change'));
+
+                    setTimeout(() => {
+                        const familyCount = familyData.length;
+                        jumlahKeluargaSelect.value = familyCount > 0 ? familyCount : (mainData.jumlahKeluarga || 0);
+                        jumlahKeluargaSelect.dispatchEvent(new Event('change'));
+                        if (familyCount > 0) {
+                            populateFamilyTable(familyData);
+                        }
+                    }, 100);
+
                 } else {
-                    checkResultDiv.innerHTML = `<p style="color: red;">Terjadi Kesalahan dari Server: ${result.message}</p>`;
+                    checkResultDiv.innerHTML = `<p style="color: red;">Nama tidak ditemukan. Hubungi panitia.</p>`;
                 }
             } catch (error) {
-                checkResultDiv.innerHTML = `<p style="color: red;">Gagal menghubungi server. Pastikan URL Web App sudah benar dan di-deploy ulang.</p>`;
+                checkResultDiv.innerHTML = `<p style="color: red;">Gagal menghubungi server.</p>`;
             }
         }
 
+        // --- Submit Logic ---
         regForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.innerText = "Menyimpan...";
-            
-            const formData = new FormData(regForm);
-            const data = {};
-            formData.forEach((value, key) => { data[key] = value; });
-            
-            fetch(SCRIPT_URL, { 
-                method: 'POST', 
-                mode: 'no-cors',
-                cache: 'no-cache',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-                redirect: 'follow'
-            })
-            .then(() => {
-                formResultDiv.innerHTML = `<p style="color: green;">Pendaftaran atau Update Anda sedang diproses. Silakan periksa hasilnya langsung di Google Sheet.</p>`;
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Kirim Lagi";
-                regForm.reset();
-                regForm.style.display = 'none';
-            })
-            .catch(error => {
-                formResultDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan yang tidak terduga saat mengirim data.</p>`;
-                submitBtn.disabled = false;
+
+            const dataKeluarga = [];
+            const rows = familyTableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                dataKeluarga.push({
+                    status: row.querySelector('.statusKeluarga').value,
+                    nama: row.querySelector('.namaKeluarga').value,
+                    jenisKelamin: row.querySelector('.jenisKelaminKeluarga').value,
+                    bersekolah: row.querySelector('.bersekolah').value,
+                    kelas: row.querySelector('.kelas').value,
+                });
             });
+            
+            const payload = {
+                rowIndex: document.getElementById('rowIndex').value,
+                konfirmasiKehadiran: konfirmasiSelect.value,
+                jumlahKeluarga: jumlahKeluargaSelect.value,
+                keluarga: dataKeluarga,
+            };
+
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
+            .then(() => {
+                formResultDiv.innerHTML = `<p style="color: green;">Terima kasih! Konfirmasi kehadiran Anda telah disimpan.</p>`;
+                submitBtn.disabled = false;
+                regForm.style.display = 'none';
+                searchNameInput.value = '';
+                checkResultDiv.innerHTML = '';
+            })
+            .catch(error => { 
+                formResultDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan saat mengirim.</p>`;
+                submitBtn.disabled = false;
+             });
         });
+
+        // Sembunyikan autocomplete saat klik di luar
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.autocomplete-container')) {
+                document.querySelectorAll('.autocomplete-results').forEach(res => res.innerHTML = '');
+            }
+        });
+
+        // Muat daftar nama saat halaman siap
+        document.addEventListener('DOMContentLoaded', loadEmployeeNames);
     </script>
 </body>
 </html>
