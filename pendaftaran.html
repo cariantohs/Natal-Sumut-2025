@@ -32,22 +32,158 @@
     <main class="container">
         <div class="form-container">
             <div id="checkNameSection">
-                <h2>Pendaftaran & Update Data Kehadiran</h2>
-                <p>Masukkan nama Anda untuk memuat data dan mengonfirmasi kehadiran.</p>
+                <h2>Pendaftaran & Update Data</h2>
+                <p>Masukkan nama Anda untuk mendaftar atau memperbarui data.</p>
                 <input type="text" id="searchName" placeholder="Ketik Nama Anda di Sini" required>
-                <button onclick="checkName()">Cari Nama Saya</button>
+                <button onclick="checkName()">Cari / Daftar dengan Nama Ini</button>
             </div>
             <div id="checkResult"></div>
 
             <form id="regForm" style="display:none;">
-                <h3 id="formTitle">Formulir Konfirmasi</h3>
+                <h3 id="formTitle">Formulir Pendaftaran</h3>
                 <input type="hidden" id="rowIndex" name="rowIndex">
                 
-                <label for="Nama">Nama Lengkap (Peserta Utama)</label>
-                <input type="text" id="Nama" name="Nama" required readonly>
+                <h4>BAGIAN 1: BIODATA PESERTA</h4>
+                <label for="KabupatenKota">Kabupaten / Kota</label>
+                <select id="KabupatenKota" name="KabupatenKota" required>
+                    <option value="" disabled selected>-- Pilih Kabupaten/Kota --</option>
+                    <option value="Asahan">Asahan</option>
+                    <option value="Batubara">Batubara</option>
+                    <option value="Binjai">Binjai (Kota)</option>
+                    <option value="Dairi">Dairi</option>
+                    <option value="Deli Serdang">Deli Serdang</option>
+                    <option value="Gunungsitoli">Gunungsitoli (Kota)</option>
+                    <option value="Humbang Hasundutan">Humbang Hasundutan</option>
+                    <option value="Karo">Karo</option>
+                    <option value="Labuhanbatu">Labuhanbatu</option>
+                    <option value="Labuhanbatu Selatan">Labuhanbatu Selatan</option>
+                    <option value="Labuhanbatu Utara">Labuhanbatu Utara</option>
+                    <option value="Langkat">Langkat</option>
+                    <option value="Mandailing Natal">Mandailing Natal</option>
+                    <option value="Medan">Medan (Kota)</option>
+                    <option value="Nias">Nias</option>
+                    <option value="Nias Barat">Nias Barat</option>
+                    <option value="Nias Selatan">Nias Selatan</option>
+                    <option value="Nias Utara">Nias Utara</option>
+                    <option value="Padang Lawas">Padang Lawas</option>
+                    <option value="Padang Lawas Utara">Padang Lawas Utara</option>
+                    <option value="Padangsidempuan">Padangsidempuan (Kota)</option>
+                    <option value="Pakpak Bharat">Pakpak Bharat</option>
+                    <option value="Pematangsiantar">Pematangsiantar (Kota)</option>
+                    <option value="Samosir">Samosir</option>
+                    <option value="Serdang Bedagai">Serdang Bedagai</option>
+                    <option value="Sibolga">Sibolga (Kota)</option>
+                    <option value="Simalungun">Simalungun</option>
+                    <option value="Tanjungbalai">Tanjungbalai (Kota)</option>
+                    <option value="Tapanuli Selatan">Tapanuli Selatan</option>
+                    <option value="Tapanuli Tengah">Tapanuli Tengah</option>
+                    <option value="Tapanuli Utara">Tapanuli Utara</option>
+                    <option value="Tebing Tinggi">Tebing Tinggi (Kota)</option>
+                    <option value="Toba">Toba</option>
+                </select>
                 
+                <label for="Nama">Nama Lengkap</label>
+                <input type="text" id="Nama" name="Nama" required>
+                
+                <label for="TTL">Tempat, Tanggal Lahir</label>
+                <input type="text" id="TTL" name="TTL" placeholder="Contoh: Medan, 25 Desember 1990" required>
+                
+                <label for="Agama">Agama</label>
+                <select id="Agama" name="Agama" required>
+                    <option value="Kristen Protestan">Kristen Protestan</option>
+                    <option value="Katolik">Katolik</option>
+                </select>
+                
+                <label for="Jabatan">Jabatan</label>
+                <select id="Jabatan" name="Jabatan" required>
+                    <option value="" disabled selected>-- Pilih Jabatan --</option>
+                    <option value="Kepala BPS Kabupaten/Kota">Kepala BPS Kabupaten/Kota</option>
+                    <option value="Kepala Bagian Umum">Kepala Bagian Umum</option>
+                    <option value="Kepala Subbagian Umum">Kepala Subbagian Umum</option>
+                    <option value="Penata Laksana Barang Mahir">Penata Laksana Barang Mahir</option>
+                    <option value="Penata Laksana Barang Terampil">Penata Laksana Barang Terampil</option>
+                    <option value="Analis Pengelola Keuangan APBN Ahli Madya">Analis Pengelola Keuangan APBN Ahli Madya</option>
+                    <option value="Analis Pengelola Keuangan APBN Ahli Muda">Analis Pengelola Keuangan APBN Ahli Muda</option>
+                    <option value="Analis Pengelola Keuangan APBN Ahli Pertama">Analis Pengelola Keuangan APBN Ahli Pertama</option>
+                    <option value="Pranata Keuangan APBN Penyelia">Pranata Keuangan APBN Penyelia</option>
+                    <option value="Pranata Keuangan APBN Mahir">Pranata Keuangan APBN Mahir</option>
+                    <option value="Pranata Keuangan APBN Terampil">Pranata Keuangan APBN Terampil</option>
+                    <option value="Analis Anggaran Ahli Madya">Analis Anggaran Ahli Madya</option>
+                    <option value="Analis Anggaran Ahli Muda">Analis Anggaran Ahli Muda</option>
+                    <option value="Analis Anggaran Ahli Pertama">Analis Anggaran Ahli Pertama</option>
+                    <option value="Analis SDM Aparatur Ahli Muda">Analis SDM Aparatur Ahli Muda</option>
+                    <option value="Analis SDM Aparatur Ahli Pertama">Analis SDM Aparatur Ahli Pertama</option>
+                    <option value="Pranata SDM Aparatur Penyelia">Pranata SDM Aparatur Penyelia</option>
+                    <option value="Pranata SDM Aparatur Mahir">Pranata SDM Aparatur Mahir</option>
+                    <option value="Pranata SDM Aparatur Terampil">Pranata SDM Aparatur Terampil</option>
+                    <option value="Arsiparis Ahli Madya">Arsiparis Ahli Madya</option>
+                    <option value="Arsiparis Ahli Muda">Arsiparis Ahli Muda</option>
+                    <option value="Arsiparis Ahli Pertama">Arsiparis Ahli Pertama</option>
+                    <option value="Arsiparis Terampil">Arsiparis Terampil</option>
+                    <option value="Penyuluh Hukum Ahli Muda">Penyuluh Hukum Ahli Muda</option>
+                    <option value="Penyuluh Hukum Ahli Pertama">Penyuluh Hukum Ahli Pertama</option>
+                    <option value="Pranata Humas Ahli Muda">Pranata Humas Ahli Muda</option>
+                    <option value="Pranata Humas Ahli Pertama">Pranata Humas Ahli Pertama</option>
+                    <option value="Pustakawan Penyelia">Pustakawan Penyelia</option>
+                    <option value="Pustakawan Mahir">Pustakawan Mahir</option>
+                    <option value="Pustakawan Terampil">Pustakawan Terampil</option>
+                    <option value="Pengolah Data">Pengolah Data</option>
+                    <option value="Verifikator Keuangan">Verifikator Keuangan</option>
+                    <option value="Pengelola Surat">Pengelola Surat</option>
+                    <option value="Pranata Kearsipan">Pranata Kearsipan</option>
+                    <option value="Pengelola Barang Milik Negara">Pengelola Barang Milik Negara</option>
+                    <option value="Teknisi Pemeliharaan Sarana dan Prasarana">Teknisi Pemeliharaan Sarana dan Prasarana</option>
+                    <option value="Pengemudi">Pengemudi</option>
+                    <option value="Statistisi Ahli Utama">Statistisi Ahli Utama</option>
+                    <option value="Statistisi Ahli Madya">Statistisi Ahli Madya</option>
+                    <option value="Statistisi Ahli Muda">Statistisi Ahli Muda</option>
+                    <option value="Statistisi Ahli Pertama">Statistisi Ahli Pertama</option>
+                    <option value="Statistisi Penyelia">Statistisi Penyelia</option>
+                    <option value="Statistisi Mahir">Statistisi Mahir</option>
+                    <option value="Statistisi Terampil">Statistisi Terampil</option>
+                    <option value="Pranata Komputer Ahli Utama">Pranata Komputer Ahli Utama</option>
+                    <option value="Pranata Komputer Ahli Madya">Pranata Komputer Ahli Madya</option>
+                    <option value="Pranata Komputer Ahli Muda">Pranata Komputer Ahli Muda</option>
+                    <option value="Pranata Komputer Ahli Pertama">Pranata Komputer Ahli Pertama</option>
+                    <option value="Pranata Komputer Penyelia">Pranata Komputer Penyelia</option>
+                    <option value="Pranata Komputer Mahir">Pranata Komputer Mahir</option>
+                    <option value="Pranata Komputer Terampil">Pranata Komputer Terampil</option>
+                    <option value="Sekretaris">Sekretaris</option>
+                </select>
+
+                <label for="PangkatGolongan">Pangkat/Golongan</label>
+                <select id="PangkatGolongan" name="PangkatGolongan" required>
+                    <option value="" disabled selected>-- Pilih Pangkat/Golongan --</option>
+                    <option value="Juru Muda/Ia">Juru Muda/Ia</option>
+                    <option value="Juru Muda Tingkat/Ib">Juru Muda Tingkat/Ib</option>
+                    <option value="Juru/Ic">Juru/Ic</option>
+                    <option value="Juru Tingkat I/Id">Juru Tingkat I/Id</option>
+                    <option value="Pengatur Muda/IIa">Pengatur Muda/IIa</option>
+                    <option value="Pengatur Muda Tingkat I/IIb">Pengatur Muda Tingkat I/IIb</option>
+                    <option value="Pengatur/IIc">Pengatur/IIc</option>
+                    <option value="Pengatur Tingkat I/IId">Pengatur Tingkat I/IId</option>
+                    <option value="Penata Muda/IIIa">Penata Muda/IIIa</option>
+                    <option value="Penata Muda Tingkat I/IIIb">Penata Muda Tingkat I/IIIb</option>
+                    <option value="Penata/IIIc">Penata/IIIc</option>
+                    <option value="Penata Tingkat I/IIId">Penata Tingkat I/IIId</option>
+                    <option value="Pembina/IVa">Pembina/IVa</option>
+                    <option value="Pembina Tingkat I/IVb">Pembina Tingkat I/IVb</option>
+                    <option value="Pembina Muda/IVc">Pembina Muda/IVc</option>
+                    <option value="Pembina Madya/IVd">Pembina Madya/IVd</option>
+                    <option value="Pembina Utama/IVe">Pembina Utama/IVe</option>
+                </select>
+
+                <label for="Grade">Grade</label>
+                <select id="Grade" name="Grade" required>
+                    <option value="" disabled selected>-- Pilih Grade --</option>
+                    <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                    <option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
+                    <option value="11">11</option><option value="12">12</option>
+                </select>
+
                 <hr style="margin: 2rem 0;">
-                
+
+                <h4>BAGIAN 2: KONFIRMASI KEHADIRAN</h4>
                 <label for="konfirmasiKehadiran">Konfirmasi rencana kehadiran Natal 2025</label>
                 <select id="konfirmasiKehadiran" name="konfirmasiKehadiran" required>
                     <option value="" disabled selected>-- Pilih Opsi --</option>
@@ -73,14 +209,14 @@
                         <tbody></tbody>
                     </table>
                 </div>
-
+                
                 <hr style="margin: 2rem 0;">
-                <button type="submit" id="submitBtn">Update Data Kehadiran</button>
+                <button type="submit" id="submitBtn">Simpan Data</button>
             </form>
             <div id="formResult"></div>
         </div>
     </main>
-
+    
     <template id="familyRowTemplate">
         <tr>
             <td><select class="statusKeluarga"><option value="Bukan Pegawai BPS" selected>Bukan Pegawai BPS</option><option value="Pegawai BPS">Pegawai BPS</option></select></td>
@@ -199,12 +335,13 @@
                 }
             });
         }
-
+        
         async function checkName() {
             const nameToCheck = searchNameInput.value;
             if (nameToCheck.trim().length === 0) { checkResultDiv.innerHTML = `<p style="color: red;">Nama tidak boleh kosong.</p>`; return; }
             checkResultDiv.innerHTML = `<p>Mencari...</p>`;
             regForm.style.display = 'none';
+            formResultDiv.innerHTML = '';
 
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=search&nama=${encodeURIComponent(nameToCheck)}`);
@@ -214,10 +351,19 @@
                     const mainData = result.data.main;
                     const familyData = result.data.family;
 
-                    checkResultDiv.innerHTML = `<p style="color: green;">Selamat datang, <b>${mainData.nama}</b>. Silakan perbarui data kehadiran Anda.</p>`;
+                    checkResultDiv.innerHTML = `<p style="color: green;">Data ditemukan untuk <b>${mainData.nama}</b>. Silakan perbarui data Anda di bawah.</p>`;
                     regForm.style.display = 'block';
-                    document.getElementById('Nama').value = mainData.nama;
+                    document.getElementById('formTitle').innerText = "Formulir Update Data";
+                    document.getElementById('submitBtn').innerText = "Update Data Saya";
+                    
                     document.getElementById('rowIndex').value = mainData.rowIndex;
+                    document.getElementById('KabupatenKota').value = mainData.KabupatenKota;
+                    document.getElementById('Nama').value = mainData.nama;
+                    document.getElementById('TTL').value = mainData.TTL;
+                    document.getElementById('Agama').value = mainData.Agama;
+                    document.getElementById('Jabatan').value = mainData.Jabatan;
+                    document.getElementById('PangkatGolongan').value = mainData.PangkatGolongan;
+                    document.getElementById('Grade').value = mainData.Grade;
 
                     konfirmasiSelect.value = mainData.konfirmasi || "";
                     konfirmasiSelect.dispatchEvent(new Event('change'));
@@ -231,8 +377,20 @@
                         }
                     }, 100);
 
+                } else if (result.result === 'not_found') {
+                    checkResultDiv.innerHTML = `<p style="color: blue;">Nama tidak ditemukan. Silakan isi formulir pendaftaran baru di bawah.</p>`;
+                    regForm.style.display = 'block';
+                    document.getElementById('formTitle').innerText = "Formulir Pendaftaran Baru";
+                    document.getElementById('submitBtn').innerText = "Daftar Sekarang";
+                    
+                    regForm.reset(); 
+                    konfirmasiSelect.dispatchEvent(new Event('change'));
+                    
+                    document.getElementById('Nama').value = nameToCheck;
+                    document.getElementById('rowIndex').value = '';
+
                 } else {
-                    checkResultDiv.innerHTML = `<p style="color: red;">Nama tidak ditemukan. Hubungi panitia.</p>`;
+                    checkResultDiv.innerHTML = `<p style="color: red;">Error: ${result.message}</p>`;
                 }
             } catch (error) {
                 checkResultDiv.innerHTML = `<p style="color: red;">Gagal menghubungi server.</p>`;
@@ -246,6 +404,10 @@
             submitBtn.disabled = true;
             submitBtn.innerText = "Menyimpan...";
 
+            const formData = new FormData(regForm);
+            const payload = {};
+            formData.forEach((value, key) => { payload[key] = value; });
+            
             const dataKeluarga = [];
             const rows = familyTableBody.querySelectorAll('tr');
             rows.forEach(row => {
@@ -257,17 +419,11 @@
                     kelas: row.querySelector('.kelas').value,
                 });
             });
-            
-            const payload = {
-                rowIndex: document.getElementById('rowIndex').value,
-                konfirmasiKehadiran: konfirmasiSelect.value,
-                jumlahKeluarga: jumlahKeluargaSelect.value,
-                keluarga: dataKeluarga,
-            };
+            payload.keluarga = dataKeluarga;
 
             fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
             .then(() => {
-                formResultDiv.innerHTML = `<p style="color: green;">Terima kasih! Konfirmasi kehadiran Anda telah disimpan.</p>`;
+                formResultDiv.innerHTML = `<p style="color: green;">Terima kasih! Data Anda telah berhasil disimpan.</p>`;
                 submitBtn.disabled = false;
                 regForm.style.display = 'none';
                 searchNameInput.value = '';
