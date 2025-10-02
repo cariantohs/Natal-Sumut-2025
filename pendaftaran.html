@@ -3,82 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendaftaran Acara Natal</title>
+    <title>Pendaftaran & Update Data Peserta</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <header>
-        <div class="container">
-            <h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1>
-        </div>
+        <h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1>
     </header>
 
     <main class="container">
         <div class="form-container">
-            <h2>Formulir Pendaftaran Peserta</h2>
-            <p>Silakan isi data di bawah ini dengan lengkap dan benar.</p>
-            <form id="regForm">
-                <input type="text" name="nama" placeholder="Nama Lengkap Anda" required>
-                <input type="tel" name="whatsapp" placeholder="Nomor WhatsApp (Contoh: 62812xxxx)" required>
-                <input type="email" name="email" placeholder="Alamat Email (Untuk pengiriman QR Code)" required>
-                <textarea name="namaDibawa" placeholder="Tuliskan nama anggota keluarga/teman yang Anda bawa (pisahkan dengan koma)"></textarea>
-                <button type="submit" id="submitBtn">Daftar Sekarang</button>
+            <div id="checkNameSection">
+                <h2>Pendaftaran & Update Data</h2>
+                <p>Silakan masukkan nama lengkap Anda untuk memeriksa apakah data Anda sudah terdaftar.</p>
+                <input type="text" id="searchName" placeholder="Ketik Nama Lengkap Anda" required>
+                <button onclick="checkName()">Cek Nama</button>
+                <div id="checkResult"></div>
+            </div>
+
+            <form id="regForm" style="display:none;">
+                <h3 id="formTitle">Formulir Biodata</h3>
+                <input type="hidden" id="rowIndex" name="rowIndex">
+                
+                <label for="KabupatenKota">Kabupaten / Kota</label>
+                <input type="text" id="KabupatenKota" name="KabupatenKota" required>
+                
+                <label for="Nama">Nama Lengkap</label>
+                <input type="text" id="Nama" name="Nama" required>
+                
+                <label for="TTL">Tempat, Tanggal Lahir</label>
+                <input type="text" id="TTL" name="TTL" placeholder="Contoh: Jakarta, 25 Desember 1990" required>
+                
+                <label for="Agama">Agama</label>
+                <input type="text" id="Agama" name="Agama" required>
+                
+                <label for="Jabatan">Jabatan</label>
+                <input type="text" id="Jabatan" name="Jabatan" required>
+                
+                <label for="PangkatGolongan">Pangkat/Golongan</label>
+                <input type="text" id="PangkatGolongan" name="PangkatGolongan">
+                
+                <label for="Grade">Grade</label>
+                <input type="text" id="Grade" name="Grade">
+
+                <button type="submit" id="submitBtn">Daftar</button>
             </form>
-            <div id="result"></div>
+            <div id="formResult"></div>
         </div>
     </main>
-
-    <footer>
-        <p>&copy; 2025 Panitia Natal.</p>
-    </footer>
+    <footer><p>© 2025 Panitia Natal.</p></footer>
 
     <script>
-        const form = document.getElementById('regForm');
-        const resultDiv = document.getElementById('result');
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz7N7DcUJ4gsJf8n36HocWjDHagR-PWbkXbmBUv4VAiD4rN36ShLJk33iEHnD-UnTLg/exec";
+        const checkResult = document.getElementById('checkResult');
+        const regForm = document.getElementById('regForm');
+        const formResult = document.getElementById('formResult');
+        const formTitle = document.getElementById('formTitle');
         const submitBtn = document.getElementById('submitBtn');
-        // PENTING: Ganti dengan URL Web App Anda dari Google Apps Script
-        const SCRIPT_URL = "URL_WEB_APP_ANDA_YANG_SUDAH_DI_DEPLOY";
 
-        form.addEventListener('submit', e => {
+        async function checkName() {
+            const nameToCheck = document.getElementById('searchName').value;
+            if (nameToCheck.trim() === '') {
+                checkResult.innerHTML = `<p style="color: red;">Nama tidak boleh kosong.</p>`;
+                return;
+            }
+            checkResult.innerHTML = `<p>Mencari nama "${nameToCheck}"...</p>`;
+
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=search&nama=${encodeURIComponent(nameToCheck)}`);
+                const result = await response.json();
+
+                regForm.style.display = 'block'; // Tampilkan form
+                formResult.innerHTML = ''; // Kosongkan hasil form sebelumnya
+                
+                if (result.result === 'found') {
+                    checkResult.innerHTML = `<p style="color: green;">Data ditemukan! Silakan perbarui data Anda di bawah ini jika perlu.</p>`;
+                    formTitle.innerText = "Perbarui Biodata Anda";
+                    submitBtn.innerText = "Update Data";
+                    // Isi form dengan data yang ditemukan
+                    document.getElementById('rowIndex').value = result.rowIndex;
+                    document.getElementById('KabupatenKota').value = result.data.KabupatenKota;
+                    document.getElementById('Nama').value = result.data.Nama;
+                    document.getElementById('TTL').value = result.data.TTL;
+                    document.getElementById('Agama').value = result.data.Agama;
+                    document.getElementById('Jabatan').value = result.data.Jabatan;
+                    document.getElementById('PangkatGolongan').value = result.data.PangkatGolongan;
+                    document.getElementById('Grade').value = result.data.Grade;
+                } else { // Not found
+                    checkResult.innerHTML = `<p style="color: blue;">Nama tidak ditemukan. Silakan lengkapi formulir pendaftaran baru di bawah ini.</p>`;
+                    formTitle.innerText = "Formulir Pendaftaran Baru";
+                    submitBtn.innerText = "Daftar Baru";
+                    regForm.reset(); // Kosongkan form
+                    document.getElementById('Nama').value = nameToCheck; // Langsung isi nama yang dicari
+                }
+            } catch (error) {
+                checkResult.innerHTML = `<p style="color: red;">Terjadi kesalahan saat menghubungi server.</p>`;
+                console.error('Error:', error);
+            }
+        }
+
+        regForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             submitBtn.disabled = true;
-            submitBtn.innerText = "Mengirim...";
+            submitBtn.innerText = "Menyimpan...";
 
-            const formData = new FormData(form);
+            const formData = new FormData(regForm);
             const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
+            formData.forEach((value, key) => { data[key] = value; });
 
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors', // Mode no-cors untuk tipe deploy tertentu
-                cache: 'no-cache',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-                redirect: 'follow'
-            })
-            .then(res => {
-                // Karena Google Script redirect, kita tidak bisa membaca responsnya langsung
-                // Jadi kita asumsikan sukses dan berikan pesan generik.
-                resultDiv.style.border = "2px solid var(--accent-color-green)";
-                resultDiv.innerHTML = `
-                    <h2>Pendaftaran Berhasil! ✅</h2>
-                    <p>Terima kasih telah mendaftar. QR Code telah dikirimkan ke email Anda.</p>
-                    <p>Mohon periksa folder Inbox atau Spam. Jika tidak menerima, silakan hubungi panitia.</p>
-                `;
-                form.reset();
-            })
-            .catch(error => {
-                resultDiv.style.border = "2px solid var(--accent-color-red)";
-                resultDiv.innerHTML = "Terjadi kesalahan. Mohon coba lagi.";
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+
+                formResult.innerHTML = `<p style="color: ${result.result === 'success' ? 'green' : 'red'};">${result.message}</p>`;
+                
+                if (result.result === 'success' && result.qrUrl) {
+                    formResult.innerHTML += `<h3>QR Code Anda:</h3><img src="${result.qrUrl}" alt="QR Code">`;
+                }
+                
+                if(result.result === 'success') {
+                    regForm.reset();
+                    regForm.style.display = 'none'; // Sembunyikan form setelah sukses
+                    checkResult.innerHTML = '';
+                }
+            } catch (error) {
+                formResult.innerHTML = `<p style="color: red;">Terjadi kesalahan jaringan.</p>`;
                 console.error('Error:', error);
-            })
-            .finally(() => {
+            } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = "Daftar Sekarang";
-            });
+                // Text tombol akan kembali sesuai kondisi saat `checkName` dijalankan lagi
+            }
         });
     </script>
 </body>
