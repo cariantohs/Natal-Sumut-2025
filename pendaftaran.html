@@ -5,8 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendaftaran & Update Data Peserta</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Gaya tambahan untuk daftar pilihan nama */
+        .name-selection { 
+            margin-top: 1rem; 
+        }
+        .name-option {
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .name-option:hover { 
+            background-color: #f0f0f0; 
+        }
+    </style>
 </head>
 <body>
+
     <header>
         <h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1>
     </header>
@@ -15,11 +33,12 @@
         <div class="form-container">
             <div id="checkNameSection">
                 <h2>Pendaftaran & Update Data</h2>
-                <p>Silakan masukkan nama lengkap Anda untuk memeriksa apakah data Anda sudah terdaftar.</p>
-                <input type="text" id="searchName" placeholder="Ketik Nama Lengkap Anda" required>
-                <button onclick="checkName()">Cek Nama</button>
-                <div id="checkResult"></div>
+                <p>Masukkan nama Anda (bisa nama depan/belakang) untuk mencari data.</p>
+                <input type="text" id="searchName" placeholder="Ketik Nama Anda di Sini" required>
+                <button onclick="checkName()">Cari Nama Saya</button>
             </div>
+
+            <div id="checkResult"></div>
 
             <form id="regForm" style="display:none;">
                 <h3 id="formTitle">Formulir Biodata</h3>
@@ -51,91 +70,131 @@
             <div id="formResult"></div>
         </div>
     </main>
-    <footer><p>© 2025 Panitia Natal.</p></footer>
+
+    <footer>
+        <p>© 2025 Panitia Natal.</p>
+    </footer>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwAR2cvP6VqU9d0i9fThHL6LV-yGLprqDLEJer-Tm4sXT4yQJDeTNc0zd3rVQqB950/exec";
-        const checkResult = document.getElementById('checkResult');
+        // PENTING: Ganti dengan URL Web App Anda yang sudah di-deploy ulang
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwAR2cvP6VqU9d0i9fThHL6LV-yGLprqDLEJer-Tm4sXT4yQJDeTNc0zd3rVQqB950/exec"; 
+        
+        const checkResultDiv = document.getElementById('checkResult');
         const regForm = document.getElementById('regForm');
-        const formResult = document.getElementById('formResult');
-        const formTitle = document.getElementById('formTitle');
-        const submitBtn = document.getElementById('submitBtn');
+        const formResultDiv = document.getElementById('formResult');
+        const searchNameInput = document.getElementById('searchName');
 
+        // Fungsi untuk mengisi dan menampilkan formulir
+        function populateForm(dataToFill, isUpdate) {
+            regForm.style.display = 'block';
+            formResultDiv.innerHTML = '';
+            
+            if (isUpdate) {
+                document.getElementById('formTitle').innerText = "Perbarui Biodata Anda";
+                document.getElementById('submitBtn').innerText = "Update Data";
+                document.getElementById('rowIndex').value = dataToFill.rowIndex;
+                document.getElementById('KabupatenKota').value = dataToFill.data.KabupatenKota;
+                document.getElementById('Nama').value = dataToFill.data.Nama;
+                document.getElementById('TTL').value = dataToFill.data.TTL;
+                document.getElementById('Agama').value = dataToFill.data.Agama;
+                document.getElementById('Jabatan').value = dataToFill.data.Jabatan;
+                document.getElementById('PangkatGolongan').value = dataToFill.data.PangkatGolongan;
+                document.getElementById('Grade').value = dataToFill.data.Grade;
+            } else {
+                document.getElementById('formTitle').innerText = "Formulir Pendaftaran Baru";
+                document.getElementById('submitBtn').innerText = "Daftar Baru";
+                regForm.reset();
+                // Langsung isi kolom nama dengan nama yang dicari oleh pengguna
+                document.getElementById('Nama').value = searchNameInput.value; 
+            }
+        }
+
+        // Fungsi utama untuk mencari nama
         async function checkName() {
-            const nameToCheck = document.getElementById('searchName').value;
-            if (nameToCheck.trim() === '') {
-                checkResult.innerHTML = `<p style="color: red;">Nama tidak boleh kosong.</p>`;
+            const nameToCheck = searchNameInput.value;
+            if (nameToCheck.trim().length < 3) {
+                checkResultDiv.innerHTML = `<p style="color: red;">Masukkan minimal 3 huruf.</p>`;
                 return;
             }
-            checkResult.innerHTML = `<p>Mencari nama "${nameToCheck}"...</p>`;
+            checkResultDiv.innerHTML = `<p>Mencari...</p>`;
+            regForm.style.display = 'none'; // Sembunyikan form saat pencarian baru
 
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=search&nama=${encodeURIComponent(nameToCheck)}`);
                 const result = await response.json();
 
-                regForm.style.display = 'block'; // Tampilkan form
-                formResult.innerHTML = ''; // Kosongkan hasil form sebelumnya
-                
-                if (result.result === 'found') {
-                    checkResult.innerHTML = `<p style="color: green;">Data ditemukan! Silakan perbarui data Anda di bawah ini jika perlu.</p>`;
-                    formTitle.innerText = "Perbarui Biodata Anda";
-                    submitBtn.innerText = "Update Data";
-                    // Isi form dengan data yang ditemukan
-                    document.getElementById('rowIndex').value = result.rowIndex;
-                    document.getElementById('KabupatenKota').value = result.data.KabupatenKota;
-                    document.getElementById('Nama').value = result.data.Nama;
-                    document.getElementById('TTL').value = result.data.TTL;
-                    document.getElementById('Agama').value = result.data.Agama;
-                    document.getElementById('Jabatan').value = result.data.Jabatan;
-                    document.getElementById('PangkatGolongan').value = result.data.PangkatGolongan;
-                    document.getElementById('Grade').value = result.data.Grade;
-                } else { // Not found
-                    checkResult.innerHTML = `<p style="color: blue;">Nama tidak ditemukan. Silakan lengkapi formulir pendaftaran baru di bawah ini.</p>`;
-                    formTitle.innerText = "Formulir Pendaftaran Baru";
-                    submitBtn.innerText = "Daftar Baru";
-                    regForm.reset(); // Kosongkan form
-                    document.getElementById('Nama').value = nameToCheck; // Langsung isi nama yang dicari
+                if (result.result === 'found_multiple') {
+                    checkResultDiv.innerHTML = `<h4>Ditemukan beberapa nama yang cocok. Apakah ini Anda?</h4><div class="name-selection"></div>`;
+                    const selectionDiv = checkResultDiv.querySelector('.name-selection');
+                    
+                    // Tampilkan setiap nama yang cocok sebagai pilihan
+                    result.data.forEach(match => {
+                        const option = document.createElement('div');
+                        option.className = 'name-option';
+                        option.textContent = `${match.data.Nama} (${match.data.KabupatenKota})`;
+                        option.onclick = () => {
+                            checkResultDiv.innerHTML = `<p style="color: green;">Data untuk <b>${match.data.Nama}</b> dipilih. Silakan perbarui di bawah.</p>`;
+                            populateForm(match, true);
+                        };
+                        selectionDiv.appendChild(option);
+                    });
+                    
+                    // Tambahkan opsi untuk mendaftar sebagai peserta baru
+                    const notMeOption = document.createElement('div');
+                    notMeOption.className = 'name-option';
+                    notMeOption.innerHTML = `<b>Bukan nama di atas? Daftar sebagai peserta baru.</b>`;
+                    notMeOption.onclick = () => {
+                        checkResultDiv.innerHTML = '';
+                        populateForm(null, false);
+                    };
+                    selectionDiv.appendChild(notMeOption);
+
+                } else if (result.result === 'not_found') {
+                    checkResultDiv.innerHTML = `<p style="color: blue;">Nama tidak ditemukan. Silakan isi formulir pendaftaran baru di bawah.</p>`;
+                    populateForm(null, false);
+                } else {
+                    // Menangani jika ada error dari script
+                    checkResultDiv.innerHTML = `<p style="color: red;">Terjadi Kesalahan: ${result.message}</p>`;
                 }
             } catch (error) {
-                checkResult.innerHTML = `<p style="color: red;">Terjadi kesalahan saat menghubungi server.</p>`;
+                checkResultDiv.innerHTML = `<p style="color: red;">Gagal menghubungi server. Pastikan URL Web App sudah benar dan di-deploy ulang.</p>`;
                 console.error('Error:', error);
             }
         }
 
+        // Fungsi untuk mengirim data (Create/Update)
         regForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.innerText = "Menyimpan...";
-
+            
             const formData = new FormData(regForm);
             const data = {};
             formData.forEach((value, key) => { data[key] = value; });
-
+            
             try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                    headers: { 'Content-Type': 'application/json' }
+                const response = await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify(data), 
+                    headers: { 'Content-Type': 'application/json' } 
                 });
                 const result = await response.json();
 
-                formResult.innerHTML = `<p style="color: ${result.result === 'success' ? 'green' : 'red'};">${result.message}</p>`;
-                
-                if (result.result === 'success' && result.qrUrl) {
-                    formResult.innerHTML += `<h3>QR Code Anda:</h3><img src="${result.qrUrl}" alt="QR Code">`;
+                formResultDiv.innerHTML = `<p style="color: ${result.result === 'success' ? 'green' : 'red'};">${result.message}</p>`;
+                if (result.result === 'success' && result.qrUrl) { 
+                    formResultDiv.innerHTML += `<h3>QR Code Pendaftaran Baru Anda:</h3><img src="${result.qrUrl}" alt="QR Code">`; 
                 }
                 
                 if(result.result === 'success') {
-                    regForm.reset();
-                    regForm.style.display = 'none'; // Sembunyikan form setelah sukses
-                    checkResult.innerHTML = '';
+                    regForm.style.display = 'none';
+                    checkResultDiv.innerHTML = '';
+                    searchNameInput.value = ''; // Kosongkan input pencarian
                 }
             } catch (error) {
-                formResult.innerHTML = `<p style="color: red;">Terjadi kesalahan jaringan.</p>`;
-                console.error('Error:', error);
+                formResultDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan jaringan.</p>`;
             } finally {
                 submitBtn.disabled = false;
-                // Text tombol akan kembali sesuai kondisi saat `checkName` dijalankan lagi
             }
         });
     </script>
