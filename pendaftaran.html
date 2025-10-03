@@ -15,94 +15,143 @@
             line-height: 1.6;
             color: #333;
             background-color: #f5f5f5;
+            padding: 0;
+            margin: 0;
         }
         header {
             background: linear-gradient(135deg, #2e7d32, #1b5e20);
             color: white;
-            padding: 1rem 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            text-align: center;
         }
         header h1 {
-            text-align: center;
-            font-size: 1.8rem;
+            font-size: 2rem;
+            margin: 0;
         }
         header a {
             color: white;
             text-decoration: none;
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        header a:hover {
+            background-color: rgba(255,255,255,0.2);
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 2rem auto;
-            padding: 0 1rem;
+            padding: 0 1.5rem;
         }
         .form-container {
             background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
         }
         h2, h3, h4 {
             color: #2e7d32;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        h2 {
+            font-size: 1.8rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+        }
+        h3 {
+            font-size: 1.5rem;
+        }
+        h4 {
+            font-size: 1.2rem;
+            color: #388e3c;
         }
         .name-selection { 
-            margin-top: 1rem; 
+            margin-top: 1.5rem; 
         }
         .name-option { 
-            padding: 0.8rem; 
-            margin-bottom: 0.5rem; 
+            padding: 1rem; 
+            margin-bottom: 0.8rem; 
             border: 1px solid #ddd; 
-            border-radius: 5px; 
+            border-radius: 8px; 
             cursor: pointer; 
-            transition: background-color 0.2s; 
+            transition: all 0.3s ease;
+            background-color: #f9f9f9;
         }
         .name-option:hover { 
-            background-color: #f0f0f0; 
+            background-color: #e8f5e9; 
+            border-color: #2e7d32;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        form select, form input { 
+        form select, form input, form button { 
             width: 100%; 
-            padding: 0.8rem; 
-            margin-bottom: 1rem; 
-            border-radius: 5px; 
+            padding: 1rem; 
+            margin-bottom: 1.2rem; 
+            border-radius: 8px; 
             border: 1px solid #ddd; 
             background-color: white; 
             font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        form select:focus, form input:focus {
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+            outline: none;
         }
         button {
             background: linear-gradient(135deg, #2e7d32, #1b5e20);
             color: white;
             border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 5px;
+            padding: 1.2rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
-            transition: opacity 0.3s;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
         }
         button:hover {
             opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
         button:disabled {
             background: #cccccc;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #searchName {
+            margin-bottom: 1.5rem;
         }
         .hidden-section { 
             display: none; 
         }
         #familyTable { 
             width: 100%; 
-            margin-top: 1rem; 
-            border-collapse: collapse; 
+            margin-top: 1.5rem; 
+            border-collapse: collapse;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         #familyTable th, #familyTable td { 
-            border: 1px solid #ddd; 
-            padding: 0.5rem; 
+            border: 1px solid #e0e0e0; 
+            padding: 0.8rem; 
             text-align: left; 
             vertical-align: top; 
         }
+        #familyTable th {
+            background-color: #e8f5e9;
+            font-weight: 600;
+            color: #2e7d32;
+        }
         #familyTable select, #familyTable input { 
-            padding: 0.5rem; 
+            padding: 0.6rem; 
             width: 100%; 
             margin-bottom: 0; 
+            font-size: 0.9rem;
         }
         .autocomplete-container { 
             position: relative; 
@@ -111,56 +160,118 @@
             position: absolute; 
             border: 1px solid #ddd; 
             border-top: none; 
-            z-index: 99;
+            z-index: 100;
             top: 100%; 
             left: 0; 
             right: 0; 
             background-color: white;
-            max-height: 150px; 
+            max-height: 200px; 
             overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 0 0 8px 8px;
         }
         .autocomplete-item { 
-            padding: 8px 12px; 
+            padding: 10px 12px; 
             cursor: pointer; 
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
         }
         .autocomplete-item:hover { 
-            background-color: #e9e9e9; 
+            background-color: #e8f5e9; 
+        }
+        .autocomplete-item:last-child {
+            border-bottom: none;
         }
         .success-message { 
             color: #2e7d32; 
-            padding: 10px; 
+            padding: 15px; 
             background-color: #f1f8e9; 
-            border-radius: 5px; 
-            margin: 10px 0; 
-            border-left: 4px solid #2e7d32;
+            border-radius: 8px; 
+            margin: 15px 0; 
+            border-left: 5px solid #2e7d32;
+            font-weight: 500;
         }
         .error-message { 
             color: #c62828; 
-            padding: 10px; 
+            padding: 15px; 
             background-color: #ffebee; 
-            border-radius: 5px; 
-            margin: 10px 0; 
-            border-left: 4px solid #c62828;
+            border-radius: 8px; 
+            margin: 15px 0; 
+            border-left: 5px solid #c62828;
+            font-weight: 500;
         }
         .info-text {
             color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 3px solid #2e7d32;
+        }
+        .loading-message {
+            color: #666;
+            padding: 10px;
+            text-align: center;
+            font-style: italic;
         }
         hr {
             border: none;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #e0e0e0;
             margin: 2rem 0;
         }
         label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
             color: #555;
+        }
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 2rem;
+        }
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            z-index: 1000;
+        }
+        .connection-status.connected {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #2e7d32;
+        }
+        .connection-status.disconnected {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #c62828;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+            .form-container {
+                padding: 1.5rem;
+            }
+            #familyTable {
+                display: block;
+                overflow-x: auto;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="connectionStatus" class="connection-status hidden-section">Status Koneksi</div>
+    
     <header>
         <h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1>
     </header>
@@ -171,7 +282,7 @@
                 <h2>Pendaftaran & Update Data</h2>
                 <p>Masukkan nama Anda untuk mendaftar atau memperbarui data.</p>
                 <input type="text" id="searchName" placeholder="Ketik Nama Anda di Sini" required>
-                <button onclick="checkName()">Cari / Daftar dengan Nama Ini</button>
+                <button onclick="checkName()" id="searchButton">Cari / Daftar dengan Nama Ini</button>
             </div>
             <div id="checkResult"></div>
 
@@ -346,6 +457,10 @@
         </div>
     </main>
     
+    <footer>
+        <p>© 2025 Acara Natal BPS. Semua hak dilindungi.</p>
+    </footer>
+    
     <template id="familyRowTemplate">
         <tr>
             <td>
@@ -388,7 +503,7 @@
     </template>
 
     <script>
-        // URL Google Apps Script - pastikan ini benar
+        // URL Google Apps Script - GANTI DENGAN URL ANDA
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEB3JCxxVDkChnSDlr3EDW0KuEAZrSBra2DSdlM5qu5U-H3w6rD8pMGxSQ9RjwZNCf/exec";
         
         let employeeNames = [];
@@ -405,6 +520,8 @@
         const checkResultDiv = document.getElementById('checkResult');
         const formResultDiv = document.getElementById('formResult');
         const searchNameInput = document.getElementById('searchName');
+        const searchButton = document.getElementById('searchButton');
+        const connectionStatus = document.getElementById('connectionStatus');
 
         // Event listeners
         konfirmasiSelect.addEventListener('change', function() {
@@ -427,6 +544,36 @@
         function updateFamilyTableDisplay() {
             const count = parseInt(jumlahKeluargaSelect.value, 10);
             tabelKeluargaSection.style.display = (count > 0) ? 'block' : 'none';
+        }
+
+        // Test koneksi ke server
+        async function testConnection() {
+            try {
+                connectionStatus.textContent = "Mengecek koneksi...";
+                connectionStatus.className = "connection-status";
+                connectionStatus.style.display = "block";
+                
+                const response = await fetch(`${SCRIPT_URL}?action=test`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.result === 'success') {
+                    connectionStatus.textContent = "Terhubung ke server";
+                    connectionStatus.className = "connection-status connected";
+                    return true;
+                } else {
+                    throw new Error(result.message || 'Respon server tidak valid');
+                }
+            } catch (error) {
+                console.error('Koneksi gagal:', error);
+                connectionStatus.textContent = "Tidak terhubung ke server";
+                connectionStatus.className = "connection-status disconnected";
+                return false;
+            }
         }
 
         // Load daftar nama pegawai
@@ -570,7 +717,10 @@
                 return;
             }
             
-            checkResultDiv.innerHTML = `<p>Mencari data untuk "${nameToCheck}"...</p>`;
+            // Disable button dan tampilkan loading
+            searchButton.disabled = true;
+            searchButton.textContent = "Mencari...";
+            checkResultDiv.innerHTML = `<div class="loading-message">Mencari data untuk "${nameToCheck}"...</div>`;
             regForm.style.display = 'none';
             formResultDiv.innerHTML = '';
 
@@ -658,25 +808,30 @@
             } catch (error) {
                 console.error('Error dalam checkName:', error);
                 checkResultDiv.innerHTML = `<div class="error-message">Gagal menghubungi server: ${error.message}. Pastikan Anda terhubung ke internet dan coba lagi.</div>`;
+            } finally {
+                searchButton.disabled = false;
+                searchButton.textContent = "Cari / Daftar dengan Nama Ini";
             }
         }
 
-        // Form submission handler
+        // Event listener untuk submit form
         regForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
             const originalText = submitBtn.innerText;
             submitBtn.disabled = true;
             submitBtn.innerText = "Menyimpan...";
-            formResultDiv.innerHTML = '<p>Menyimpan data...</p>';
+            formResultDiv.innerHTML = '<div class="loading-message">Menyimpan data...</div>';
             
             try {
+                // Validasi form dasar
+                if (!regForm.checkValidity()) {
+                    throw new Error('Harap isi semua field yang wajib diisi');
+                }
+
                 // Collect form data
                 const formData = new FormData(regForm);
-                const payload = {
-                    action: 'submit'
-                };
-                
+                const payload = {};
                 formData.forEach((value, key) => { 
                     if (value !== '') payload[key] = value; 
                 });
@@ -685,13 +840,17 @@
                 const dataKeluarga = [];
                 const rows = familyTableBody.querySelectorAll('tr');
                 rows.forEach(row => {
-                    dataKeluarga.push({
-                        status: row.querySelector('.statusKeluarga').value,
-                        nama: row.querySelector('.namaKeluarga').value,
-                        jenisKelamin: row.querySelector('.jenisKelaminKeluarga').value,
-                        bersekolah: row.querySelector('.bersekolah').value,
-                        kelas: row.querySelector('.kelas').value,
-                    });
+                    const nama = row.querySelector('.namaKeluarga').value.trim();
+                    // Hanya tambahkan jika ada nama
+                    if (nama) {
+                        dataKeluarga.push({
+                            status: row.querySelector('.statusKeluarga').value,
+                            nama: nama,
+                            jenisKelamin: row.querySelector('.jenisKelaminKeluarga').value,
+                            bersekolah: row.querySelector('.bersekolah').value,
+                            kelas: row.querySelector('.kelas').value,
+                        });
+                    }
                 });
                 
                 payload.keluarga = dataKeluarga;
@@ -699,45 +858,60 @@
                 
                 console.log('Mengirim data:', payload);
 
-                // Send data to Google Apps Script
+                // Kirim data ke Google Apps Script dengan timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 detik timeout
+                
                 const response = await fetch(SCRIPT_URL, { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 
                 console.log('Response status:', response.status);
                 
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log('Response data:', result);
-                    
-                    if (result.result === 'success') {
-                        formResultDiv.innerHTML = `<div class="success-message">
-                            <strong>Berhasil!</strong> Data Anda telah disimpan.
-                            <br><small>Halaman akan direset dalam 3 detik...</small>
-                        </div>`;
-                        
-                        setTimeout(() => {
-                            regForm.style.display = 'none';
-                            searchNameInput.value = '';
-                            checkResultDiv.innerHTML = '';
-                            formResultDiv.innerHTML = '';
-                            location.reload(); // Refresh untuk membersihkan state
-                        }, 3000);
-                    } else {
-                        throw new Error(result.message || 'Gagal menyimpan data');
-                    }
-                } else {
+                if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Response data:', result);
+                
+                if (result.result === 'success') {
+                    formResultDiv.innerHTML = `<div class="success-message">
+                        <strong>Berhasil!</strong> Data Anda telah disimpan.
+                        <br><small>ID Anda: ${result.idUnik}</small>
+                        <br><small>Halaman akan direset dalam 5 detik...</small>
+                    </div>`;
+                    
+                    // Reset form setelah berhasil
+                    setTimeout(() => {
+                        regForm.style.display = 'none';
+                        searchNameInput.value = '';
+                        checkResultDiv.innerHTML = '';
+                        formResultDiv.innerHTML = '';
+                        location.reload(); // Refresh untuk membersihkan state
+                    }, 5000);
+                } else {
+                    throw new Error(result.message || 'Gagal menyimpan data');
                 }
             } catch (error) { 
                 console.error('Error dalam submit:', error);
+                let errorMessage = error.message;
+                
+                if (error.name === 'AbortError') {
+                    errorMessage = 'Timeout: Server terlalu lama merespons. Silakan coba lagi.';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMessage = 'Gagal terhubung ke server. Periksa koneksi internet Anda dan coba lagi.';
+                }
+                
                 formResultDiv.innerHTML = `<div class="error-message">
-                    <strong>Gagal menyimpan data:</strong> ${error.message}
-                    <br><small>Silakan coba lagi atau hubungi administrator.</small>
+                    <strong>Gagal menyimpan data:</strong> ${errorMessage}
                 </div>`;
             } finally {
                 submitBtn.disabled = false;
@@ -763,22 +937,23 @@
         });
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             console.log('Memulai aplikasi pendaftaran...');
-            loadEmployeeNames();
             
-            // Test connection
-            fetch(`${SCRIPT_URL}?action=getNames`)
-                .then(response => {
-                    if (response.ok) {
-                        console.log('Koneksi ke server berhasil');
-                    } else {
-                        console.warn('Koneksi ke server memiliki masalah');
-                    }
-                })
-                .catch(error => {
-                    console.error('Tidak dapat terhubung ke server:', error);
-                });
+            // Test koneksi terlebih dahulu
+            const isConnected = await testConnection();
+            
+            if (isConnected) {
+                // Load data setelah koneksi berhasil
+                await loadEmployeeNames();
+            } else {
+                alert('Tidak dapat terhubung ke server. Beberapa fitur mungkin tidak berfungsi. Periksa koneksi internet Anda.');
+            }
+            
+            // Sembunyikan status koneksi setelah 5 detik
+            setTimeout(() => {
+                connectionStatus.style.display = 'none';
+            }, 5000);
         });
     </script>
 </body>
