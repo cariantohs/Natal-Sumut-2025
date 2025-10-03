@@ -503,7 +503,7 @@
     </template>
 
     <script>
-        // URL Google Apps Script - GANTI DENGAN URL ANDA
+        // URL Google Apps Script yang BENAR - SESUAI DENGAN URL ANDA
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEB3JCxxVDkChnSDlr3EDW0KuEAZrSBra2DSdlM5qu5U-H3w6rD8pMGxSQ9RjwZNCf/exec";
         
         let employeeNames = [];
@@ -553,6 +553,8 @@
                 connectionStatus.className = "connection-status";
                 connectionStatus.style.display = "block";
                 
+                console.log("Testing connection to:", SCRIPT_URL);
+                
                 const response = await fetch(`${SCRIPT_URL}?action=test`);
                 
                 if (!response.ok) {
@@ -562,15 +564,16 @@
                 const result = await response.json();
                 
                 if (result.result === 'success') {
-                    connectionStatus.textContent = "Terhubung ke server";
+                    connectionStatus.textContent = "✓ Terhubung ke server";
                     connectionStatus.className = "connection-status connected";
+                    console.log("Connection test: SUCCESS");
                     return true;
                 } else {
                     throw new Error(result.message || 'Respon server tidak valid');
                 }
             } catch (error) {
                 console.error('Koneksi gagal:', error);
-                connectionStatus.textContent = "Tidak terhubung ke server";
+                connectionStatus.textContent = "✗ Tidak terhubung ke server";
                 connectionStatus.className = "connection-status disconnected";
                 return false;
             }
@@ -912,6 +915,7 @@
                 
                 formResultDiv.innerHTML = `<div class="error-message">
                     <strong>Gagal menyimpan data:</strong> ${errorMessage}
+                    <br><small>URL Script: ${SCRIPT_URL}</small>
                 </div>`;
             } finally {
                 submitBtn.disabled = false;
@@ -939,6 +943,7 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('Memulai aplikasi pendaftaran...');
+            console.log('Script URL:', SCRIPT_URL);
             
             // Test koneksi terlebih dahulu
             const isConnected = await testConnection();
@@ -947,7 +952,12 @@
                 // Load data setelah koneksi berhasil
                 await loadEmployeeNames();
             } else {
-                alert('Tidak dapat terhubung ke server. Beberapa fitur mungkin tidak berfungsi. Periksa koneksi internet Anda.');
+                const errorMsg = `Tidak dapat terhubung ke server. 
+                                Periksa: 
+                                1. Koneksi internet
+                                2. URL script: ${SCRIPT_URL}
+                                3. Deployment setting di Google Apps Script`;
+                alert(errorMsg);
             }
             
             // Sembunyikan status koneksi setelah 5 detik
@@ -955,6 +965,28 @@
                 connectionStatus.style.display = 'none';
             }, 5000);
         });
+
+        // Fungsi untuk debugging - bisa dipanggil di console browser
+        window.debugConnection = async function() {
+            console.log('=== DEBUG CONNECTION ===');
+            console.log('Script URL:', SCRIPT_URL);
+            
+            const tests = [
+                { action: 'test', desc: 'Test Connection' },
+                { action: 'getNames', desc: 'Get Employee Names' }
+            ];
+            
+            for (let test of tests) {
+                try {
+                    console.log(`Testing: ${test.desc}`);
+                    const response = await fetch(`${SCRIPT_URL}?action=${test.action}`);
+                    const result = await response.json();
+                    console.log(`✓ ${test.desc}:`, result);
+                } catch (error) {
+                    console.error(`✗ ${test.desc}:`, error);
+                }
+            }
+        };
     </script>
 </body>
 </html>
