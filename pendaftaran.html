@@ -22,6 +22,8 @@
         }
         .autocomplete-item { padding: 8px 12px; cursor: pointer; }
         .autocomplete-item:hover { background-color: #e9e9e9; }
+        .success-message { color: green; padding: 10px; background-color: #f0fff0; border-radius: 5px; margin: 10px 0; }
+        .error-message { color: red; padding: 10px; background-color: #fff0f0; border-radius: 5px; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -42,6 +44,7 @@
             <form id="regForm" style="display:none;">
                 <h3 id="formTitle">Formulir Pendaftaran</h3>
                 <input type="hidden" id="rowIndex" name="rowIndex">
+                <input type="hidden" id="idUnik" name="idUnik">
                 
                 <h4>BAGIAN 1: BIODATA PESERTA</h4>
                 <label for="KabupatenKota">Kabupaten / Kota</label>
@@ -99,6 +102,7 @@
 
                 <div id="tabelKeluargaSection" class="hidden-section">
                     <h4>Detail Anggota Keluarga</h4>
+                    <p class="info-text">Jika anggota keluarga adalah Pegawai BPS, pilih status "Pegawai BPS" dan ketik nama untuk pencarian otomatis.</p>
                     <table id="familyTable">
                         <thead>
                             <tr><th>Status</th><th>Nama</th><th>Jenis Kelamin</th><th>Bersekolah?</th><th>Kelas</th></tr>
@@ -116,22 +120,49 @@
     
     <template id="familyRowTemplate">
         <tr>
-            <td><select class="statusKeluarga"><option value="Bukan Pegawai BPS" selected>Bukan Pegawai BPS</option><option value="Pegawai BPS">Pegawai BPS</option></select></td>
+            <td>
+                <select class="statusKeluarga" name="statusKeluarga">
+                    <option value="Bukan Pegawai BPS" selected>Bukan Pegawai BPS</option>
+                    <option value="Pegawai BPS">Pegawai BPS</option>
+                </select>
+            </td>
             <td>
                 <div class="autocomplete-container">
-                    <input type="text" class="namaKeluarga" placeholder="Nama anggota keluarga">
+                    <input type="text" class="namaKeluarga" name="namaKeluarga" placeholder="Nama anggota keluarga" required>
                     <div class="autocomplete-results"></div>
                 </div>
             </td>
-            <td><select class="jenisKelaminKeluarga"><option value="Laki-Laki">Laki-Laki</option><option value="Perempuan">Perempuan</option></select></td>
-            <td><select class="bersekolah"><option value="Tidak" selected>Tidak</option><option value="Ya">Ya</option></select></td>
-            <td><select class="kelas" disabled><option value="" disabled selected>-- Pilih --</option><option value="SD Kelas 1">SD Kelas 1</option><option value="SD Kelas 2">SD Kelas 2</option><option value="SD Kelas 3">SD Kelas 3</option><option value="SD Kelas 4">SD Kelas 4</option><option value="SD Kelas 5">SD Kelas 5</option><option value="SD Kelas 6">SD Kelas 6</option><option value="SMP Keatas">SMP Keatas</option></select></td>
+            <td>
+                <select class="jenisKelaminKeluarga" name="jenisKelaminKeluarga">
+                    <option value="Laki-Laki">Laki-Laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </select>
+            </td>
+            <td>
+                <select class="bersekolah" name="bersekolah">
+                    <option value="Tidak" selected>Tidak</option>
+                    <option value="Ya">Ya</option>
+                </select>
+            </td>
+            <td>
+                <select class="kelas" name="kelas" disabled>
+                    <option value="" disabled selected>-- Pilih --</option>
+                    <option value="SD Kelas 1">SD Kelas 1</option>
+                    <option value="SD Kelas 2">SD Kelas 2</option>
+                    <option value="SD Kelas 3">SD Kelas 3</option>
+                    <option value="SD Kelas 4">SD Kelas 4</option>
+                    <option value="SD Kelas 5">SD Kelas 5</option>
+                    <option value="SD Kelas 6">SD Kelas 6</option>
+                    <option value="SMP Keatas">SMP Keatas</option>
+                </select>
+            </td>
         </tr>
     </template>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxzDbrJRBUZQrxSbPnEA3VUcdXMTPLsFfP0S3oHZy6VGiLcQrvDyTcOeJqaFsXuOUzF/exec";
         let employeeNames = [];
+        let currentFamilyData = [];
 
         const konfirmasiSelect = document.getElementById('konfirmasiKehadiran');
         const jumlahKeluargaSection = document.getElementById('jumlahKeluargaSection');
@@ -144,35 +175,54 @@
         const formResultDiv = document.getElementById('formResult');
         const searchNameInput = document.getElementById('searchName');
 
+        // Event listeners
         konfirmasiSelect.addEventListener('change', function() {
-            jumlahKeluargaSection.style.display = (this.value === 'Hadir') ? 'block' : 'none';
-            if (this.value !== 'Hadir') {
+            const isAttending = this.value === 'Hadir';
+            jumlahKeluargaSection.style.display = isAttending ? 'block' : 'none';
+            if (!isAttending) {
                 jumlahKeluargaSelect.value = '0';
-                jumlahKeluargaSelect.dispatchEvent(new Event('change'));
+                updateFamilyTableDisplay();
             }
         });
 
         jumlahKeluargaSelect.addEventListener('change', function() {
-            const count = parseInt(this.value, 10);
-            tabelKeluargaSection.style.display = (count > 0) ? 'block' : 'none';
-            if(document.activeElement !== this) return;
-            generateFamilyTable(count);
+            updateFamilyTableDisplay();
+            if(document.activeElement === this) {
+                generateFamilyTable(parseInt(this.value, 10));
+            }
         });
 
+        // Fungsi untuk menampilkan/menyembunyikan tabel keluarga
+        function updateFamilyTableDisplay() {
+            const count = parseInt(jumlahKeluargaSelect.value, 10);
+            tabelKeluargaSection.style.display = (count > 0) ? 'block' : 'none';
+        }
+
+        // Memuat daftar nama pegawai untuk autocomplete
         async function loadEmployeeNames() {
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getNames`);
                 const result = await response.json();
-                if (result.result === 'success') employeeNames = result.data;
-            } catch (error) { console.error("Gagal memuat nama pegawai:", error); }
+                if (result.result === 'success') {
+                    employeeNames = result.data;
+                }
+            } catch (error) {
+                console.error("Gagal memuat nama pegawai:", error);
+            }
         }
 
+        // Menampilkan autocomplete untuk input nama
         function showAutocomplete(inputElement) {
             const searchTerm = inputElement.value.toLowerCase();
             const resultsContainer = inputElement.nextElementSibling;
             resultsContainer.innerHTML = '';
+            
             if (searchTerm.length === 0) return;
-            const filteredNames = employeeNames.filter(name => name.toLowerCase().includes(searchTerm));
+            
+            const filteredNames = employeeNames.filter(name => 
+                name.toLowerCase().includes(searchTerm)
+            );
+            
             filteredNames.forEach(name => {
                 const item = document.createElement('div');
                 item.className = 'autocomplete-item';
@@ -185,53 +235,80 @@
             });
         }
         
+        // Membuat tabel keluarga berdasarkan jumlah
         function generateFamilyTable(count) {
             familyTableBody.innerHTML = '';
+            
             for (let i = 0; i < count; i++) {
                 const newRow = familyRowTemplate.content.cloneNode(true);
                 const statusSelect = newRow.querySelector('.statusKeluarga');
                 const namaInput = newRow.querySelector('.namaKeluarga');
                 const bersekolahSelect = newRow.querySelector('.bersekolah');
                 const kelasSelect = newRow.querySelector('.kelas');
+                const jenisKelaminSelect = newRow.querySelector('.jenisKelaminKeluarga');
                 
+                // Jika ada data sebelumnya, isi dengan data tersebut
+                if (currentFamilyData[i]) {
+                    statusSelect.value = currentFamilyData[i].status;
+                    namaInput.value = currentFamilyData[i].nama;
+                    jenisKelaminSelect.value = currentFamilyData[i].jenisKelamin;
+                    bersekolahSelect.value = currentFamilyData[i].bersekolah;
+                    
+                    if (currentFamilyData[i].bersekolah === 'Ya') {
+                        kelasSelect.disabled = false;
+                        kelasSelect.value = currentFamilyData[i].kelas;
+                    }
+                }
+                
+                // Event listener untuk perubahan status bersekolah
                 bersekolahSelect.addEventListener('change', function() {
                     kelasSelect.disabled = (this.value !== 'Ya');
-                    if (this.value !== 'Ya') kelasSelect.value = '';
+                    if (this.value !== 'Ya') {
+                        kelasSelect.value = '';
+                    }
                 });
+                
+                // Event listener untuk input nama (autocomplete)
                 namaInput.addEventListener('input', function() {
-                    if (statusSelect.value === 'Pegawai BPS') showAutocomplete(this);
+                    if (statusSelect.value === 'Pegawai BPS') {
+                        showAutocomplete(this);
+                    }
                 });
-                statusSelect.addEventListener('change', () => {
+                
+                // Event listener untuk perubahan status (Pegawai BPS / Bukan)
+                statusSelect.addEventListener('change', function() {
                     namaInput.value = '';
                     if (namaInput.nextElementSibling) {
                         namaInput.nextElementSibling.innerHTML = '';
                     }
                 });
+                
                 familyTableBody.appendChild(newRow);
             }
         }
 
+        // Mengisi tabel keluarga dengan data yang sudah ada
         function populateFamilyTable(familyData) {
             if (!familyData || familyData.length === 0) return;
-            generateFamilyTable(familyData.length);
-            const rows = familyTableBody.querySelectorAll('tr');
-            rows.forEach((row, index) => {
-                const anggota = familyData[index];
-                row.querySelector('.statusKeluarga').value = anggota.status;
-                row.querySelector('.namaKeluarga').value = anggota.nama;
-                row.querySelector('.jenisKelaminKeluarga').value = anggota.jenisKelamin;
-                row.querySelector('.bersekolah').value = anggota.bersekolah;
-                if (anggota.bersekolah === 'Ya') {
-                    const kelasSelect = row.querySelector('.kelas');
-                    kelasSelect.disabled = false;
-                    kelasSelect.value = anggota.kelas;
-                }
-            });
+            
+            // Simpan data keluarga untuk digunakan ulang
+            currentFamilyData = [...familyData];
+            
+            const count = familyData.length;
+            jumlahKeluargaSelect.value = count;
+            updateFamilyTableDisplay();
+            generateFamilyTable(count);
         }
         
+        // Fungsi utama untuk mencari nama
         async function checkName(nameOverride) {
-            const nameToCheck = nameOverride || searchNameInput.value;
-            if (nameToCheck.trim().length === 0) { checkResultDiv.innerHTML = `<p style="color: red;">Nama tidak boleh kosong.</p>`; return; }
+            const nameToCheck = nameOverride || searchNameInput.value.trim();
+            
+            if (nameToCheck.length === 0) {
+                checkResultDiv.innerHTML = `<div class="error-message">Nama tidak boleh kosong.</div>`;
+                return;
+            }
+            
             checkResultDiv.innerHTML = `<p>Mencari...</p>`;
             regForm.style.display = 'none';
             formResultDiv.innerHTML = '';
@@ -243,12 +320,15 @@
                 if (result.result === 'found_single') {
                     const mainData = result.data.main;
                     const familyData = result.data.family;
-                    checkResultDiv.innerHTML = `<p style="color: green;">Data ditemukan untuk <b>${mainData.Nama}</b>. Silakan perbarui data Anda di bawah.</p>`;
+                    
+                    checkResultDiv.innerHTML = `<div class="success-message">Data ditemukan untuk <b>${mainData.Nama}</b>. Silakan perbarui data Anda di bawah.</div>`;
                     regForm.style.display = 'block';
                     document.getElementById('formTitle').innerText = "Formulir Update Data";
                     document.getElementById('submitBtn').innerText = "Update Data Saya";
                     
+                    // Isi form dengan data yang ada
                     document.getElementById('rowIndex').value = mainData.rowIndex;
+                    document.getElementById('idUnik').value = mainData.idUnik;
                     document.getElementById('KabupatenKota').value = mainData.KabupatenKota;
                     document.getElementById('Nama').value = mainData.Nama;
                     document.getElementById('TTL').value = mainData.TTL;
@@ -259,10 +339,12 @@
 
                     konfirmasiSelect.value = mainData.konfirmasi || "";
                     konfirmasiSelect.dispatchEvent(new Event('change'));
+                    
+                    // Tunggu sebentar sebelum mengatur data keluarga
                     setTimeout(() => {
                         const familyCount = familyData.length;
                         jumlahKeluargaSelect.value = familyCount > 0 ? familyCount : (mainData.jumlahKeluarga || 0);
-                        jumlahKeluargaSelect.dispatchEvent(new Event('change'));
+                        updateFamilyTableDisplay();
                         if (familyCount > 0) {
                             populateFamilyTable(familyData);
                         }
@@ -286,65 +368,104 @@
                     checkResultDiv.appendChild(selectionDiv);
 
                 } else if (result.result === 'not_found') {
-                    checkResultDiv.innerHTML = `<p style="color: blue;">Nama tidak ditemukan. Silakan isi formulir pendaftaran baru di bawah.</p>`;
+                    checkResultDiv.innerHTML = `<div class="success-message">Nama tidak ditemukan. Silakan isi formulir pendaftaran baru di bawah.</div>`;
                     regForm.style.display = 'block';
                     document.getElementById('formTitle').innerText = "Formulir Pendaftaran Baru";
                     document.getElementById('submitBtn').innerText = "Daftar Sekarang";
                     
                     regForm.reset(); 
+                    currentFamilyData = [];
                     konfirmasiSelect.dispatchEvent(new Event('change'));
                     document.getElementById('Nama').value = nameToCheck;
                     document.getElementById('rowIndex').value = '';
+                    document.getElementById('idUnik').value = '';
 
                 } else {
-                    checkResultDiv.innerHTML = `<p style="color: red;">Error: ${result.message}</p>`;
+                    checkResultDiv.innerHTML = `<div class="error-message">Error: ${result.message}</div>`;
                 }
             } catch (error) {
-                checkResultDiv.innerHTML = `<p style="color: red;">Gagal menghubungi server.</p>`;
+                checkResultDiv.innerHTML = `<div class="error-message">Gagal menghubungi server. Pastikan Anda terhubung ke internet.</div>`;
             }
         }
 
-        regForm.addEventListener('submit', (e) => {
+        // Event listener untuk submit form
+        regForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerText;
             submitBtn.disabled = true;
             submitBtn.innerText = "Menyimpan...";
-            const formData = new FormData(regForm);
-            const payload = {};
-            formData.forEach((value, key) => { payload[key] = value; });
-            const dataKeluarga = [];
-            const rows = familyTableBody.querySelectorAll('tr');
-            rows.forEach(row => {
-                dataKeluarga.push({
-                    status: row.querySelector('.statusKeluarga').value,
-                    nama: row.querySelector('.namaKeluarga').value,
-                    jenisKelamin: row.querySelector('.jenisKelaminKeluarga').value,
-                    bersekolah: row.querySelector('.bersekolah').value,
-                    kelas: row.querySelector('.kelas').value,
+            formResultDiv.innerHTML = '';
+            
+            try {
+                const formData = new FormData(regForm);
+                const payload = {};
+                formData.forEach((value, key) => { 
+                    if (value) payload[key] = value; 
                 });
-            });
-            payload.keluarga = dataKeluarga;
+                
+                // Kumpulkan data keluarga dari tabel
+                const dataKeluarga = [];
+                const rows = familyTableBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    dataKeluarga.push({
+                        status: row.querySelector('.statusKeluarga').value,
+                        nama: row.querySelector('.namaKeluarga').value,
+                        jenisKelamin: row.querySelector('.jenisKelaminKeluarga').value,
+                        bersekolah: row.querySelector('.bersekolah').value,
+                        kelas: row.querySelector('.kelas').value,
+                    });
+                });
+                payload.keluarga = dataKeluarga;
+                payload.jumlahKeluarga = dataKeluarga.length;
 
-            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
-            .then(() => {
-                formResultDiv.innerHTML = `<p style="color: green;">Terima kasih! Data Anda telah berhasil disimpan.</p>`;
+                const response = await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.result === 'success') {
+                        formResultDiv.innerHTML = `<div class="success-message">Terima kasih! Data Anda telah berhasil disimpan.</div>`;
+                        setTimeout(() => {
+                            regForm.style.display = 'none';
+                            searchNameInput.value = '';
+                            checkResultDiv.innerHTML = '';
+                            formResultDiv.innerHTML = '';
+                        }, 3000);
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            } catch (error) { 
+                formResultDiv.innerHTML = `<div class="error-message">Terjadi kesalahan saat mengirim: ${error.message}</div>`;
+            } finally {
                 submitBtn.disabled = false;
-                regForm.style.display = 'none';
-                searchNameInput.value = '';
-                checkResultDiv.innerHTML = '';
-            })
-            .catch(error => { 
-                formResultDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan saat mengirim.</p>`;
-                submitBtn.disabled = false;
-             });
+                submitBtn.innerText = originalText;
+            }
         });
 
+        // Menutup autocomplete ketika klik di luar
         document.addEventListener('click', e => {
             if (!e.target.closest('.autocomplete-container')) {
                 document.querySelectorAll('.autocomplete-results').forEach(res => res.innerHTML = '');
             }
         });
 
+        // Event listener untuk tombol enter di search input
+        searchNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkName();
+            }
+        });
+
+        // Memuat data saat halaman dimuat
         document.addEventListener('DOMContentLoaded', loadEmployeeNames);
     </script>
 </body>
