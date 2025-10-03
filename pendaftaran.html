@@ -228,8 +228,8 @@
             });
         }
         
-        async function checkName() {
-            const nameToCheck = searchNameInput.value;
+        async function checkName(nameOverride) {
+            const nameToCheck = nameOverride || searchNameInput.value;
             if (nameToCheck.trim().length === 0) { checkResultDiv.innerHTML = `<p style="color: red;">Nama tidak boleh kosong.</p>`; return; }
             checkResultDiv.innerHTML = `<p>Mencari...</p>`;
             regForm.style.display = 'none';
@@ -239,10 +239,10 @@
                 const response = await fetch(`${SCRIPT_URL}?action=search&nama=${encodeURIComponent(nameToCheck)}`);
                 const result = await response.json();
 
-                if (result.result === 'found') {
+                if (result.result === 'found_single') {
                     const mainData = result.data.main;
                     const familyData = result.data.family;
-                    checkResultDiv.innerHTML = `<p style="color: green;">Data ditemukan untuk <b>${mainData.nama}</b>. Silakan perbarui data Anda di bawah.</p>`;
+                    checkResultDiv.innerHTML = `<p style="color: green;">Data ditemukan untuk <b>${mainData.Nama}</b>. Silakan perbarui data Anda di bawah.</p>`;
                     regForm.style.display = 'block';
                     document.getElementById('formTitle').innerText = "Formulir Update Data";
                     document.getElementById('submitBtn').innerText = "Update Data Saya";
@@ -266,6 +266,23 @@
                             populateFamilyTable(familyData);
                         }
                     }, 100);
+
+                } else if (result.result === 'found_multiple') {
+                    checkResultDiv.innerHTML = `<h4>Ditemukan beberapa nama yang cocok. Silakan pilih nama Anda:</h4>`;
+                    const selectionDiv = document.createElement('div');
+                    selectionDiv.className = 'name-selection';
+                    
+                    result.data.forEach(match => {
+                        const option = document.createElement('div');
+                        option.className = 'name-option';
+                        option.textContent = `${match.Nama} (${match.KabupatenKota})`;
+                        option.onclick = () => {
+                            searchNameInput.value = match.Nama;
+                            checkName(match.Nama);
+                        };
+                        selectionDiv.appendChild(option);
+                    });
+                    checkResultDiv.appendChild(selectionDiv);
 
                 } else if (result.result === 'not_found') {
                     checkResultDiv.innerHTML = `<p style="color: blue;">Nama tidak ditemukan. Silakan isi formulir pendaftaran baru di bawah.</p>`;
