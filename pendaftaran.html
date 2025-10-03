@@ -155,6 +155,7 @@
         jumlahKeluargaSelect.addEventListener('change', function() {
             const count = parseInt(this.value, 10);
             tabelKeluargaSection.style.display = (count > 0) ? 'block' : 'none';
+            if(document.activeElement !== this) return; // Prevent infinite loop
             generateFamilyTable(count);
         });
 
