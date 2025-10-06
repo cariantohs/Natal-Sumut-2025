@@ -931,8 +931,8 @@
     </template>
 
     <script>
-        // URL Google Apps Script
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEB3JCxxVDkChnSDlr3EDW0KuEAZrSBra2DSdlM5qu5U-H3w6rD8pMGxSQ9RjwZNCf/exec";
+        // URL Google Apps Script - GANTI DENGAN URL DEPLOYMENT ANDA
+        const SCRIPT_URL = "https://script.google.com/macros/s/SCRIPT_ID_HERE/exec";
         
         let employeeNames = [];
         let currentFamilyData = [];
@@ -1005,6 +1005,7 @@
                 
                 console.log("Testing connection to:", SCRIPT_URL);
                 
+                // Test dengan fetch biasa
                 const response = await fetch(`${SCRIPT_URL}?action=test&t=${Date.now()}`);
                 
                 if (!response.ok) {
