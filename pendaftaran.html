@@ -218,33 +218,50 @@
             margin-bottom: 2rem;
         }
 
-        /* Family Table */
-        #familyTable {
-            width: 100%;
+        /* Family Cards (New Layout) */
+        .family-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
             margin-top: 1.5rem;
-            border-collapse: collapse;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
 
-        #familyTable th, #familyTable td {
+        .family-card {
+            background: var(--white);
             border: 1px solid var(--border);
-            padding: 0.8rem;
-            text-align: left;
-            vertical-align: top;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        #familyTable th {
-            background-color: #e8f5e9;
+        .family-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .family-card-title {
             font-weight: 600;
             color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        #familyTable select, #familyTable input {
-            padding: 0.6rem;
-            width: 100%;
-            margin-bottom: 0;
-            font-size: 0.9rem;
+        .family-card-body {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .family-card-body {
+                grid-template-columns: 1fr 1fr;
+                gap: 1.5rem;
+            }
         }
 
         /* Autocomplete */
@@ -450,16 +467,6 @@
                 font-size: 1.3rem;
             }
 
-            #familyTable {
-                display: block;
-                overflow-x: auto;
-            }
-
-            #familyTable th, #familyTable td {
-                padding: 0.5rem;
-                font-size: 0.9rem;
-            }
-
             .btn {
                 padding: 1rem;
                 font-size: 1rem;
@@ -487,10 +494,6 @@
 
             form select, form input, form button, .btn {
                 padding: 0.8rem;
-            }
-
-            #familyTable {
-                font-size: 0.8rem;
             }
         }
 
@@ -686,6 +689,15 @@
                     </div>
                     
                     <div class="form-group">
+                        <label for="JenisKelamin">Jenis Kelamin</label>
+                        <select id="JenisKelamin" name="JenisKelamin" required>
+                            <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
+                            <option value="Laki-Laki">Laki-Laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="TTL">Tempat, Tanggal Lahir</label>
                         <input type="text" id="TTL" name="TTL" placeholder="Contoh: Medan, 25 Desember 1990" required>
                     </div>
@@ -843,21 +855,12 @@
                         
                         <p class="info-text">
                             <i class="fas fa-info-circle"></i> 
-                            Jika anggota keluarga adalah Pegawai BPS, pilih status "Pegawai BPS" dan ketik nama untuk pencarian otomatis.
+                            Jika Keluarga sesama pegawai BPS Se-Provinsi Sumatera Utara, Harap 1 Pegawai saja yang menambahkan daftar tamu yang akan dibawa.
                         </p>
                         
-                        <table id="familyTable">
-                            <thead>
-                                <tr>
-                                    <th>Status</th>
-                                    <th>Nama</th>
-                                    <th>Jenis Kelamin</th>
-                                    <th>Bersekolah?</th>
-                                    <th>Kelas</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <div id="familyCards" class="family-cards">
+                            <!-- Family cards will be generated here -->
+                        </div>
                     </div>
                 </div>
                 
@@ -879,45 +882,52 @@
         <p>© 2025 Acara Natal BPS Sumatera Utara. Semua hak dilindungi.</p>
     </footer>
     
-    <template id="familyRowTemplate">
-        <tr>
-            <td>
-                <select class="statusKeluarga" name="statusKeluarga">
-                    <option value="Bukan Pegawai BPS" selected>Bukan Pegawai BPS</option>
-                    <option value="Pegawai BPS">Pegawai BPS</option>
-                </select>
-            </td>
-            <td>
-                <div class="autocomplete-container">
-                    <input type="text" class="namaKeluarga" name="namaKeluarga" placeholder="Nama anggota keluarga" required>
-                    <div class="autocomplete-results"></div>
+    <template id="familyCardTemplate">
+        <div class="family-card">
+            <div class="family-card-header">
+                <div class="family-card-title">
+                    <i class="fas fa-user"></i>
+                    <span>Anggota Keluarga <span class="family-member-index">1</span></span>
                 </div>
-            </td>
-            <td>
-                <select class="jenisKelaminKeluarga" name="jenisKelaminKeluarga">
-                    <option value="Laki-Laki">Laki-Laki</option>
-                    <option value="Perempuan">Perempuan</option>
-                </select>
-            </td>
-            <td>
-                <select class="bersekolah" name="bersekolah">
-                    <option value="Tidak" selected>Tidak</option>
-                    <option value="Ya">Ya</option>
-                </select>
-            </td>
-            <td>
-                <select class="kelas" name="kelas" disabled>
-                    <option value="" disabled selected>-- Pilih --</option>
-                    <option value="SD Kelas 1">SD Kelas 1</option>
-                    <option value="SD Kelas 2">SD Kelas 2</option>
-                    <option value="SD Kelas 3">SD Kelas 3</option>
-                    <option value="SD Kelas 4">SD Kelas 4</option>
-                    <option value="SD Kelas 5">SD Kelas 5</option>
-                    <option value="SD Kelas 6">SD Kelas 6</option>
-                    <option value="SMP Keatas">SMP Keatas</option>
-                </select>
-            </td>
-        </tr>
+            </div>
+            <div class="family-card-body">
+                <div class="form-group">
+                    <label for="namaKeluarga">Nama Lengkap</label>
+                    <input type="text" class="namaKeluarga" name="namaKeluarga" placeholder="Nama anggota keluarga" required>
+                </div>
+                <div class="form-group">
+                    <label for="jenisKelaminKeluarga">Jenis Kelamin</label>
+                    <select class="jenisKelaminKeluarga" name="jenisKelaminKeluarga">
+                        <option value="Laki-Laki">Laki-Laki</option>
+                        <option value="Perempuan">Perempuan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="bersekolah">Masih Bersekolah?</label>
+                    <select class="bersekolah" name="bersekolah">
+                        <option value="Tidak" selected>Tidak</option>
+                        <option value="Ya">Ya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="kelas">Kelas</label>
+                    <select class="kelas" name="kelas" disabled>
+                        <option value="" disabled selected>-- Pilih Kelas --</option>
+                        <option value="SD Kelas 1">SD Kelas 1</option>
+                        <option value="SD Kelas 2">SD Kelas 2</option>
+                        <option value="SD Kelas 3">SD Kelas 3</option>
+                        <option value="SD Kelas 4">SD Kelas 4</option>
+                        <option value="SD Kelas 5">SD Kelas 5</option>
+                        <option value="SD Kelas 6">SD Kelas 6</option>
+                        <option value="SMP Kelas 1">SMP Kelas 1</option>
+                        <option value="SMP Kelas 2">SMP Kelas 2</option>
+                        <option value="SMP Kelas 3">SMP Kelas 3</option>
+                        <option value="SMA/SMK">SMA/SMK</option>
+                        <option value="Perguruan Tinggi">Perguruan Tinggi</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </template>
 
     <script>
@@ -932,8 +942,8 @@
         const jumlahKeluargaSection = document.getElementById('jumlahKeluargaSection');
         const jumlahKeluargaSelect = document.getElementById('jumlahKeluarga');
         const tabelKeluargaSection = document.getElementById('tabelKeluargaSection');
-        const familyTableBody = document.querySelector('#familyTable tbody');
-        const familyRowTemplate = document.getElementById('familyRowTemplate');
+        const familyCardsContainer = document.getElementById('familyCards');
+        const familyCardTemplate = document.getElementById('familyCardTemplate');
         const regForm = document.getElementById('regForm');
         const checkResultDiv = document.getElementById('checkResult');
         const formResultDiv = document.getElementById('formResult');
@@ -968,19 +978,19 @@
             jumlahKeluargaSection.style.display = isAttending ? 'block' : 'none';
             if (!isAttending) {
                 jumlahKeluargaSelect.value = '0';
-                updateFamilyTableDisplay();
+                updateFamilyCardsDisplay();
             }
         });
 
         jumlahKeluargaSelect.addEventListener('change', function() {
-            updateFamilyTableDisplay();
+            updateFamilyCardsDisplay();
             if(document.activeElement === this) {
-                generateFamilyTable(parseInt(this.value, 10));
+                generateFamilyCards(parseInt(this.value, 10));
             }
         });
 
-        // Update tampilan tabel keluarga
-        function updateFamilyTableDisplay() {
+        // Update tampilan kartu keluarga
+        function updateFamilyCardsDisplay() {
             const count = parseInt(jumlahKeluargaSelect.value, 10);
             tabelKeluargaSection.style.display = (count > 0) ? 'block' : 'none';
         }
@@ -1038,60 +1048,27 @@
                 }
             } catch (error) {
                 console.error("Gagal memuat nama pegawai:", error);
-                // Tetap lanjut meskipun gagal load nama
             }
-        }
-
-        // Autocomplete functionality
-        function showAutocomplete(inputElement) {
-            const searchTerm = inputElement.value.toLowerCase();
-            const resultsContainer = inputElement.nextElementSibling;
-            resultsContainer.innerHTML = '';
-            
-            if (searchTerm.length === 0 || employeeNames.length === 0) return;
-            
-            const filteredNames = employeeNames.filter(name => 
-                name.toLowerCase().includes(searchTerm)
-            );
-            
-            if (filteredNames.length === 0) {
-                const noResult = document.createElement('div');
-                noResult.className = 'autocomplete-item';
-                noResult.textContent = 'Tidak ditemukan';
-                noResult.style.color = '#999';
-                resultsContainer.appendChild(noResult);
-                return;
-            }
-            
-            filteredNames.forEach(name => {
-                const item = document.createElement('div');
-                item.className = 'autocomplete-item';
-                item.textContent = name;
-                item.onclick = () => {
-                    inputElement.value = name;
-                    resultsContainer.innerHTML = '';
-                    // Trigger input event untuk validasi
-                    inputElement.dispatchEvent(new Event('input'));
-                };
-                resultsContainer.appendChild(item);
-            });
         }
         
-        // Generate tabel keluarga
-        function generateFamilyTable(count) {
-            familyTableBody.innerHTML = '';
+        // Generate kartu keluarga
+        function generateFamilyCards(count) {
+            familyCardsContainer.innerHTML = '';
             
             for (let i = 0; i < count; i++) {
-                const newRow = familyRowTemplate.content.cloneNode(true);
-                const statusSelect = newRow.querySelector('.statusKeluarga');
-                const namaInput = newRow.querySelector('.namaKeluarga');
-                const bersekolahSelect = newRow.querySelector('.bersekolah');
-                const kelasSelect = newRow.querySelector('.kelas');
-                const jenisKelaminSelect = newRow.querySelector('.jenisKelaminKeluarga');
+                const newCard = familyCardTemplate.content.cloneNode(true);
+                const cardElement = newCard.querySelector('.family-card');
+                const memberIndex = cardElement.querySelector('.family-member-index');
+                const namaInput = cardElement.querySelector('.namaKeluarga');
+                const jenisKelaminSelect = cardElement.querySelector('.jenisKelaminKeluarga');
+                const bersekolahSelect = cardElement.querySelector('.bersekolah');
+                const kelasSelect = cardElement.querySelector('.kelas');
+                
+                // Set member index
+                memberIndex.textContent = i + 1;
                 
                 // Isi dengan data sebelumnya jika ada
                 if (currentFamilyData[i]) {
-                    statusSelect.value = currentFamilyData[i].status || 'Bukan Pegawai BPS';
                     namaInput.value = currentFamilyData[i].nama || '';
                     jenisKelaminSelect.value = currentFamilyData[i].jenisKelamin || 'Laki-Laki';
                     bersekolahSelect.value = currentFamilyData[i].bersekolah || 'Tidak';
@@ -1104,41 +1081,19 @@
                 
                 // Event listeners untuk interaktivitas
                 bersekolahSelect.addEventListener('change', function() {
-                    const kelasSelect = this.closest('tr').querySelector('.kelas');
+                    const kelasSelect = this.closest('.family-card').querySelector('.kelas');
                     kelasSelect.disabled = (this.value !== 'Ya');
                     if (this.value !== 'Ya') {
                         kelasSelect.value = '';
                     }
                 });
                 
-                namaInput.addEventListener('input', function() {
-                    const statusSelect = this.closest('tr').querySelector('.statusKeluarga');
-                    if (statusSelect.value === 'Pegawai BPS') {
-                        showAutocomplete(this);
-                    }
-                });
-                
-                namaInput.addEventListener('focus', function() {
-                    const statusSelect = this.closest('tr').querySelector('.statusKeluarga');
-                    if (statusSelect.value === 'Pegawai BPS' && this.value === '') {
-                        showAutocomplete(this);
-                    }
-                });
-                
-                statusSelect.addEventListener('change', function() {
-                    const namaInput = this.closest('tr').querySelector('.namaKeluarga');
-                    namaInput.value = '';
-                    if (namaInput.nextElementSibling) {
-                        namaInput.nextElementSibling.innerHTML = '';
-                    }
-                });
-                
-                familyTableBody.appendChild(newRow);
+                familyCardsContainer.appendChild(newCard);
             }
         }
 
-        // Populate tabel keluarga dengan data
-        function populateFamilyTable(familyData) {
+        // Populate kartu keluarga dengan data
+        function populateFamilyCards(familyData) {
             if (!familyData || familyData.length === 0) {
                 currentFamilyData = [];
                 return;
@@ -1147,8 +1102,8 @@
             currentFamilyData = [...familyData];
             const count = familyData.length;
             jumlahKeluargaSelect.value = count;
-            updateFamilyTableDisplay();
-            generateFamilyTable(count);
+            updateFamilyCardsDisplay();
+            generateFamilyCards(count);
         }
         
         // Fungsi utama pencarian nama
@@ -1193,6 +1148,7 @@
                     document.getElementById('idUnik').value = mainData.idUnik || '';
                     document.getElementById('KabupatenKota').value = mainData.KabupatenKota || '';
                     document.getElementById('Nama').value = mainData.Nama || '';
+                    document.getElementById('JenisKelamin').value = mainData.JenisKelamin || '';
                     document.getElementById('TTL').value = mainData.TTL || '';
                     document.getElementById('Agama').value = mainData.Agama || 'Kristen Protestan';
                     document.getElementById('Jabatan').value = mainData.Jabatan || '';
@@ -1206,9 +1162,9 @@
                     setTimeout(() => {
                         const familyCount = familyData.length;
                         jumlahKeluargaSelect.value = familyCount > 0 ? familyCount : (mainData.jumlahKeluarga || 0);
-                        updateFamilyTableDisplay();
+                        updateFamilyCardsDisplay();
                         if (familyCount > 0) {
-                            populateFamilyTable(familyData);
+                            populateFamilyCards(familyData);
                         } else {
                             currentFamilyData = [];
                         }
@@ -1283,6 +1239,7 @@
                     idUnik: document.getElementById('idUnik').value,
                     KabupatenKota: document.getElementById('KabupatenKota').value,
                     Nama: document.getElementById('Nama').value,
+                    JenisKelamin: document.getElementById('JenisKelamin').value,
                     TTL: document.getElementById('TTL').value,
                     Agama: document.getElementById('Agama').value,
                     Jabatan: document.getElementById('Jabatan').value,
@@ -1294,16 +1251,15 @@
                 
                 // Collect family data
                 const dataKeluarga = [];
-                const rows = familyTableBody.querySelectorAll('tr');
-                rows.forEach(row => {
-                    const nama = row.querySelector('.namaKeluarga').value.trim();
+                const cards = familyCardsContainer.querySelectorAll('.family-card');
+                cards.forEach((card, index) => {
+                    const nama = card.querySelector('.namaKeluarga').value.trim();
                     if (nama) {
                         dataKeluarga.push({
-                            status: row.querySelector('.statusKeluarga').value,
                             nama: nama,
-                            jenisKelamin: row.querySelector('.jenisKelaminKeluarga').value,
-                            bersekolah: row.querySelector('.bersekolah').value,
-                            kelas: row.querySelector('.kelas').value,
+                            jenisKelamin: card.querySelector('.jenisKelaminKeluarga').value,
+                            bersekolah: card.querySelector('.bersekolah').value,
+                            kelas: card.querySelector('.kelas').value,
                         });
                     }
                 });
@@ -1388,14 +1344,18 @@
             return response;
         }
 
-        // Close autocomplete when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.matches('.namaKeluarga')) {
-                document.querySelectorAll('.autocomplete-results').forEach(res => {
-                    res.innerHTML = '';
-                });
+        // Reset form
+        function resetForm() {
+            if (confirm('Apakah Anda yakin ingin mereset form? Semua data yang belum disimpan akan hilang.')) {
+                regForm.reset();
+                currentFamilyData = [];
+                jumlahKeluargaSelect.value = '0';
+                updateFamilyCardsDisplay();
+                checkResultDiv.innerHTML = '';
+                formResultDiv.innerHTML = '';
+                updateStepIndicator(1);
             }
-        });
+        }
 
         // Enter key support for search
         searchNameInput.addEventListener('keypress', (e) => {
@@ -1404,19 +1364,6 @@
                 checkName();
             }
         });
-
-        // Reset form
-        function resetForm() {
-            if (confirm('Apakah Anda yakin ingin mereset form? Semua data yang belum disimpan akan hilang.')) {
-                regForm.reset();
-                currentFamilyData = [];
-                jumlahKeluargaSelect.value = '0';
-                updateFamilyTableDisplay();
-                checkResultDiv.innerHTML = '';
-                formResultDiv.innerHTML = '';
-                updateStepIndicator(1);
-            }
-        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1444,6 +1391,7 @@
             const testData = {
                 action: 'submit',
                 Nama: 'Test User',
+                JenisKelamin: 'Laki-Laki',
                 KabupatenKota: 'Medan',
                 TTL: 'Medan, 1 Januari 1990',
                 Agama: 'Kristen Protestan',
@@ -1454,7 +1402,6 @@
                 jumlahKeluarga: 1,
                 keluarga: [
                     {
-                        status: 'Bukan Pegawai BPS',
                         nama: 'Test Keluarga',
                         jenisKelamin: 'Laki-Laki',
                         bersekolah: 'Tidak',
