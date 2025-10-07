@@ -4,1408 +4,324 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendaftaran & Update Data Peserta Natal 2025</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
     <style>
-        :root {
-            --primary: #2e7d32;
-            --primary-dark: #1b5e20;
-            --primary-light: #4caf50;
-            --secondary: #ff9800;
-            --text: #333333;
-            --text-light: #666666;
-            --background: #f8f9fa;
-            --white: #ffffff;
-            --border: #e0e0e0;
-            --success: #4caf50;
-            --error: #f44336;
-            --warning: #ff9800;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --radius: 8px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text);
-            background-color: var(--background);
-            padding: 0;
-            margin: 0;
-        }
-
-        /* Header Styles */
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--white);
-            padding: 1.5rem 0;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .logo i {
-            font-size: 2rem;
-        }
-
-        .logo h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .logo a {
-            color: var(--white);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        /* Main Container */
-        .container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-        }
-
-        /* Form Container */
-        .form-container {
-            background: var(--white);
-            padding: 2.5rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-        }
-
-        /* Typography */
-        h2, h3, h4 {
-            color: var(--primary);
-            margin-bottom: 1.5rem;
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        h2 i {
-            color: var(--primary-light);
-        }
-
-        h3 {
-            font-size: 1.5rem;
-        }
-
-        h4 {
-            font-size: 1.2rem;
-            color: var(--primary-dark);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        form select, form input, form button, .btn {
-            width: 100%;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            background-color: var(--white);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        form select:focus, form input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
-            outline: none;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--white);
-            border: none;
-            padding: 1.2rem 1.5rem;
-            border-radius: var(--radius);
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .btn:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, var(--text-light), var(--text));
-        }
-
-        .btn-small {
-            padding: 0.7rem 1rem;
-            font-size: 0.9rem;
-        }
-
-        /* Search Section */
-        #searchName {
-            margin-bottom: 1.5rem;
-        }
-
-        /* Utility Classes */
-        .hidden-section {
-            display: none;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .mt-2 {
-            margin-top: 2rem;
-        }
-
-        .mb-2 {
-            margin-bottom: 2rem;
-        }
-
-        /* Family Cards (New Layout) */
-        .family-cards {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
+        .name-selection { margin-top: 1rem; }
+        .name-option { padding: 0.8rem; margin-bottom: 0.5rem; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; }
+        .name-option:hover { background-color: #f0f0f0; }
+        form select, form input { width: 100%; padding: 1rem; margin-bottom: 1rem; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; background-color: white; }
+        .hidden-section { display: none; }
         .family-card {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .family-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .family-card-title {
-            font-weight: 600;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .family-card-body {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-
-        @media (min-width: 768px) {
-            .family-card-body {
-                grid-template-columns: 1fr 1fr;
-                gap: 1.5rem;
-            }
-        }
-
-        /* Autocomplete */
-        .autocomplete-container {
-            position: relative;
-        }
-
-        .autocomplete-results {
-            position: absolute;
-            border: 1px solid var(--border);
-            border-top: none;
-            z-index: 100;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background-color: var(--white);
-            max-height: 200px;
-            overflow-y: auto;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            border-radius: 0 0 var(--radius) var(--radius);
-        }
-
-        .autocomplete-item {
-            padding: 10px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
-            transition: background-color 0.2s;
-        }
-
-        .autocomplete-item:hover {
-            background-color: #e8f5e9;
-        }
-
-        .autocomplete-item:last-child {
-            border-bottom: none;
-        }
-
-        /* Messages */
-        .success-message {
-            color: var(--success);
-            padding: 15px;
-            background-color: #f1f8e9;
-            border-radius: var(--radius);
-            margin: 15px 0;
-            border-left: 5px solid var(--success);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .error-message {
-            color: var(--error);
-            padding: 15px;
-            background-color: #ffebee;
-            border-radius: var(--radius);
-            margin: 15px 0;
-            border-left: 5px solid var(--error);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .warning-message {
-            color: var(--warning);
-            padding: 15px;
-            background-color: #fff3e0;
-            border-radius: var(--radius);
-            margin: 15px 0;
-            border-left: 5px solid var(--warning);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .info-text {
-            color: var(--text-light);
-            font-size: 0.95rem;
-            margin-bottom: 1.2rem;
-            line-height: 1.5;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            border-left: 3px solid var(--primary);
-        }
-
-        .loading-message {
-            color: var(--text-light);
-            padding: 10px;
-            text-align: center;
-            font-style: italic;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Name Selection */
-        .name-selection {
-            margin-top: 1.5rem;
-        }
-
-        .name-option {
+            border: 1px solid #eee;
+            border-radius: 8px;
             padding: 1rem;
-            margin-bottom: 0.8rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: all 0.3s ease;
+            margin-bottom: 1rem;
             background-color: #f9f9f9;
         }
-
-        .name-option:hover {
-            background-color: #e8f5e9;
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        .family-card h5 {
+            margin-top: 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.5rem;
         }
-
-        /* Connection Status */
-        .connection-status {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .connection-status.connected {
-            background-color: #e8f5e9;
-            color: var(--success);
-            border: 1px solid var(--success);
-        }
-
-        .connection-status.disconnected {
-            background-color: #ffebee;
-            color: var(--error);
-            border: 1px solid var(--error);
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 1.5rem;
-            color: var(--text-light);
-            font-size: 0.9rem;
-            border-top: 1px solid var(--border);
-            margin-top: 2rem;
-        }
-
-        /* Card Layout */
-        .card {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        /* Divider */
-        hr {
-            border: none;
-            border-top: 1px solid var(--border);
-            margin: 2rem 0;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 1rem;
-                margin: 1rem auto;
-            }
-
-            .form-container {
-                padding: 1.5rem;
-            }
-
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            h3 {
-                font-size: 1.3rem;
-            }
-
-            .btn {
-                padding: 1rem;
-                font-size: 1rem;
-            }
-
-            .connection-status {
-                top: 5px;
-                right: 5px;
-                font-size: 0.7rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .form-container {
-                padding: 1rem;
-            }
-
-            h2 {
-                font-size: 1.3rem;
-            }
-
-            h3 {
-                font-size: 1.1rem;
-            }
-
-            form select, form input, form button, .btn {
-                padding: 0.8rem;
-            }
-        }
-
-        /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease;
-        }
-
-        /* Step Indicator */
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .step-indicator::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--border);
-            z-index: 1;
-        }
-
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .step-number {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--white);
-            border: 2px solid var(--border);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .family-card label {
+            display: block;
+            margin-top: 0.5rem;
             font-weight: bold;
-            margin-bottom: 0.5rem;
+            font-size: 0.9em;
         }
-
-        .step.active .step-number {
-            background: var(--primary);
-            color: var(--white);
-            border-color: var(--primary);
+        .family-card input, .family-card select {
+            padding: 0.5rem;
+            margin-top: 0.25rem;
         }
-
-        .step.completed .step-number {
-            background: var(--success);
-            color: var(--white);
-            border-color: var(--success);
-        }
-
-        .step-label {
-            font-size: 0.8rem;
-            text-align: center;
-        }
-
-        /* Print Styles */
-        @media print {
-            header, footer, .btn, .connection-status {
-                display: none;
-            }
-
-            .form-container {
-                box-shadow: none;
-                padding: 0;
-            }
+        .disclaimer {
+            font-size: 0.9em;
+            font-style: italic;
+            color: #555;
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #1e90ff;
         }
     </style>
 </head>
 <body>
-    <div id="connectionStatus" class="connection-status hidden-section">
-        <i class="fas fa-circle-notch fa-spin"></i>
-        <span>Status Koneksi</span>
-    </div>
-    
     <header>
-        <div class="header-content">
-            <div class="logo">
-                <a href="index.html">
-                    <i class="fas fa-tree"></i>
-                    <h1>Acara Natal 2025</h1>
-                </a>
-            </div>
-            <div class="header-info">
-                <p>Pendaftaran & Update Data Peserta</p>
-            </div>
-        </div>
+        <h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1>
     </header>
 
     <main class="container">
-        <div class="form-container fade-in">
-            <!-- Step Indicator -->
-            <div class="step-indicator">
-                <div class="step active" id="step1">
-                    <div class="step-number">1</div>
-                    <div class="step-label">Cari Nama</div>
-                </div>
-                <div class="step" id="step2">
-                    <div class="step-number">2</div>
-                    <div class="step-label">Isi Data</div>
-                </div>
-                <div class="step" id="step3">
-                    <div class="step-number">3</div>
-                    <div class="step-label">Konfirmasi</div>
-                </div>
-            </div>
-
-            <!-- Search Section -->
+        <div class="form-container">
             <div id="checkNameSection">
-                <h2><i class="fas fa-search"></i> Pendaftaran & Update Data</h2>
+                <h2>Pendaftaran & Update Data</h2>
                 <p>Masukkan nama Anda untuk mendaftar atau memperbarui data.</p>
-                
-                <div class="form-group">
-                    <label for="searchName"><i class="fas fa-user"></i> Nama Lengkap</label>
-                    <input type="text" id="searchName" placeholder="Ketik Nama Anda di Sini" required>
-                </div>
-                
-                <button onclick="checkName()" id="searchButton" class="btn">
-                    <i class="fas fa-search"></i> Cari / Daftar dengan Nama Ini
-                </button>
+                <input type="text" id="searchName" placeholder="Ketik Nama Anda di Sini" required>
+                <button onclick="checkName()">Cari / Daftar dengan Nama Ini</button>
             </div>
-            
             <div id="checkResult"></div>
 
-            <!-- Registration Form -->
             <form id="regForm" style="display:none;">
-                <h3 id="formTitle"><i class="fas fa-edit"></i> Formulir Pendaftaran</h3>
+                <h3 id="formTitle">Formulir Pendaftaran</h3>
                 <input type="hidden" id="rowIndex" name="rowIndex">
-                <input type="hidden" id="idUnik" name="idUnik">
                 
-                <div class="card">
-                    <div class="card-header">
-                        <h4><i class="fas fa-id-card"></i> BIODATA PESERTA</h4>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="KabupatenKota">Kabupaten / Kota</label>
-                        <select id="KabupatenKota" name="KabupatenKota" required>
-                            <option value="" disabled selected>-- Pilih Kabupaten/Kota --</option>
-                            <option value="Asahan">Asahan</option>
-                            <option value="Batubara">Batubara</option>
-                            <option value="Binjai">Binjai (Kota)</option>
-                            <option value="Dairi">Dairi</option>
-                            <option value="Deli Serdang">Deli Serdang</option>
-                            <option value="Gunungsitoli">Gunungsitoli (Kota)</option>
-                            <option value="Humbang Hasundutan">Humbang Hasundutan</option>
-                            <option value="Karo">Karo</option>
-                            <option value="Labuhanbatu">Labuhanbatu</option>
-                            <option value="Labuhanbatu Selatan">Labuhanbatu Selatan</option>
-                            <option value="Labuhanbatu Utara">Labuhanbatu Utara</option>
-                            <option value="Langkat">Langkat</option>
-                            <option value="Mandailing Natal">Mandailing Natal</option>
-                            <option value="Medan">Medan (Kota)</option>
-                            <option value="Nias">Nias</option>
-                            <option value="Nias Barat">Nias Barat</option>
-                            <option value="Nias Selatan">Nias Selatan</option>
-                            <option value="Nias Utara">Nias Utara</option>
-                            <option value="Padang Lawas">Padang Lawas</option>
-                            <option value="Padang Lawas Utara">Padang Lawas Utara</option>
-                            <option value="Padangsidempuan">Padangsidempuan (Kota)</option>
-                            <option value="Pakpak Bharat">Pakpak Bharat</option>
-                            <option value="Pematangsiantar">Pematangsiantar (Kota)</option>
-                            <option value="Samosir">Samosir</option>
-                            <option value="Serdang Bedagai">Serdang Bedagai</option>
-                            <option value="Sibolga">Sibolga (Kota)</option>
-                            <option value="Simalungun">Simalungun</option>
-                            <option value="Tanjungbalai">Tanjungbalai (Kota)</option>
-                            <option value="Tapanuli Selatan">Tapanuli Selatan</option>
-                            <option value="Tapanuli Tengah">Tapanuli Tengah</option>
-                            <option value="Tapanuli Utara">Tapanuli Utara</option>
-                            <option value="Tebing Tinggi">Tebing Tinggi (Kota)</option>
-                            <option value="Toba">Toba</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="Nama">Nama Lengkap</label>
-                        <input type="text" id="Nama" name="Nama" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="JenisKelamin">Jenis Kelamin</label>
-                        <select id="JenisKelamin" name="JenisKelamin" required>
-                            <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
-                            <option value="Laki-Laki">Laki-Laki</option>
-                            <option value="Perempuan">Perempuan</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="TTL">Tempat, Tanggal Lahir</label>
-                        <input type="text" id="TTL" name="TTL" placeholder="Contoh: Medan, 25 Desember 1990" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="Agama">Agama</label>
-                        <select id="Agama" name="Agama" required>
-                            <option value="Kristen Protestan">Kristen Protestan</option>
-                            <option value="Katolik">Katolik</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="Jabatan">Jabatan</label>
-                        <select id="Jabatan" name="Jabatan" required>
-                            <option value="" disabled selected>-- Pilih Jabatan --</option>
-                            <option value="Kepala BPS Kabupaten/Kota">Kepala BPS Kabupaten/Kota</option>
-                            <option value="Kepala Bagian Umum">Kepala Bagian Umum</option>
-                            <option value="Kepala Subbagian Umum">Kepala Subbagian Umum</option>
-                            <option value="Penata Laksana Barang Mahir">Penata Laksana Barang Mahir</option>
-                            <option value="Penata Laksana Barang Terampil">Penata Laksana Barang Terampil</option>
-                            <option value="Analis Pengelola Keuangan APBN Ahli Madya">Analis Pengelola Keuangan APBN Ahli Madya</option>
-                            <option value="Analis Pengelola Keuangan APBN Ahli Muda">Analis Pengelola Keuangan APBN Ahli Muda</option>
-                            <option value="Analis Pengelola Keuangan APBN Ahli Pertama">Analis Pengelola Keuangan APBN Ahli Pertama</option>
-                            <option value="Pranata Keuangan APBN Penyelia">Pranata Keuangan APBN Penyelia</option>
-                            <option value="Pranata Keuangan APBN Mahir">Pranata Keuangan APBN Mahir</option>
-                            <option value="Pranata Keuangan APBN Terampil">Pranata Keuangan APBN Terampil</option>
-                            <option value="Analis Anggaran Ahli Madya">Analis Anggaran Ahli Madya</option>
-                            <option value="Analis Anggaran Ahli Muda">Analis Anggaran Ahli Muda</option>
-                            <option value="Analis Anggaran Ahli Pertama">Analis Anggaran Ahli Pertama</option>
-                            <option value="Analis SDM Aparatur Ahli Muda">Analis SDM Aparatur Ahli Muda</option>
-                            <option value="Analis SDM Aparatur Ahli Pertama">Analis SDM Aparatur Ahli Pertama</option>
-                            <option value="Pranata SDM Aparatur Penyelia">Pranata SDM Aparatur Penyelia</option>
-                            <option value="Pranata SDM Aparatur Mahir">Pranata SDM Aparatur Mahir</option>
-                            <option value="Pranata SDM Aparatur Terampil">Pranata SDM Aparatur Terampil</option>
-                            <option value="Arsiparis Ahli Madya">Arsiparis Ahli Madya</option>
-                            <option value="Arsiparis Ahli Muda">Arsiparis Ahli Muda</option>
-                            <option value="Arsiparis Ahli Pertama">Arsiparis Ahli Pertama</option>
-                            <option value="Arsiparis Terampil">Arsiparis Terampil</option>
-                            <option value="Penyuluh Hukum Ahli Muda">Penyuluh Hukum Ahli Muda</option>
-                            <option value="Penyuluh Hukum Ahli Pertama">Penyuluh Hukum Ahli Pertama</option>
-                            <option value="Pranata Humas Ahli Muda">Pranata Humas Ahli Muda</option>
-                            <option value="Pranata Humas Ahli Pertama">Pranata Humas Ahli Pertama</option>
-                            <option value="Pustakawan Penyelia">Pustakawan Penyelia</option>
-                            <option value="Pustakawan Mahir">Pustakawan Mahir</option>
-                            <option value="Pustakawan Terampil">Pustakawan Terampil</option>
-                            <option value="Pengolah Data">Pengolah Data</option>
-                            <option value="Verifikator Keuangan">Verifikator Keuangan</option>
-                            <option value="Pengelola Surat">Pengelola Surat</option>
-                            <option value="Pranata Kearsipan">Pranata Kearsipan</option>
-                            <option value="Pengelola Barang Milik Negara">Pengelola Barang Milik Negara</option>
-                            <option value="Teknisi Pemeliharaan Sarana dan Prasarana">Teknisi Pemeliharaan Sarana dan Prasarana</option>
-                            <option value="Pengemudi">Pengemudi</option>
-                            <option value="Statistisi Ahli Utama">Statistisi Ahli Utama</option>
-                            <option value="Statistisi Ahli Madya">Statistisi Ahli Madya</option>
-                            <option value="Statistisi Ahli Muda">Statistisi Ahli Muda</option>
-                            <option value="Statistisi Ahli Pertama">Statistisi Ahli Pertama</option>
-                            <option value="Statistisi Penyelia">Statistisi Penyelia</option>
-                            <option value="Statistisi Mahir">Statistisi Mahir</option>
-                            <option value="Statistisi Terampil">Statistisi Terampil</option>
-                            <option value="Pranata Komputer Ahli Utama">Pranata Komputer Ahli Utama</option>
-                            <option value="Pranata Komputer Ahli Madya">Pranata Komputer Ahli Madya</option>
-                            <option value="Pranata Komputer Ahli Muda">Pranata Komputer Ahli Muda</option>
-                            <option value="Pranata Komputer Ahli Pertama">Pranata Komputer Ahli Pertama</option>
-                            <option value="Pranata Komputer Penyelia">Pranata Komputer Penyelia</option>
-                            <option value="Pranata Komputer Mahir">Pranata Komputer Mahir</option>
-                            <option value="Pranata Komputer Terampil">Pranata Komputer Terampil</option>
-                            <option value="Sekretaris">Sekretaris</option>
-                        </select>
-                    </div>
+                <h4>BAGIAN 1: BIODATA PESERTA</h4>
+                <label for="Nama">Nama Lengkap</label>
+                <input type="text" id="Nama" name="Nama" required>
 
-                    <div class="form-group">
-                        <label for="PangkatGolongan">Pangkat/Golongan</label>
-                        <select id="PangkatGolongan" name="PangkatGolongan" required>
-                            <option value="" disabled selected>-- Pilih Pangkat/Golongan --</option>
-                            <option value="Juru Muda/Ia">Juru Muda/Ia</option>
-                            <option value="Juru Muda Tingkat/Ib">Juru Muda Tingkat/Ib</option>
-                            <option value="Juru/Ic">Juru/Ic</option>
-                            <option value="Juru Tingkat I/Id">Juru Tingkat I/Id</option>
-                            <option value="Pengatur Muda/IIa">Pengatur Muda/IIa</option>
-                            <option value="Pengatur Muda Tingkat I/IIb">Pengatur Muda Tingkat I/IIb</option>
-                            <option value="Pengatur/IIc">Pengatur/IIc</option>
-                            <option value="Pengatur Tingkat I/IId">Pengatur Tingkat I/IId</option>
-                            <option value="Penata Muda/IIIa">Penata Muda/IIIa</option>
-                            <option value="Penata Muda Tingkat I/IIIb">Penata Muda Tingkat I/IIIb</option>
-                            <option value="Penata/IIIc">Penata/IIIc</option>
-                            <option value="Penata Tingkat I/IIId">Penata Tingkat I/IIId</option>
-                            <option value="Pembina/IVa">Pembina/IVa</option>
-                            <option value="Pembina Tingkat I/IVb">Pembina Tingkat I/IVb</option>
-                            <option value="Pembina Muda/IVc">Pembina Muda/IVc</option>
-                            <option value="Pembina Madya/IVd">Pembina Madya/IVd</option>
-                            <option value="Pembina Utama/IVe">Pembina Utama/IVe</option>
-                        </select>
-                    </div>
+                <label for="JenisKelamin">Jenis Kelamin</label>
+                <select id="JenisKelamin" name="JenisKelamin" required>
+                    <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </select>
+                
+                <label for="KabupatenKota">Kabupaten / Kota</label>
+                <select id="KabupatenKota" name="KabupatenKota" required>
+                    <option value="" disabled selected>-- Pilih Kabupaten/Kota --</option>
+                    <option value="Asahan">Asahan</option><option value="Batubara">Batubara</option><option value="Binjai">Binjai (Kota)</option><option value="Dairi">Dairi</option><option value="Deli Serdang">Deli Serdang</option><option value="Gunungsitoli">Gunungsitoli (Kota)</option><option value="Humbang Hasundutan">Humbang Hasundutan</option><option value="Karo">Karo</option><option value="Labuhanbatu">Labuhanbatu</option><option value="Labuhanbatu Selatan">Labuhanbatu Selatan</option><option value="Labuhanbatu Utara">Labuhanbatu Utara</option><option value="Langkat">Langkat</option><option value="Mandailing Natal">Mandailing Natal</option><option value="Medan">Medan (Kota)</option><option value="Nias">Nias</option><option value="Nias Barat">Nias Barat</option><option value="Nias Selatan">Nias Selatan</option><option value="Nias Utara">Nias Utara</option><option value="Padang Lawas">Padang Lawas</option><option value="Padang Lawas Utara">Padang Lawas Utara</option><option value="Padangsidempuan">Padangsidempuan (Kota)</option><option value="Pakpak Bharat">Pakpak Bharat</option><option value="Pematangsiantar">Pematangsiantar (Kota)</option><option value="Samosir">Samosir</option><option value="Serdang Bedagai">Serdang Bedagai</option><option value="Sibolga">Sibolga (Kota)</option><option value="Simalungun">Simalungun</option><option value="Tanjungbalai">Tanjungbalai (Kota)</option><option value="Tapanuli Selatan">Tapanuli Selatan</option><option value="Tapanuli Tengah">Tapanuli Tengah</option><option value="Tapanuli Utara">Tapanuli Utara</option><option value="Tebing Tinggi">Tebing Tinggi (Kota)</option><option value="Toba">Toba</option>
+                </select>
+                
+                <label for="TTL">Tempat, Tanggal Lahir</label>
+                <input type="text" id="TTL" name="TTL" placeholder="Contoh: Medan, 25 Desember 1990" required>
+                
+                <label for="Agama">Agama</label>
+                <select id="Agama" name="Agama" required>
+                    <option value="Kristen Protestan">Kristen Protestan</option><option value="Katolik">Katolik</option>
+                </select>
+                
+                <label for="Jabatan">Jabatan</label>
+                <select id="Jabatan" name="Jabatan" required>
+                    <option value="" disabled selected>-- Pilih Jabatan --</option>
+                    <option value="Kepala BPS Kabupaten/Kota">Kepala BPS Kabupaten/Kota</option><option value="Kepala Bagian Umum">Kepala Bagian Umum</option><option value="Kepala Subbagian Umum">Kepala Subbagian Umum</option><option value="Penata Laksana Barang Mahir">Penata Laksana Barang Mahir</option><option value="Penata Laksana Barang Terampil">Penata Laksana Barang Terampil</option><option value="Analis Pengelola Keuangan APBN Ahli Madya">Analis Pengelola Keuangan APBN Ahli Madya</option><option value="Analis Pengelola Keuangan APBN Ahli Muda">Analis Pengelola Keuangan APBN Ahli Muda</option><option value="Analis Pengelola Keuangan APBN Ahli Pertama">Analis Pengelola Keuangan APBN Ahli Pertama</option><option value="Pranata Keuangan APBN Penyelia">Pranata Keuangan APBN Penyelia</option><option value="Pranata Keuangan APBN Mahir">Pranata Keuangan APBN Mahir</option><option value="Pranata Keuangan APBN Terampil">Pranata Keuangan APBN Terampil</option><option value="Analis Anggaran Ahli Madya">Analis Anggaran Ahli Madya</option><option value="Analis Anggaran Ahli Muda">Analis Anggaran Ahli Muda</option><option value="Analis Anggaran Ahli Pertama">Analis Anggaran Ahli Pertama</option><option value="Analis SDM Aparatur Ahli Muda">Analis SDM Aparatur Ahli Muda</option><option value="Analis SDM Aparatur Ahli Pertama">Analis SDM Aparatur Ahli Pertama</option><option value="Pranata SDM Aparatur Penyelia">Pranata SDM Aparatur Penyelia</option><option value="Pranata SDM Aparatur Mahir">Pranata SDM Aparatur Mahir</option><option value="Pranata SDM Aparatur Terampil">Pranata SDM Aparatur Terampil</option><option value="Arsiparis Ahli Madya">Arsiparis Ahli Madya</option><option value="Arsiparis Ahli Muda">Arsiparis Ahli Muda</option><option value="Arsiparis Ahli Pertama">Arsiparis Ahli Pertama</option><option value="Arsiparis Terampil">Arsiparis Terampil</option><option value="Penyuluh Hukum Ahli Muda">Penyuluh Hukum Ahli Muda</option><option value="Penyuluh Hukum Ahli Pertama">Penyuluh Hukum Ahli Pertama</option><option value="Pranata Humas Ahli Muda">Pranata Humas Ahli Muda</option><option value="Pranata Humas Ahli Pertama">Pranata Humas Ahli Pertama</option><option value="Pustakawan Penyelia">Pustakawan Penyelia</option><option value="Pustakawan Mahir">Pustakawan Mahir</option><option value="Pustakawan Terampil">Pustakawan Terampil</option><option value="Pengolah Data">Pengolah Data</option><option value="Verifikator Keuangan">Verifikator Keuangan</option><option value="Pengelola Surat">Pengelola Surat</option><option value="Pranata Kearsipan">Pranata Kearsipan</option><option value="Pengelola Barang Milik Negara">Pengelola Barang Milik Negara</option><option value="Teknisi Pemeliharaan Sarana dan Prasarana">Teknisi Pemeliharaan Sarana dan Prasarana</option><option value="Pengemudi">Pengemudi</option><option value="Statistisi Ahli Utama">Statistisi Ahli Utama</option><option value="Statistisi Ahli Madya">Statistisi Ahli Madya</option><option value="Statistisi Ahli Muda">Statistisi Ahli Muda</option><option value="Statistisi Ahli Pertama">Statistisi Ahli Pertama</option><option value="Statistisi Penyelia">Statistisi Penyelia</option><option value="Statistisi Mahir">Statistisi Mahir</option><option value="Statistisi Terampil">Statistisi Terampil</option><option value="Pranata Komputer Ahli Utama">Pranata Komputer Ahli Utama</option><option value="Pranata Komputer Ahli Madya">Pranata Komputer Ahli Madya</option><option value="Pranata Komputer Ahli Muda">Pranata Komputer Ahli Muda</option><option value="Pranata Komputer Ahli Pertama">Pranata Komputer Ahli Pertama</option><option value="Pranata Komputer Penyelia">Pranata Komputer Penyelia</option><option value="Pranata Komputer Mahir">Pranata Komputer Mahir</option><option value="Pranata Komputer Terampil">Pranata Komputer Terampil</option><option value="Sekretaris">Sekretaris</option>
+                </select>
 
-                    <div class="form-group">
-                        <label for="Grade">Grade</label>
-                        <select id="Grade" name="Grade" required>
-                            <option value="" disabled selected>-- Pilih Grade --</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="11">11</option>
-                            <option value="12">12</option>
-                        </select>
-                    </div>
-                </div>
+                <label for="PangkatGolongan">Pangkat/Golongan</label>
+                <select id="PangkatGolongan" name="PangkatGolongan" required>
+                    <option value="" disabled selected>-- Pilih Pangkat/Golongan --</option>
+                    <option value="Juru Muda/Ia">Juru Muda/Ia</option><option value="Juru Muda Tingkat/Ib">Juru Muda Tingkat/Ib</option><option value="Juru/Ic">Juru/Ic</option><option value="Juru Tingkat I/Id">Juru Tingkat I/Id</option><option value="Pengatur Muda/IIa">Pengatur Muda/IIa</option><option value="Pengatur Muda Tingkat I/IIb">Pengatur Muda Tingkat I/IIb</option><option value="Pengatur/IIc">Pengatur/IIc</option><option value="Pengatur Tingkat I/IId">Pengatur Tingkat I/IId</option><option value="Penata Muda/IIIa">Penata Muda/IIIa</option><option value="Penata Muda Tingkat I/IIIb">Penata Muda Tingkat I/IIIb</option><option value="Penata/IIIc">Penata/IIIc</option><option value="Penata Tingkat I/IIId">Penata Tingkat I/IIId</option><option value="Pembina/IVa">Pembina/IVa</option><option value="Pembina Tingkat I/IVb">Pembina Tingkat I/IVb</option><option value="Pembina Muda/IVc">Pembina Muda/IVc</option><option value="Pembina Madya/IVd">Pembina Madya/IVd</option><option value="Pembina Utama/IVe">Pembina Utama/IVe</option>
+                </select>
 
-                <div class="card">
-                    <div class="card-header">
-                        <h4><i class="fas fa-calendar-check"></i> KONFIRMASI KEHADIRAN</h4>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="konfirmasiKehadiran">Konfirmasi rencana kehadiran Natal 2025</label>
-                        <select id="konfirmasiKehadiran" name="konfirmasiKehadiran" required>
-                            <option value="" disabled selected>-- Pilih Opsi --</option>
-                            <option value="Hadir">Hadir</option>
-                            <option value="Tidak Hadir">Tidak Hadir</option>
-                        </select>
-                    </div>
+                <label for="Grade">Grade</label>
+                <select id="Grade" name="Grade" required>
+                    <option value="" disabled selected>-- Pilih Grade --</option>
+                    <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
+                </select>
 
-                    <div id="jumlahKeluargaSection" class="hidden-section">
-                        <div class="form-group">
-                            <label for="jumlahKeluarga">Jumlah keluarga yang akan dibawa (selain Anda)</label>
-                            <select id="jumlahKeluarga" name="jumlahKeluarga">
-                                <option value="0">Tidak membawa keluarga</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
-                            </select>
-                        </div>
-                    </div>
+                <hr style="margin: 2rem 0;">
+
+                <h4>BAGIAN 2: KONFIRMASI KEHADIRAN</h4>
+                <label for="konfirmasiKehadiran">Konfirmasi rencana kehadiran Natal 2025</label>
+                <select id="konfirmasiKehadiran" name="konfirmasiKehadiran" required>
+                    <option value="" disabled selected>-- Pilih Opsi --</option>
+                    <option value="Hadir">Hadir</option>
+                    <option value="Tidak Hadir">Tidak Hadir</option>
+                </select>
+
+                <div id="jumlahKeluargaSection" class="hidden-section">
+                    <label for="jumlahKeluarga">Jumlah keluarga yang akan dibawa (selain Anda)</label>
+                    <select id="jumlahKeluarga" name="jumlahKeluarga">
+                        <option value="0">Tidak membawa keluarga</option>
+                        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
+                    </select>
                 </div>
 
                 <div id="tabelKeluargaSection" class="hidden-section">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4><i class="fas fa-users"></i> DETAIL ANGGOTA KELUARGA</h4>
-                        </div>
-                        
-                        <p class="info-text">
-                            <i class="fas fa-info-circle"></i> 
-                            Jika Keluarga sesama pegawai BPS Se-Provinsi Sumatera Utara, Harap 1 Pegawai saja yang menambahkan daftar tamu yang akan dibawa.
-                        </p>
-                        
-                        <div id="familyCards" class="family-cards">
-                            <!-- Family cards will be generated here -->
-                        </div>
-                    </div>
+                    <h4>Detail Anggota Keluarga</h4>
+                    <p class="disclaimer">
+                        <strong>PENTING:</strong> Jika Keluarga sesama pegawai BPS Se-Provinsi Sumatera Utara, Harap <strong>1 Pegawai saja</strong> yang menambahkan daftar tamu yang akan dibawa untuk menghindari data ganda.
+                    </p>
+                    <div id="family-cards-container"></div>
                 </div>
                 
-                <div class="text-center mt-2">
-                    <button type="submit" id="submitBtn" class="btn">
-                        <i class="fas fa-save"></i> Simpan Data
-                    </button>
-                    <button type="button" onclick="resetForm()" class="btn btn-secondary btn-small">
-                        <i class="fas fa-redo"></i> Reset Form
-                    </button>
-                </div>
+                <hr style="margin: 2rem 0;">
+                <button type="submit" id="submitBtn">Simpan Data</button>
             </form>
-            
             <div id="formResult"></div>
         </div>
     </main>
     
-    <footer>
-        <p>© 2025 Acara Natal BPS Sumatera Utara. Semua hak dilindungi.</p>
-    </footer>
-    
     <template id="familyCardTemplate">
         <div class="family-card">
-            <div class="family-card-header">
-                <div class="family-card-title">
-                    <i class="fas fa-user"></i>
-                    <span>Anggota Keluarga <span class="family-member-index">1</span></span>
-                </div>
-            </div>
-            <div class="family-card-body">
-                <div class="form-group">
-                    <label for="namaKeluarga">Nama Lengkap</label>
-                    <input type="text" class="namaKeluarga" name="namaKeluarga" placeholder="Nama anggota keluarga" required>
-                </div>
-                <div class="form-group">
-                    <label for="jenisKelaminKeluarga">Jenis Kelamin</label>
-                    <select class="jenisKelaminKeluarga" name="jenisKelaminKeluarga">
-                        <option value="Laki-Laki">Laki-Laki</option>
-                        <option value="Perempuan">Perempuan</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="bersekolah">Masih Bersekolah?</label>
-                    <select class="bersekolah" name="bersekolah">
-                        <option value="Tidak" selected>Tidak</option>
-                        <option value="Ya">Ya</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="kelas">Kelas</label>
-                    <select class="kelas" name="kelas" disabled>
-                        <option value="" disabled selected>-- Pilih Kelas --</option>
-                        <option value="SD Kelas 1">SD Kelas 1</option>
-                        <option value="SD Kelas 2">SD Kelas 2</option>
-                        <option value="SD Kelas 3">SD Kelas 3</option>
-                        <option value="SD Kelas 4">SD Kelas 4</option>
-                        <option value="SD Kelas 5">SD Kelas 5</option>
-                        <option value="SD Kelas 6">SD Kelas 6</option>
-                        <option value="SMP Kelas 1">SMP Kelas 1</option>
-                        <option value="SMP Kelas 2">SMP Kelas 2</option>
-                        <option value="SMP Kelas 3">SMP Kelas 3</option>
-                        <option value="SMA/SMK">SMA/SMK</option>
-                        <option value="Perguruan Tinggi">Perguruan Tinggi</option>
-                    </select>
-                </div>
+            <h5>Anggota Keluarga</h5>
+            <label>Nama</label>
+            <input type="text" class="namaKeluarga" placeholder="Nama anggota keluarga" required>
+            <label>Jenis Kelamin</label>
+            <select class="jenisKelaminKeluarga">
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+            </select>
+            <label>Masih Bersekolah?</label>
+            <select class="bersekolah">
+                <option value="Tidak" selected>Tidak</option>
+                <option value="Ya">Ya</option>
+            </select>
+            <div class="kelas-container hidden-section">
+                <label>Kelas</label>
+                <select class="kelas">
+                    <option value="" disabled selected>-- Pilih --</option>
+                    <option value="SD Kelas 1">SD Kelas 1</option><option value="SD Kelas 2">SD Kelas 2</option><option value="SD Kelas 3">SD Kelas 3</option>
+                    <option value="SD Kelas 4">SD Kelas 4</option><option value="SD Kelas 5">SD Kelas 5</option><option value="SD Kelas 6">SD Kelas 6</option>
+                    <option value="SMP Keatas">SMP Keatas</option>
+                </select>
             </div>
         </div>
     </template>
 
     <script>
-        // URL Google Apps Script Anda
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEB3JCxxVDkChnSDlr3EDW0KuEAZrSBra2DSdlM5qu5U-H3w6rD8pMGxSQ9RjwZNCf/exec";
         
-        console.log("🚀 Aplikasi Pendaftaran Natal 2025");
-        console.log("📡 Script URL:", SCRIPT_URL);
-        console.log("🌐 Host:", window.location.hostname);
-
-        let employeeNames = [];
-        let currentFamilyData = [];
-
-        // Element references
+        const regForm = document.getElementById('regForm');
+        const checkResultDiv = document.getElementById('checkResult');
+        const searchNameInput = document.getElementById('searchName');
         const konfirmasiSelect = document.getElementById('konfirmasiKehadiran');
         const jumlahKeluargaSection = document.getElementById('jumlahKeluargaSection');
         const jumlahKeluargaSelect = document.getElementById('jumlahKeluarga');
         const tabelKeluargaSection = document.getElementById('tabelKeluargaSection');
-        const familyCardsContainer = document.getElementById('familyCards');
+        const familyCardsContainer = document.getElementById('family-cards-container');
         const familyCardTemplate = document.getElementById('familyCardTemplate');
-        const regForm = document.getElementById('regForm');
-        const checkResultDiv = document.getElementById('checkResult');
         const formResultDiv = document.getElementById('formResult');
-        const searchNameInput = document.getElementById('searchName');
-        const searchButton = document.getElementById('searchButton');
-        const connectionStatus = document.getElementById('connectionStatus');
-        const step1 = document.getElementById('step1');
-        const step2 = document.getElementById('step2');
-        const step3 = document.getElementById('step3');
 
-        // Fungsi JSONP untuk menghindari CORS
-        function jsonpRequest(url) {
-            return new Promise((resolve, reject) => {
-                const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
-                const script = document.createElement('script');
-                
-                window[callbackName] = function(data) {
-                    delete window[callbackName];
-                    document.body.removeChild(script);
-                    resolve(data);
-                };
-                
-                script.onerror = function() {
-                    delete window[callbackName];
-                    document.body.removeChild(script);
-                    reject(new Error('JSONP request failed'));
-                };
-                
-                script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
-                document.body.appendChild(script);
-            });
-        }
-
-        // Fungsi untuk GET request (menggunakan JSONP)
-        async function safeGet(url) {
-            try {
-                console.log('🔗 GET Request:', url);
-                const data = await jsonpRequest(url);
-                return { ok: true, json: () => Promise.resolve(data) };
-            } catch (error) {
-                console.error('❌ GET Error:', error);
-                throw error;
-            }
-        }
-
-        // Fungsi untuk POST request
-        async function safePost(url, postData) {
-            try {
-                console.log('📤 POST Request:', url, postData);
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(postData)
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                return response;
-            } catch (error) {
-                console.error('❌ POST Error:', error);
-                
-                // Fallback: Coba dengan mode no-cors
-                try {
-                    await fetch(url, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(postData)
-                    });
-                    
-                    // Dengan no-cors, kita tidak bisa membaca response
-                    return { ok: true, json: () => Promise.resolve({result: 'success', message: 'Data sedang diproses'}) };
-                } catch (fallbackError) {
-                    throw new Error('Gagal mengirim data: ' + error.message);
-                }
-            }
-        }
-
-        // Update step indicator
-        function updateStepIndicator(step) {
-            step1.classList.remove('active', 'completed');
-            step2.classList.remove('active', 'completed');
-            step3.classList.remove('active', 'completed');
-            
-            if (step >= 1) step1.classList.add('completed');
-            if (step >= 2) step2.classList.add('completed');
-            if (step >= 3) step3.classList.add('completed');
-            
-            if (step === 1) step1.classList.add('active');
-            if (step === 2) step2.classList.add('active');
-            if (step === 3) step3.classList.add('active');
-        }
-
-        // Event listeners
         konfirmasiSelect.addEventListener('change', function() {
-            const isAttending = this.value === 'Hadir';
-            jumlahKeluargaSection.style.display = isAttending ? 'block' : 'none';
-            if (!isAttending) {
+            const isHadir = this.value === 'Hadir';
+            jumlahKeluargaSection.style.display = isHadir ? 'block' : 'none';
+            if (!isHadir) {
                 jumlahKeluargaSelect.value = '0';
-                updateFamilyCardsDisplay();
+                jumlahKeluargaSelect.dispatchEvent(new Event('change'));
             }
         });
 
         jumlahKeluargaSelect.addEventListener('change', function() {
-            updateFamilyCardsDisplay();
-            if(document.activeElement === this) {
-                generateFamilyCards(parseInt(this.value, 10));
-            }
+            const count = parseInt(this.value, 10);
+            tabelKeluargaSection.style.display = (count > 0) ? 'block' : 'none';
+            generateFamilyCards(count);
         });
 
-        // Update tampilan kartu keluarga
-        function updateFamilyCardsDisplay() {
-            const count = parseInt(jumlahKeluargaSelect.value, 10);
-            tabelKeluargaSection.style.display = (count > 0) ? 'block' : 'none';
-        }
-
-        // Test koneksi ke server
-        async function testConnection() {
-            try {
-                connectionStatus.style.display = "block";
-                connectionStatus.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Mengecek koneksi...';
-                connectionStatus.className = "connection-status";
-                
-                const testUrl = `${SCRIPT_URL}?action=test`;
-                console.log("🔄 Testing connection to:", testUrl);
-                
-                const response = await safeGet(testUrl);
-                const result = await response.json();
-                
-                if (result.result === 'success') {
-                    connectionStatus.innerHTML = '<i class="fas fa-check-circle"></i> Terhubung ke server';
-                    connectionStatus.className = "connection-status connected";
-                    console.log("✅ Connection test: SUCCESS");
-                    return true;
-                } else {
-                    throw new Error(result.message || 'Respon server tidak valid');
-                }
-            } catch (error) {
-                console.error('❌ Koneksi gagal:', error);
-                connectionStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> Mode offline - tetap bisa daftar';
-                connectionStatus.className = "connection-status disconnected";
-                
-                // Tetap lanjutkan dalam mode offline
-                setTimeout(() => {
-                    connectionStatus.style.display = 'none';
-                }, 5000);
-                return false;
-            }
-        }
-
-        // Load daftar nama pegawai
-        async function loadEmployeeNames() {
-            try {
-                console.log('📝 Memuat daftar nama pegawai...');
-                const response = await safeGet(`${SCRIPT_URL}?action=getNames`);
-                const result = await response.json();
-                
-                if (result.result === 'success') {
-                    employeeNames = result.data;
-                    console.log(`✅ Berhasil memuat ${employeeNames.length} nama pegawai`);
-                } else {
-                    throw new Error(result.message || 'Gagal memuat nama pegawai');
-                }
-            } catch (error) {
-                console.error("❌ Gagal memuat nama pegawai:", error);
-                employeeNames = []; // Kosongkan array jika gagal
-            }
-        }
-        
-        // Generate kartu keluarga
         function generateFamilyCards(count) {
             familyCardsContainer.innerHTML = '';
-            
-            for (let i = 0; i < count; i++) {
+            for (let i = 1; i <= count; i++) {
                 const newCard = familyCardTemplate.content.cloneNode(true);
-                const cardElement = newCard.querySelector('.family-card');
-                const memberIndex = cardElement.querySelector('.family-member-index');
-                const namaInput = cardElement.querySelector('.namaKeluarga');
-                const jenisKelaminSelect = cardElement.querySelector('.jenisKelaminKeluarga');
-                const bersekolahSelect = cardElement.querySelector('.bersekolah');
-                const kelasSelect = cardElement.querySelector('.kelas');
-                
-                memberIndex.textContent = i + 1;
-                
-                if (currentFamilyData[i]) {
-                    namaInput.value = currentFamilyData[i].nama || '';
-                    jenisKelaminSelect.value = currentFamilyData[i].jenisKelamin || 'Laki-Laki';
-                    bersekolahSelect.value = currentFamilyData[i].bersekolah || 'Tidak';
-                    
-                    if (currentFamilyData[i].bersekolah === 'Ya') {
-                        kelasSelect.disabled = false;
-                        kelasSelect.value = currentFamilyData[i].kelas || '';
-                    }
-                }
+                newCard.querySelector('h5').textContent = `Anggota Keluarga ${i}`;
+                const bersekolahSelect = newCard.querySelector('.bersekolah');
+                const kelasContainer = newCard.querySelector('.kelas-container');
                 
                 bersekolahSelect.addEventListener('change', function() {
-                    const kelasSelect = this.closest('.family-card').querySelector('.kelas');
-                    kelasSelect.disabled = (this.value !== 'Ya');
-                    if (this.value !== 'Ya') {
-                        kelasSelect.value = '';
-                    }
+                    kelasContainer.style.display = (this.value === 'Ya') ? 'block' : 'none';
                 });
-                
                 familyCardsContainer.appendChild(newCard);
             }
         }
 
-        // Populate kartu keluarga dengan data
         function populateFamilyCards(familyData) {
-            if (!familyData || familyData.length === 0) {
-                currentFamilyData = [];
-                return;
-            }
-            
-            currentFamilyData = [...familyData];
-            const count = familyData.length;
-            jumlahKeluargaSelect.value = count;
-            updateFamilyCardsDisplay();
-            generateFamilyCards(count);
+            if (!familyData || familyData.length === 0) return;
+            generateFamilyCards(familyData.length);
+            const cards = familyCardsContainer.querySelectorAll('.family-card');
+            cards.forEach((card, index) => {
+                const anggota = familyData[index];
+                if (anggota) {
+                    card.querySelector('.namaKeluarga').value = anggota.nama || '';
+                    card.querySelector('.jenisKelaminKeluarga').value = anggota.jenisKelamin || 'Laki-laki';
+                    card.querySelector('.bersekolah').value = anggota.bersekolah || 'Tidak';
+                    if (anggota.bersekolah === 'Ya') {
+                        const kelasContainer = card.querySelector('.kelas-container');
+                        kelasContainer.style.display = 'block';
+                        card.querySelector('.kelas').value = anggota.kelas || '';
+                    }
+                }
+            });
         }
         
-        // Fungsi utama pencarian nama
-        async function checkName(nameOverride) {
-            const nameToCheck = nameOverride || searchNameInput.value.trim();
-            
-            if (nameToCheck.length === 0) {
-                checkResultDiv.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-circle"></i> Nama tidak boleh kosong.</div>`;
-                return;
-            }
-            
-            searchButton.disabled = true;
-            searchButton.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Mencari...';
-            checkResultDiv.innerHTML = `<div class="loading-message"><i class="fas fa-circle-notch fa-spin"></i> Mencari data untuk "${nameToCheck}"...</div>`;
+        async function checkName() {
+            const nameToCheck = searchNameInput.value;
+            if (nameToCheck.trim().length === 0) { checkResultDiv.innerHTML = `<p style="color: red;">Nama tidak boleh kosong.</p>`; return; }
+            checkResultDiv.innerHTML = `<p>Mencari...</p>`;
             regForm.style.display = 'none';
             formResultDiv.innerHTML = '';
-            updateStepIndicator(1);
 
             try {
-                console.log(`🔍 Mencari nama: ${nameToCheck}`);
-                const response = await safeGet(`${SCRIPT_URL}?action=search&nama=${encodeURIComponent(nameToCheck)}`);
+                const response = await fetch(`${SCRIPT_URL}?action=search&nama=${encodeURIComponent(nameToCheck)}`);
                 const result = await response.json();
-                console.log('📄 Hasil pencarian:', result);
 
-                if (result.result === 'found_single') {
+                if (result.result === 'found') {
                     const mainData = result.data.main;
                     const familyData = result.data.family;
-                    
-                    checkResultDiv.innerHTML = `<div class="success-message"><i class="fas fa-check-circle"></i> Data ditemukan untuk <b>${mainData.Nama}</b>. Silakan perbarui data Anda di bawah.</div>`;
+                    checkResultDiv.innerHTML = `<p style="color: green;">Data ditemukan untuk <b>${mainData.Nama}</b>. Silakan perbarui data Anda di bawah.</p>`;
                     regForm.style.display = 'block';
                     document.getElementById('formTitle').innerText = "Formulir Update Data";
-                    document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update Data Saya';
+                    document.getElementById('submitBtn').innerText = "Update Data Saya";
                     
-                    document.getElementById('rowIndex').value = mainData.rowIndex || '';
-                    document.getElementById('idUnik').value = mainData.idUnik || '';
-                    document.getElementById('KabupatenKota').value = mainData.KabupatenKota || '';
+                    document.getElementById('rowIndex').value = mainData.rowIndex;
                     document.getElementById('Nama').value = mainData.Nama || '';
                     document.getElementById('JenisKelamin').value = mainData.JenisKelamin || '';
+                    document.getElementById('KabupatenKota').value = mainData.KabupatenKota || '';
                     document.getElementById('TTL').value = mainData.TTL || '';
-                    document.getElementById('Agama').value = mainData.Agama || 'Kristen Protestan';
+                    document.getElementById('Agama').value = mainData.Agama || '';
                     document.getElementById('Jabatan').value = mainData.Jabatan || '';
                     document.getElementById('PangkatGolongan').value = mainData.PangkatGolongan || '';
                     document.getElementById('Grade').value = mainData.Grade || '';
 
                     konfirmasiSelect.value = mainData.konfirmasi || "";
                     konfirmasiSelect.dispatchEvent(new Event('change'));
-                    
                     setTimeout(() => {
-                        const familyCount = familyData.length;
-                        jumlahKeluargaSelect.value = familyCount > 0 ? familyCount : (mainData.jumlahKeluarga || 0);
-                        updateFamilyCardsDisplay();
+                        const familyCount = familyData.length > 0 ? familyData.length : (mainData.jumlahKeluarga || 0);
+                        jumlahKeluargaSelect.value = familyCount;
+                        jumlahKeluargaSelect.dispatchEvent(new Event('change'));
                         if (familyCount > 0) {
                             populateFamilyCards(familyData);
-                        } else {
-                            currentFamilyData = [];
                         }
                     }, 100);
 
-                    updateStepIndicator(2);
-
-                } else if (result.result === 'found_multiple') {
-                    checkResultDiv.innerHTML = `<h4><i class="fas fa-users"></i> Ditemukan beberapa nama yang cocok. Silakan pilih nama Anda:</h4>`;
-                    const selectionDiv = document.createElement('div');
-                    selectionDiv.className = 'name-selection';
-                    
-                    result.data.forEach(match => {
-                        const option = document.createElement('div');
-                        option.className = 'name-option';
-                        option.textContent = `${match.Nama} (${match.KabupatenKota})`;
-                        option.onclick = () => {
-                            searchNameInput.value = match.Nama;
-                            checkName(match.Nama);
-                        };
-                        selectionDiv.appendChild(option);
-                    });
-                    checkResultDiv.appendChild(selectionDiv);
-
                 } else if (result.result === 'not_found') {
-                    checkResultDiv.innerHTML = `<div class="success-message"><i class="fas fa-info-circle"></i> Nama "${nameToCheck}" tidak ditemukan. Silakan isi formulir pendaftaran baru di bawah.</div>`;
+                    checkResultDiv.innerHTML = `<p style="color: blue;">Nama tidak ditemukan. Silakan isi formulir pendaftaran baru di bawah.</p>`;
                     regForm.style.display = 'block';
                     document.getElementById('formTitle').innerText = "Formulir Pendaftaran Baru";
-                    document.getElementById('submitBtn').innerHTML = '<i class="fas fa-user-plus"></i> Daftar Sekarang';
+                    document.getElementById('submitBtn').innerText = "Daftar Sekarang";
                     
-                    regForm.reset();
-                    currentFamilyData = [];
+                    regForm.reset(); 
                     konfirmasiSelect.dispatchEvent(new Event('change'));
                     document.getElementById('Nama').value = nameToCheck;
                     document.getElementById('rowIndex').value = '';
-                    document.getElementById('idUnik').value = '';
-                    document.getElementById('Agama').value = 'Kristen Protestan';
-
-                    updateStepIndicator(2);
 
                 } else {
-                    throw new Error(result.message || 'Terjadi kesalahan tidak diketahui');
+                    checkResultDiv.innerHTML = `<p style="color: red;">Error dari Server: ${result.message}</p>`;
                 }
             } catch (error) {
-                console.error('❌ Error dalam checkName:', error);
-                checkResultDiv.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i> ${error.message}</div>`;
-            } finally {
-                searchButton.disabled = false;
-                searchButton.innerHTML = '<i class="fas fa-search"></i> Cari / Daftar dengan Nama Ini';
+                checkResultDiv.innerHTML = `<p style="color: red;">Gagal menghubungi server. Pastikan URL Web App sudah benar dan di-deploy ulang.</p>`;
             }
         }
 
-        // Event listener untuk submit form
-        regForm.addEventListener('submit', async (e) => {
+        regForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.innerHTML;
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Menyimpan...';
-            formResultDiv.innerHTML = '<div class="loading-message"><i class="fas fa-circle-notch fa-spin"></i> Menyimpan data...</div>';
-            
-            try {
-                if (!regForm.checkValidity()) {
-                    throw new Error('Harap isi semua field yang wajib diisi');
-                }
-
-                const formData = {
-                    rowIndex: document.getElementById('rowIndex').value,
-                    idUnik: document.getElementById('idUnik').value,
-                    KabupatenKota: document.getElementById('KabupatenKota').value,
-                    Nama: document.getElementById('Nama').value,
-                    JenisKelamin: document.getElementById('JenisKelamin').value,
-                    TTL: document.getElementById('TTL').value,
-                    Agama: document.getElementById('Agama').value,
-                    Jabatan: document.getElementById('Jabatan').value,
-                    PangkatGolongan: document.getElementById('PangkatGolongan').value,
-                    Grade: document.getElementById('Grade').value,
-                    konfirmasiKehadiran: document.getElementById('konfirmasiKehadiran').value,
-                    jumlahKeluarga: parseInt(jumlahKeluargaSelect.value) || 0
-                };
-                
-                const dataKeluarga = [];
-                const cards = familyCardsContainer.querySelectorAll('.family-card');
-                cards.forEach((card, index) => {
-                    const nama = card.querySelector('.namaKeluarga').value.trim();
-                    if (nama) {
-                        dataKeluarga.push({
-                            nama: nama,
-                            jenisKelamin: card.querySelector('.jenisKelaminKeluarga').value,
-                            bersekolah: card.querySelector('.bersekolah').value,
-                            kelas: card.querySelector('.kelas').value,
-                        });
-                    }
+            submitBtn.innerText = "Menyimpan...";
+            const formData = new FormData(regForm);
+            const payload = {};
+            formData.forEach((value, key) => { payload[key] = value; });
+            const dataKeluarga = [];
+            const cards = familyCardsContainer.querySelectorAll('.family-card');
+            cards.forEach(card => {
+                dataKeluarga.push({
+                    nama: card.querySelector('.namaKeluarga').value,
+                    jenisKelamin: card.querySelector('.jenisKelaminKeluarga').value,
+                    bersekolah: card.querySelector('.bersekolah').value,
+                    kelas: card.querySelector('.kelas').value,
                 });
-                
-                formData.keluarga = dataKeluarga;
-                
-                console.log('📤 Data yang akan dikirim:', formData);
+            });
+            payload.keluarga = dataKeluarga;
 
-                const response = await safePost(SCRIPT_URL, formData);
-                const result = await response.json();
-                console.log('📥 Response data:', result);
-                
-                if (result.result === 'success') {
-                    formResultDiv.innerHTML = `<div class="success-message">
-                        <i class="fas fa-check-circle"></i>
-                        <div>
-                            <strong>Berhasil!</strong> Data Anda telah disimpan.
-                            <br><small>ID: ${result.idUnik}</small>
-                            <br><small>Halaman akan direset dalam 5 detik...</small>
-                        </div>
-                    </div>`;
-                    
-                    updateStepIndicator(3);
-                    
-                    setTimeout(() => {
-                        location.reload();
-                    }, 5000);
-                } else {
-                    throw new Error(result.message || 'Gagal menyimpan data');
-                }
-            } catch (error) { 
-                console.error('❌ Error dalam submit:', error);
-                formResultDiv.innerHTML = `<div class="error-message">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <div>
-                        <strong>Gagal menyimpan data:</strong> ${error.message}
-                    </div>
-                </div>`;
-            } finally {
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
+            .then(() => {
+                formResultDiv.innerHTML = `<p style="color: green;">Terima kasih! Data Anda telah berhasil disimpan.</p>`;
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            }
-        });
-
-        // Reset form
-        function resetForm() {
-            if (confirm('Apakah Anda yakin ingin mereset form? Semua data yang belum disimpan akan hilang.')) {
-                regForm.reset();
-                currentFamilyData = [];
-                jumlahKeluargaSelect.value = '0';
-                updateFamilyCardsDisplay();
+                regForm.style.display = 'none';
+                searchNameInput.value = '';
                 checkResultDiv.innerHTML = '';
-                formResultDiv.innerHTML = '';
-                updateStepIndicator(1);
-            }
-        }
-
-        // Enter key support for search
-        searchNameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                checkName();
-            }
+            })
+            .catch(error => { 
+                formResultDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan saat mengirim.</p>`;
+                submitBtn.disabled = false;
+             });
         });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 Memulai aplikasi pendaftaran...');
-            
-            await testConnection();
-            await loadEmployeeNames();
-            
-            updateStepIndicator(1);
-        });
-
-        // Debug function
-        window.debugTest = async function() {
-            console.log("=== DEBUG TEST ===");
-            
-            try {
-                const result = await jsonpRequest(SCRIPT_URL + "?action=test");
-                console.log("✅ JSONP Test Result:", result);
-            } catch (error) {
-                console.log("❌ JSONP Test Error:", error);
-            }
-        };
-
-        console.log("🛠️ Untuk test koneksi, ketik: debugTest() di console");
     </script>
 </body>
 </html>
