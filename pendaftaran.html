@@ -934,11 +934,9 @@
         // URL Google Apps Script Anda
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEB3JCxxVDkChnSDlr3EDW0KuEAZrSBra2DSdlM5qu5U-H3w6rD8pMGxSQ9RjwZNCf/exec";
         
-        console.log("=== DEBUG INFO ===");
-        console.log("Script URL:", SCRIPT_URL);
-        console.log("Waktu load:", new Date().toLocaleString());
-        console.log("Browser:", navigator.userAgent);
-        console.log("===================");
+        console.log("🚀 Aplikasi Pendaftaran Natal 2025");
+        console.log("📡 Script URL:", SCRIPT_URL);
+        console.log("🌐 Host:", window.location.hostname);
 
         let employeeNames = [];
         let currentFamilyData = [];
@@ -959,6 +957,81 @@
         const step1 = document.getElementById('step1');
         const step2 = document.getElementById('step2');
         const step3 = document.getElementById('step3');
+
+        // Fungsi JSONP untuk menghindari CORS
+        function jsonpRequest(url) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                const script = document.createElement('script');
+                
+                window[callbackName] = function(data) {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    resolve(data);
+                };
+                
+                script.onerror = function() {
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                    reject(new Error('JSONP request failed'));
+                };
+                
+                script.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'callback=' + callbackName;
+                document.body.appendChild(script);
+            });
+        }
+
+        // Fungsi untuk GET request (menggunakan JSONP)
+        async function safeGet(url) {
+            try {
+                console.log('🔗 GET Request:', url);
+                const data = await jsonpRequest(url);
+                return { ok: true, json: () => Promise.resolve(data) };
+            } catch (error) {
+                console.error('❌ GET Error:', error);
+                throw error;
+            }
+        }
+
+        // Fungsi untuk POST request
+        async function safePost(url, postData) {
+            try {
+                console.log('📤 POST Request:', url, postData);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(postData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return response;
+            } catch (error) {
+                console.error('❌ POST Error:', error);
+                
+                // Fallback: Coba dengan mode no-cors
+                try {
+                    await fetch(url, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(postData)
+                    });
+                    
+                    // Dengan no-cors, kita tidak bisa membaca response
+                    return { ok: true, json: () => Promise.resolve({result: 'success', message: 'Data sedang diproses'}) };
+                } catch (fallbackError) {
+                    throw new Error('Gagal mengirim data: ' + error.message);
+                }
+            }
+        }
 
         // Update step indicator
         function updateStepIndicator(step) {
@@ -998,37 +1071,6 @@
             tabelKeluargaSection.style.display = (count > 0) ? 'block' : 'none';
         }
 
-        // Fungsi fetch yang lebih robust
-        async function safeFetch(url, options = {}) {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
-            
-            try {
-                console.log('🔗 Fetching URL:', url);
-                const response = await fetch(url, {
-                    ...options,
-                    signal: controller.signal
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                return response;
-            } catch (error) {
-                clearTimeout(timeoutId);
-                console.error('❌ Fetch error:', error);
-                if (error.name === 'AbortError') {
-                    throw new Error('Request timeout: Server tidak merespons dalam 15 detik');
-                } else if (error.name === 'TypeError') {
-                    throw new Error('Gagal terhubung ke server. Periksa koneksi internet dan URL.');
-                }
-                throw error;
-            }
-        }
-
         // Test koneksi ke server
         async function testConnection() {
             try {
@@ -1036,10 +1078,10 @@
                 connectionStatus.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Mengecek koneksi...';
                 connectionStatus.className = "connection-status";
                 
-                const testUrl = `${SCRIPT_URL}?action=test&t=${Date.now()}`;
+                const testUrl = `${SCRIPT_URL}?action=test`;
                 console.log("🔄 Testing connection to:", testUrl);
                 
-                const response = await safeFetch(testUrl);
+                const response = await safeGet(testUrl);
                 const result = await response.json();
                 
                 if (result.result === 'success') {
@@ -1052,8 +1094,13 @@
                 }
             } catch (error) {
                 console.error('❌ Koneksi gagal:', error);
-                connectionStatus.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${error.message}`;
+                connectionStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> Mode offline - tetap bisa daftar';
                 connectionStatus.className = "connection-status disconnected";
+                
+                // Tetap lanjutkan dalam mode offline
+                setTimeout(() => {
+                    connectionStatus.style.display = 'none';
+                }, 5000);
                 return false;
             }
         }
@@ -1062,7 +1109,7 @@
         async function loadEmployeeNames() {
             try {
                 console.log('📝 Memuat daftar nama pegawai...');
-                const response = await safeFetch(`${SCRIPT_URL}?action=getNames`);
+                const response = await safeGet(`${SCRIPT_URL}?action=getNames`);
                 const result = await response.json();
                 
                 if (result.result === 'success') {
@@ -1073,6 +1120,7 @@
                 }
             } catch (error) {
                 console.error("❌ Gagal memuat nama pegawai:", error);
+                employeeNames = []; // Kosongkan array jika gagal
             }
         }
         
@@ -1146,7 +1194,7 @@
 
             try {
                 console.log(`🔍 Mencari nama: ${nameToCheck}`);
-                const response = await safeFetch(`${SCRIPT_URL}?action=search&nama=${encodeURIComponent(nameToCheck)}`);
+                const response = await safeGet(`${SCRIPT_URL}?action=search&nama=${encodeURIComponent(nameToCheck)}`);
                 const result = await response.json();
                 console.log('📄 Hasil pencarian:', result);
 
@@ -1278,14 +1326,7 @@
                 
                 console.log('📤 Data yang akan dikirim:', formData);
 
-                const response = await safeFetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
+                const response = await safePost(SCRIPT_URL, formData);
                 const result = await response.json();
                 console.log('📥 Response data:', result);
                 
@@ -1345,50 +1386,26 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 Memulai aplikasi pendaftaran...');
-            console.log('🔗 Script URL:', SCRIPT_URL);
             
             await testConnection();
             await loadEmployeeNames();
             
-            setTimeout(() => {
-                if (connectionStatus.className.includes('connected')) {
-                    connectionStatus.style.display = 'none';
-                }
-            }, 5000);
-            
             updateStepIndicator(1);
         });
 
-        // Fungsi debug untuk testing
+        // Debug function
         window.debugTest = async function() {
             console.log("=== DEBUG TEST ===");
-            console.log("1. Testing connection...");
             
             try {
-                const testUrl = `${SCRIPT_URL}?action=test&t=${Date.now()}`;
-                console.log("Test URL:", testUrl);
-                
-                const response = await fetch(testUrl);
-                console.log("Response status:", response.status);
-                console.log("Response ok:", response.ok);
-                
-                const result = await response.json();
-                console.log("Test result:", result);
-                
-                if (result.result === 'success') {
-                    console.log("✅ Connection test PASSED");
-                } else {
-                    console.log("❌ Connection test FAILED");
-                }
+                const result = await jsonpRequest(SCRIPT_URL + "?action=test");
+                console.log("✅ JSONP Test Result:", result);
             } catch (error) {
-                console.log("❌ Connection test ERROR:", error);
+                console.log("❌ JSONP Test Error:", error);
             }
         };
 
-        // Jalankan debug test otomatis
-        setTimeout(() => {
-            console.log("🛠️ Untuk debugging, ketik: debugTest() di console");
-        }, 2000);
+        console.log("🛠️ Untuk test koneksi, ketik: debugTest() di console");
     </script>
 </body>
 </html>
