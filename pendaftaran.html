@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendaftaran & Update Data Peserta Natal 2025</title>
+    <title>Pendaftaran & Update Data Peserta</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .name-selection { margin-top: 1rem; }
@@ -285,14 +285,11 @@
                 });
                 
                 if (!response.ok) {
-                    // Coba baca error jika ada dari server
                     let errorMessage = `HTTP error! status: ${response.status}`;
                     try {
                         const errorResult = await response.json();
                         errorMessage = errorResult.message || errorMessage;
-                    } catch (e) {
-                        // Biarkan error message default jika respons bukan JSON
-                    }
+                    } catch (e) { /* Biarkan error message default */ }
                     throw new Error(errorMessage);
                 }
 
