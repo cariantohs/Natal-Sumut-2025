@@ -18,38 +18,14 @@
             margin-bottom: 1rem;
             background-color: #f9f9f9;
         }
-        .family-card h5 {
-            margin-top: 0;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 0.5rem;
-        }
-        .family-card label {
-            display: block;
-            margin-top: 0.5rem;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-        .family-card input, .family-card select {
-            padding: 0.5rem;
-            margin-top: 0.25rem;
-        }
-        .disclaimer {
-            font-size: 0.9em;
-            font-style: italic;
-            color: #555;
-            background-color: #f0f8ff;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #1e90ff;
-        }
+        .family-card h5 { margin-top: 0; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; }
+        .family-card label { display: block; margin-top: 0.5rem; font-weight: bold; font-size: 0.9em; }
+        .family-card input, .family-card select { padding: 0.5rem; margin-top: 0.25rem; }
+        .disclaimer { font-size: 0.9em; font-style: italic; color: #555; background-color: #f0f8ff; padding: 10px; border-radius: 5px; margin-bottom: 1rem; border-left: 4px solid #1e90ff; }
     </style>
 </head>
 <body>
-    <header>
-        <h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1>
-    </header>
-
+    <header><h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1></header>
     <main class="container">
         <div class="form-container">
             <div id="checkNameSection">
@@ -127,9 +103,7 @@
 
                 <div id="tabelKeluargaSection" class="hidden-section">
                     <h4>Detail Anggota Keluarga</h4>
-                    <p class="disclaimer">
-                        <strong>PENTING:</strong> Jika Keluarga sesama pegawai BPS Se-Provinsi Sumatera Utara, Harap <strong>1 Pegawai saja</strong> yang menambahkan daftar tamu yang akan dibawa untuk menghindari data ganda.
-                    </p>
+                    <p class="disclaimer"><strong>PENTING:</strong> Jika Keluarga sesama pegawai BPS Se-Provinsi Sumatera Utara, Harap <strong>1 Pegawai saja</strong> yang menambahkan daftar tamu yang akan dibawa untuk menghindari data ganda.</p>
                     <div id="family-cards-container"></div>
                 </div>
                 
@@ -146,22 +120,14 @@
             <label>Nama</label>
             <input type="text" class="namaKeluarga" placeholder="Nama anggota keluarga" required>
             <label>Jenis Kelamin</label>
-            <select class="jenisKelaminKeluarga">
-                <option value="Laki-laki">Laki-laki</option>
-                <option value="Perempuan">Perempuan</option>
-            </select>
+            <select class="jenisKelaminKeluarga"><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select>
             <label>Masih Bersekolah?</label>
-            <select class="bersekolah">
-                <option value="Tidak" selected>Tidak</option>
-                <option value="Ya">Ya</option>
-            </select>
+            <select class="bersekolah"><option value="Tidak" selected>Tidak</option><option value="Ya">Ya</option></select>
             <div class="kelas-container hidden-section">
                 <label>Kelas</label>
                 <select class="kelas">
                     <option value="" disabled selected>-- Pilih --</option>
-                    <option value="SD Kelas 1">SD Kelas 1</option><option value="SD Kelas 2">SD Kelas 2</option><option value="SD Kelas 3">SD Kelas 3</option>
-                    <option value="SD Kelas 4">SD Kelas 4</option><option value="SD Kelas 5">SD Kelas 5</option><option value="SD Kelas 6">SD Kelas 6</option>
-                    <option value="SMP Keatas">SMP Keatas</option>
+                    <option value="SD Kelas 1">SD Kelas 1</option><option value="SD Kelas 2">SD Kelas 2</option><option value="SD Kelas 3">SD Kelas 3</option><option value="SD Kelas 4">SD Kelas 4</option><option value="SD Kelas 5">SD Kelas 5</option><option value="SD Kelas 6">SD Kelas 6</option><option value="SMP Keatas">SMP Keatas</option>
                 </select>
             </div>
         </div>
@@ -289,14 +255,16 @@
             }
         }
 
-        regForm.addEventListener('submit', (e) => {
+        regForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
             submitBtn.innerText = "Menyimpan...";
+            
             const formData = new FormData(regForm);
             const payload = {};
             formData.forEach((value, key) => { payload[key] = value; });
+            
             const dataKeluarga = [];
             const cards = familyCardsContainer.querySelectorAll('.family-card');
             cards.forEach(card => {
@@ -309,18 +277,42 @@
             });
             payload.keluarga = dataKeluarga;
 
-            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
-            .then(() => {
-                formResultDiv.innerHTML = `<p style="color: green;">Terima kasih! Data Anda telah berhasil disimpan.</p>`;
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    // Coba baca error jika ada dari server
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorResult = await response.json();
+                        errorMessage = errorResult.message || errorMessage;
+                    } catch (e) {
+                        // Biarkan error message default jika respons bukan JSON
+                    }
+                    throw new Error(errorMessage);
+                }
+
+                const result = await response.json();
+                
+                if (result.result === "success") {
+                    formResultDiv.innerHTML = `<p style="color: green;">Terima kasih! Data Anda telah berhasil disimpan.</p>`;
+                    regForm.style.display = 'none';
+                    searchNameInput.value = '';
+                    checkResultDiv.innerHTML = '';
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                formResultDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${error.message}</p>`;
+            } finally {
                 submitBtn.disabled = false;
-                regForm.style.display = 'none';
-                searchNameInput.value = '';
-                checkResultDiv.innerHTML = '';
-            })
-            .catch(error => { 
-                formResultDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan saat mengirim.</p>`;
-                submitBtn.disabled = false;
-             });
+                submitBtn.innerText = "Simpan Data";
+            }
         });
     </script>
 </body>
