@@ -85,6 +85,7 @@ let qrCodeDataUrl = '';
 let qrCodeInstance = null;
 let isNewRegistration = false;
 let allParticipants = [];
+let participantMap = new Map(); // Untuk pencarian yang lebih cepat
 
 // Hamburger Menu Toggle
 document.addEventListener('DOMContentLoaded', function() {
@@ -107,7 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // Inisialisasi Form Pendaftaran
 function initializeRegistrationForm() {
     console.log('Menginisialisasi form pendaftaran...');
-    showDebugInfo('Menginisialisasi form...');
     
     // Isi dropdown grade
     const gradeSelect = document.getElementById('grade');
@@ -139,6 +139,10 @@ function initializeRegistrationForm() {
         pangkatSelect.appendChild(option);
     });
     
+    // Set default values
+    document.getElementById('konfirmasi_kehadiran').value = 'Hadir';
+    document.getElementById('jumlah_tamu').value = '0';
+    
     // Load data dari Google Sheets
     loadAllData();
     
@@ -155,19 +159,26 @@ function initializeRegistrationForm() {
     setupManualEntry();
     
     console.log('Form pendaftaran siap digunakan');
-    showDebugInfo('Form siap digunakan');
 }
 
 // Setup manual entry
 function setupManualEntry() {
     const manualEntryBtn = document.getElementById('manual-entry-btn');
+    const namaField = document.getElementById('nama');
     
     manualEntryBtn.addEventListener('click', function() {
         isNewRegistration = true;
         enableFormFields();
-        document.getElementById('nama').focus();
+        namaField.focus();
         showStatusMessage('Silakan isi data Anda secara manual. Pastikan semua field terisi dengan benar.', 'info');
-        showDebugInfo('Mode manual entry diaktifkan');
+    });
+    
+    // Juga aktifkan manual entry ketika mengetik langsung di field nama
+    namaField.addEventListener('input', function() {
+        if (this.value.trim().length > 0) {
+            isNewRegistration = true;
+            enableFormFields();
+        }
     });
 }
 
@@ -186,18 +197,12 @@ function enableFormFields() {
             element.disabled = false;
         }
     });
-    
-    // Set default values untuk field yang kosong
-    if (!document.getElementById('konfirmasi_kehadiran').value) {
-        document.getElementById('konfirmasi_kehadiran').value = 'Hadir';
-    }
 }
 
 // Load semua data dari Google Sheets
 async function loadAllData() {
     try {
         console.log('Memuat data dari Google Sheets...');
-        showDebugInfo('Memuat data dari Google Sheets...');
         showStatusMessage('Memuat data...', 'info');
         
         const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`);
@@ -211,8 +216,17 @@ async function loadAllData() {
         
         if (data.values && data.values.length > 1) {
             allParticipants = data.values.slice(1); // Exclude header row
+            
+            // Build participant map untuk pencarian yang lebih cepat
+            allParticipants.forEach(participant => {
+                const nama = participant[0] ? participant[0].toString().trim() : '';
+                if (nama) {
+                    participantMap.set(nama.toLowerCase(), participant);
+                }
+            });
+            
             console.log('Total peserta ditemukan:', allParticipants.length);
-            showDebugInfo(`Data loaded: ${allParticipants.length} peserta ditemukan`);
+            console.log('Participant map size:', participantMap.size);
             
             // Load Satker data
             loadSatkerData(data.values);
@@ -224,7 +238,9 @@ async function loadAllData() {
     } catch (error) {
         console.error('Error loading data:', error);
         showStatusMessage('Gagal memuat data. Silakan refresh halaman.', 'error');
-        showDebugInfo(`Error: ${error.message}`);
+        
+        // Fallback: tetap enable form untuk manual entry
+        enableFormFields();
     }
 }
 
@@ -258,12 +274,12 @@ function loadSatkerData(data) {
     console.log(`Data Satker berhasil dimuat: ${satkerArray.length} item`);
 }
 
-// Setup pencarian nama - VERSI SEDERHANA
+// Setup pencarian nama - VERSI OPTIMIZED
 function setupNameSearch() {
     const searchInput = document.getElementById('nama-search');
     const searchResults = document.getElementById('search-results');
     
-    searchInput.addEventListener('input', function() {
+    searchInput.addEventListener('input', debounce(function() {
         const searchTerm = this.value.trim();
         
         if (searchTerm.length < 2) {
@@ -272,17 +288,26 @@ function setupNameSearch() {
         }
         
         console.log(`Mencari: "${searchTerm}"`);
-        showDebugInfo(`Mencari: "${searchTerm}"`);
         
-        // Cari di data yang sudah dimuat
-        const matches = allParticipants.filter(participant => {
-            const nama = participant[0] ? participant[0].toString().toLowerCase() : '';
-            return nama.includes(searchTerm.toLowerCase());
-        });
+        // Cari di participant map untuk performa lebih baik
+        const matches = [];
+        const searchTermLower = searchTerm.toLowerCase();
         
-        console.log('Hasil pencarian:', matches);
+        for (let [nama, participant] of participantMap) {
+            if (nama.includes(searchTermLower)) {
+                matches.push({
+                    nama: participant[0] || '',
+                    participant: participant
+                });
+                
+                // Batasi hasil maksimal untuk performa
+                if (matches.length >= 20) break;
+            }
+        }
+        
+        console.log('Hasil pencarian:', matches.length);
         displaySearchResults(matches);
-    });
+    }, 300));
     
     // Sembunyikan hasil pencarian ketika klik di luar
     document.addEventListener('click', function(e) {
@@ -290,6 +315,19 @@ function setupNameSearch() {
             searchResults.style.display = 'none';
         }
     });
+}
+
+// Debounce function untuk optimasi pencarian
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 // Tampilkan hasil pencarian
@@ -315,16 +353,15 @@ function displaySearchResults(matches) {
         
         searchResults.appendChild(noResult);
     } else {
-        matches.forEach(participant => {
-            const nama = participant[0] || '';
+        matches.forEach(match => {
             const resultItem = document.createElement('div');
             resultItem.className = 'search-result-item';
-            resultItem.textContent = nama;
+            resultItem.textContent = match.nama;
             
             resultItem.addEventListener('click', function() {
-                fillFormWithData(participant);
+                fillFormWithData(match.participant);
                 searchResults.style.display = 'none';
-                document.getElementById('nama-search').value = nama;
+                document.getElementById('nama-search').value = match.nama;
             });
             
             searchResults.appendChild(resultItem);
@@ -355,19 +392,26 @@ function fillFormWithData(participant) {
         'data_tamu': 11   // Data Tamu
     };
     
-    // Isi semua field
+    // Isi semua field dengan handling data yang mungkin kosong
     Object.keys(fieldMap).forEach(field => {
         const element = document.getElementById(field);
         if (element) {
             const colIndex = fieldMap[field];
-            const value = (participant[colIndex] !== undefined && participant[colIndex] !== null) 
-                ? participant[colIndex].toString() 
-                : '';
+            let value = '';
+            
+            if (participant && participant.length > colIndex) {
+                value = participant[colIndex] ? participant[colIndex].toString() : '';
+            }
+            
             element.value = value;
+            
+            // Enable field untuk editing
+            element.readOnly = false;
+            element.disabled = false;
         }
     });
     
-    // Set default values
+    // Set default values jika kosong
     if (!document.getElementById('konfirmasi_kehadiran').value) {
         document.getElementById('konfirmasi_kehadiran').value = 'Hadir';
     }
@@ -377,7 +421,6 @@ function fillFormWithData(participant) {
     
     console.log('Form berhasil diisi dengan data:', participant[0]);
     showStatusMessage(`Data ${participant[0]} berhasil dimuat. Silakan perbarui informasi yang diperlukan.`, 'success');
-    showDebugInfo(`Data loaded: ${participant[0]}`);
 }
 
 // Handle form submission
@@ -417,16 +460,15 @@ async function handleFormSubmit(e) {
     
     try {
         console.log('Mengirim data:', data);
-        showDebugInfo('Mengirim data ke server...');
         showStatusMessage('Menyimpan data...', 'info');
         
-        // Simpan data
-        const saveResult = await saveToGoogleSheets(data);
+        // Simpan data (untuk sekarang simpan di localStorage)
+        const saveResult = await saveToLocalStorage(data);
         
         if (saveResult.success) {
             showStatusMessage('Data berhasil disimpan! Membuat QR Code...', 'success');
             
-            // Generate QR Code
+            // Generate QR Code dengan data yang dioptimasi
             await generateQRCode(data);
             
             // Tampilkan QR Code container
@@ -443,7 +485,6 @@ async function handleFormSubmit(e) {
                 'Data berhasil diperbarui! QR Code telah dibuat.';
                 
             showStatusMessage(message, 'success');
-            showDebugInfo('Data berhasil disimpan dan QR Code dibuat');
             
         } else {
             throw new Error(saveResult.message || 'Gagal menyimpan data');
@@ -452,7 +493,6 @@ async function handleFormSubmit(e) {
     } catch (error) {
         console.error('Error submitting form:', error);
         showStatusMessage('Terjadi kesalahan: ' + error.message, 'error');
-        showDebugInfo(`Error: ${error.message}`);
     } finally {
         // Reset button state
         btnText.style.display = 'inline';
@@ -502,80 +542,130 @@ function getFieldLabel(field) {
     return labels[field] || field;
 }
 
-// Simpan ke Google Sheets
-async function saveToGoogleSheets(data) {
-    // Untuk testing, simpan di localStorage
-    console.log('Menyimpan data:', data);
-    
-    const submissions = JSON.parse(localStorage.getItem('natalRegistrations') || '[]');
-    submissions.push({
-        ...data,
-        timestamp: new Date().toISOString(),
-        isNewRegistration: isNewRegistration
-    });
-    localStorage.setItem('natalRegistrations', JSON.stringify(submissions));
-    
-    return { 
-        success: true, 
-        message: 'Data disimpan di localStorage (testing mode)' 
-    };
+// Simpan ke localStorage (temporary solution)
+async function saveToLocalStorage(data) {
+    try {
+        console.log('Menyimpan data ke localStorage:', data);
+        
+        const submissionData = {
+            ...data,
+            id: generateUniqueId(),
+            timestamp: new Date().toISOString(),
+            isNewRegistration: isNewRegistration
+        };
+        
+        const submissions = JSON.parse(localStorage.getItem('natalRegistrations') || '[]');
+        submissions.push(submissionData);
+        localStorage.setItem('natalRegistrations', JSON.stringify(submissions));
+        
+        return { 
+            success: true, 
+            message: 'Data berhasil disimpan di localStorage',
+            data: submissionData
+        };
+    } catch (error) {
+        console.error('Error saving to localStorage:', error);
+        return {
+            success: false,
+            message: 'Gagal menyimpan data: ' + error.message
+        };
+    }
 }
 
-// Generate QR Code
+// Generate QR Code dengan data yang dioptimasi
 function generateQRCode(data) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const qrContainer = document.getElementById('qrcode');
         qrContainer.innerHTML = '';
         
-        // Buat data untuk QR Code
-        const qrData = JSON.stringify({
-            id: generateUniqueId(),
-            nama: data.nama,
-            satker: data.satker,
-            whatsapp: data.whatsapp,
-            jumlah_tamu: data.jumlah_tamu,
-            timestamp: new Date().toISOString(),
-            event: 'Acara Natal 2023'
-        });
+        // Data yang dioptimasi untuk QR Code - HANYA data essential
+        const qrData = {
+            i: generateUniqueId(), // ID unik (disingkat)
+            n: data.nama,          // Nama (disingkat)
+            w: data.whatsapp,      // WhatsApp (disingkat)
+            t: Date.now(),         // Timestamp
+            j: data.jumlah_tamu    // Jumlah tamu (disingkat)
+        };
         
-        // Generate QR Code
-        qrCodeInstance = new QRCode(qrContainer, {
-            text: qrData,
-            width: 200,
-            height: 200,
-            colorDark: "#1a472a",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-        });
+        // Konversi ke string JSON yang ringkas
+        const qrDataString = JSON.stringify(qrData);
+        console.log('QR Code data length:', qrDataString.length);
+        console.log('QR Code data:', qrDataString);
         
-        // Update QR info
-        document.getElementById('qr-date').textContent = new Date().toLocaleDateString('id-ID', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        
-        document.getElementById('qr-nama').textContent = data.nama;
-        document.getElementById('qr-status').textContent = isNewRegistration ? 'Pendaftaran Baru' : 'Update Data';
-        
-        // Setup tombol download dan share
-        setTimeout(() => {
-            const canvas = qrContainer.querySelector('canvas');
-            if (canvas) {
-                qrCodeDataUrl = canvas.toDataURL('image/png');
-                setupQRCodeButtons(data);
+        try {
+            // Generate QR Code dengan error correction yang lebih rendah untuk mengurangi size
+            qrCodeInstance = new QRCode(qrContainer, {
+                text: qrDataString,
+                width: 180,  // Sedikit lebih kecil
+                height: 180,
+                colorDark: "#1a472a",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M // Medium error correction
+            });
+            
+            // Update QR info
+            document.getElementById('qr-date').textContent = new Date().toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            document.getElementById('qr-nama').textContent = data.nama;
+            document.getElementById('qr-status').textContent = isNewRegistration ? 'Pendaftaran Baru' : 'Update Data';
+            
+            // Setup tombol download dan share
+            setTimeout(() => {
+                const canvas = qrContainer.querySelector('canvas');
+                if (canvas) {
+                    qrCodeDataUrl = canvas.toDataURL('image/png');
+                    setupQRCodeButtons(data);
+                    resolve();
+                } else {
+                    reject(new Error('Canvas tidak ditemukan'));
+                }
+            }, 150);
+            
+        } catch (error) {
+            console.error('Error generating QR Code:', error);
+            
+            // Fallback: buat QR code dengan data yang lebih sederhana
+            try {
+                qrContainer.innerHTML = '';
+                const fallbackData = `${data.nama}|${generateUniqueId()}`;
+                
+                qrCodeInstance = new QRCode(qrContainer, {
+                    text: fallbackData,
+                    width: 160,
+                    height: 160,
+                    colorDark: "#1a472a",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.L // Low error correction
+                });
+                
+                setTimeout(() => {
+                    const canvas = qrContainer.querySelector('canvas');
+                    if (canvas) {
+                        qrCodeDataUrl = canvas.toDataURL('image/png');
+                        setupQRCodeButtons(data);
+                        resolve();
+                    } else {
+                        reject(new Error('Fallback canvas tidak ditemukan'));
+                    }
+                }, 150);
+                
+            } catch (fallbackError) {
+                reject(new Error('Gagal membuat QR Code: ' + fallbackError.message));
             }
-            resolve();
-        }, 100);
+        }
     });
 }
 
 // Generate unique ID untuk QR Code
 function generateUniqueId() {
-    return 'NATAL_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    return 'N' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5).toUpperCase();
 }
 
 // Setup tombol download dan share QR Code
@@ -586,20 +676,32 @@ function setupQRCodeButtons(data) {
     // Tombol Download QR Code
     if (downloadBtn) {
         downloadBtn.onclick = function() {
-            const link = document.createElement('a');
-            link.download = `QR-Code-${data.nama.replace(/\s+/g, '-')}.png`;
-            link.href = qrCodeDataUrl;
-            link.click();
+            try {
+                const link = document.createElement('a');
+                link.download = `QR-Code-${data.nama.replace(/\s+/g, '-')}.png`;
+                link.href = qrCodeDataUrl;
+                link.click();
+                console.log('QR Code berhasil didownload');
+            } catch (error) {
+                console.error('Error downloading QR Code:', error);
+                showStatusMessage('Gagal mendownload QR Code', 'error');
+            }
         };
     }
     
     // Tombol Share via WhatsApp
     if (whatsappBtn) {
         whatsappBtn.onclick = function() {
-            const message = `Halo ${data.nama},\n\n*QR CODE ACARA NATAL*\n\nBerikut adalah QR Code untuk acara Natal:\n\n📅 Tanggal: 25 Desember 2023\n⏰ Waktu: 18:00 - 22:00 WIB\n📍 Tempat: Aula Utama Gedung Serbaguna\n\n*Informasi:*\n- Nama: ${data.nama}\n- Satker: ${data.satker}\n- Jumlah Tamu: ${data.jumlah_tamu}\n\n*Silakan tunjukkan QR Code ini saat check-in.*\n\nTerima kasih! 🎄`;
-            
-            const whatsappUrl = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
+            try {
+                const message = `Halo ${data.nama},\n\n*QR CODE ACARA NATAL*\n\nBerikut adalah QR Code untuk acara Natal:\n\n📅 Tanggal: 25 Desember 2023\n⏰ Waktu: 18:00 - 22:00 WIB\n📍 Tempat: Aula Utama Gedung Serbaguna\n\n*Informasi:*\n- Nama: ${data.nama}\n- Satker: ${data.satker}\n- Jumlah Tamu: ${data.jumlah_tamu}\n\n*Silakan tunjukkan QR Code ini saat check-in.*\n\nTerima kasih! 🎄`;
+                
+                const whatsappUrl = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+                console.log('Membuka WhatsApp untuk:', data.whatsapp);
+            } catch (error) {
+                console.error('Error sharing to WhatsApp:', error);
+                showStatusMessage('Gagal membuka WhatsApp', 'error');
+            }
         };
     }
 }
@@ -632,36 +734,45 @@ function resetForm() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
     showStatusMessage('Form telah direset. Silakan cari nama Anda atau isi data manual.', 'info');
-    showDebugInfo('Form direset');
 }
 
 // Show status message
 function showStatusMessage(message, type = 'info') {
     const statusElement = document.getElementById('status-message');
-    statusElement.textContent = message;
-    statusElement.className = `status-message ${type}`;
-    statusElement.style.display = 'block';
-    
-    // Auto hide success messages after 5 seconds
-    if (type === 'success') {
-        setTimeout(() => {
-            statusElement.style.display = 'none';
-        }, 5000);
-    }
-}
-
-// Show debug info
-function showDebugInfo(message) {
-    const debugElement = document.getElementById('debug-text');
-    const debugContainer = document.querySelector('.debug-info');
-    if (debugElement && debugContainer) {
-        debugElement.textContent = message;
-        debugContainer.style.display = 'block';
+    if (statusElement) {
+        statusElement.textContent = message;
+        statusElement.className = `status-message ${type}`;
+        statusElement.style.display = 'block';
+        
+        // Auto hide success/info messages after 5 seconds
+        if (type === 'success' || type === 'info') {
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 5000);
+        }
     }
 }
 
 // Hide status message
 function hideStatusMessage() {
     const statusElement = document.getElementById('status-message');
-    statusElement.style.display = 'none';
+    if (statusElement) {
+        statusElement.style.display = 'none';
+    }
 }
+
+// Error handling global
+window.addEventListener('error', function(e) {
+    console.error('Global error:', e.error);
+    showStatusMessage('Terjadi kesalahan sistem. Silakan refresh halaman.', 'error');
+});
+
+// Offline handling
+window.addEventListener('online', function() {
+    showStatusMessage('Koneksi internet pulih.', 'success');
+    setTimeout(hideStatusMessage, 3000);
+});
+
+window.addEventListener('offline', function() {
+    showStatusMessage('Anda sedang offline. Beberapa fitur mungkin tidak berfungsi.', 'warning');
+});
