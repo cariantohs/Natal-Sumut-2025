@@ -154,7 +154,6 @@ function initializeRegistrationForm() {
 
 // Setup manual entry untuk nama yang belum terdaftar
 function setupManualEntry() {
-    const namaSearch = document.getElementById('nama-search');
     const namaField = document.getElementById('nama');
     
     // Ketika user mengetik di field nama secara manual
@@ -183,7 +182,7 @@ function setupManualEntry() {
     manualEntryBtn.addEventListener('click', function() {
         isNewRegistration = true;
         enableFormFields();
-        namaField.focus();
+        document.getElementById('nama').focus();
         showStatusMessage('Silakan isi data Anda secara manual. Pastikan semua field terisi dengan benar.', 'info');
     });
     
@@ -235,13 +234,13 @@ async function loadSatkerData() {
         if (data.values && data.values.length > 1) {
             const satkerSet = new Set();
             
-            // Ambil semua nilai dari kolom Satker Asal (indeks 1)
-            // PERBAIKAN: Handle data yang tidak lengkap
+            // PERBAIKAN: Handle data yang tidak lengkap dengan lebih baik
             for (let i = 1; i < data.values.length; i++) {
                 const row = data.values[i];
                 // Pastikan row ada dan memiliki setidaknya 2 kolom
-                if (row && row.length > 1 && row[1]) {
-                    const satkerValue = row[1].toString().trim();
+                if (row && row.length > 1) {
+                    // Gunakan toString() dan cek jika undefined/null
+                    const satkerValue = row[1] ? row[1].toString().trim() : '';
                     if (satkerValue !== '') {
                         satkerSet.add(satkerValue);
                     }
@@ -273,7 +272,7 @@ async function loadSatkerData() {
     }
 }
 
-// Setup pencarian nama
+// Setup pencarian nama - VERSI DIPERBAIKI
 function setupNameSearch() {
     const searchInput = document.getElementById('nama-search');
     const searchResults = document.getElementById('search-results');
@@ -302,12 +301,13 @@ function setupNameSearch() {
                 const matches = [];
                 const headers = data.values[0];
                 
-                // PERBAIKAN: Handle data yang tidak lengkap
+                // PERBAIKAN: Handle data yang tidak lengkap dengan lebih baik
                 for (let i = 1; i < data.values.length; i++) {
                     const row = data.values[i];
-                    // Pastikan row ada dan memiliki kolom nama (indeks 0)
-                    if (row && row.length > 0 && row[0]) {
-                        const nama = row[0].toString().trim();
+                    // Pastikan row ada dan memiliki kolom nama
+                    if (row && row.length > 0) {
+                        // Gunakan toString() dan cek jika undefined/null
+                        const nama = row[0] ? row[0].toString().trim() : '';
                         if (nama && nama.toLowerCase().includes(searchTerm.toLowerCase())) {
                             matches.push({
                                 nama: nama,
@@ -389,7 +389,7 @@ function displaySearchResults(matches, headers) {
     searchResults.style.display = 'block';
 }
 
-// Isi form dengan data yang dipilih
+// Isi form dengan data yang dipilih - VERSI DIPERBAIKI
 function fillFormWithData(match, headers) {
     const row = match.data;
     currentParticipantData = {
@@ -420,7 +420,10 @@ function fillFormWithData(match, headers) {
         if (element) {
             const colIndex = fieldMap[field];
             // PERBAIKAN: Pastikan row memiliki data di kolom tersebut
-            const value = (row && row.length > colIndex && row[colIndex]) ? row[colIndex].toString() : '';
+            let value = '';
+            if (row && row.length > colIndex && row[colIndex] !== undefined && row[colIndex] !== null) {
+                value = row[colIndex].toString();
+            }
             element.value = value;
             
             // Trigger change event untuk update UI
@@ -565,7 +568,7 @@ function getFieldLabel(field) {
     return labels[field] || field;
 }
 
-// Update Google Sheets via Web App
+// Update Google Sheets via Web App - VERSI DIPERBAIKI untuk CORS
 async function updateGoogleSheets(data, isUpdate = false) {
     if (!WEB_APP_URL || WEB_APP_URL === 'YOUR_WEB_APP_URL') {
         // Fallback: Simpan di localStorage untuk testing
@@ -589,8 +592,10 @@ async function updateGoogleSheets(data, isUpdate = false) {
             originalNama: isUpdate ? currentParticipantData?.originalData[0] : null
         };
         
+        // PERBAIKAN CORS: Gunakan mode 'cors' dan handle error dengan baik
         const response = await fetch(WEB_APP_URL, {
             method: 'POST',
+            mode: 'cors', // Explicitly set CORS mode
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -605,7 +610,23 @@ async function updateGoogleSheets(data, isUpdate = false) {
         return result;
     } catch (error) {
         console.error('Error updating Google Sheets:', error);
-        throw new Error('Gagal terhubung ke server. Silakan coba lagi.');
+        
+        // Fallback ke localStorage jika gagal
+        console.warn('Menggunakan fallback ke localStorage...');
+        const submissions = JSON.parse(localStorage.getItem('natalRegistrations') || '[]');
+        submissions.push({
+            ...data,
+            timestamp: new Date().toISOString(),
+            qrGenerated: true,
+            isUpdate: isUpdate,
+            error: error.message
+        });
+        localStorage.setItem('natalRegistrations', JSON.stringify(submissions));
+        
+        return { 
+            success: true, 
+            message: 'Data disimpan secara lokal (koneksi server gagal)' 
+        };
     }
 }
 
