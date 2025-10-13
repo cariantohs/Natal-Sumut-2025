@@ -2,22 +2,77 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Akomodasi & Lokasi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akomodasi - Acara Natal</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <h2>🎄 Acara Natal</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html" class="nav-link">Acara</a></li>
+                    <li class="nav-item"><a href="pendaftaran.html" class="nav-link">Pendaftaran</a></li>
+                    <li class="nav-item"><a href="akomodasi.html" class="nav-link active">Akomodasi</a></li>
+                    <li class="nav-item"><a href="dokumentasi.html" class="nav-link">Dokumentasi</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
     </header>
-    <main class="container">
-        <div class="content-section">
-            <h2>Lokasi Acara</h2>
-            <p>Acara Natal akan diselenggarakan di <strong>Gedung Serbaguna Damai Sejahtera</strong>. Berikut adalah peta lokasi untuk mempermudah perjalanan Anda.</p>
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3982.019702219762!2d98.67211131535574!3d3.583256051307736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x303131c9b6d3a771%3A0x24991ac8c3a9d7b!2sMedan!5e0!3m2!1sen!2sid!4v1664627291123!5m2!1sen!2sid" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-            <h3>Informasi Akomodasi</h3>
-            <p>Bagi peserta dari luar kota, tersedia beberapa pilihan penginapan di sekitar lokasi. Hubungi panitia untuk rekomendasi terbaik.</p>
-        </div>
+
+    <main class="main-content">
+        <section class="accommodation-section">
+            <div class="container">
+                <h1>Informasi Akomodasi</h1>
+                <p>Berikut informasi akomodasi untuk peserta yang datang dari luar kota.</p>
+                
+                <div class="accommodation-grid">
+                    <div class="accommodation-card">
+                        <h3>🏨 Hotel Terdekat</h3>
+                        <ul>
+                            <li><strong>Hotel A</strong> - Jl. Contoh No. 123 (1 km dari lokasi)</li>
+                            <li><strong>Hotel B</strong> - Jl. Contoh No. 456 (2 km dari lokasi)</li>
+                            <li><strong>Hotel C</strong> - Jl. Contoh No. 789 (3 km dari lokasi)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="accommodation-card">
+                        <h3>🚗 Transportasi</h3>
+                        <ul>
+                            <li><strong>Shuttle Service</strong> - Tersedia dari hotel mitra</li>
+                            <li><strong>Parkir</strong> - Area parkir luas tersedia di lokasi</li>
+                            <li><strong>Transportasi Umum</strong> - Bus dan taksi mudah diakses</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="accommodation-card">
+                        <h3>🍽️ Fasilitas</h3>
+                        <ul>
+                            <li>Makan malam disediakan untuk semua peserta</li>
+                            <li>Tempat parkir yang aman dan luas</li>
+                            <li>Area bermain anak</li>
+                            <li>Toilet yang bersih dan nyaman</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
-    <footer><p>&copy; 2025 Panitia Natal.</p></footer>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Panitia Acara Natal. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
