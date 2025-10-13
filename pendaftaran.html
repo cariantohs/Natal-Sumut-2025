@@ -31,127 +31,160 @@
     <main class="main-content">
         <section class="registration-section">
             <div class="container">
-                <h1>Form Pendaftaran Acara Natal</h1>
-                <p>Silakan isi form berikut untuk mendaftar ke acara natal. Data Anda akan diverifikasi dengan database yang ada.</p>
+                <div class="registration-header">
+                    <h1>Form Pendaftaran Acara Natal</h1>
+                    <p>Silakan isi form berikut untuk mendaftar ke acara natal. Data Anda akan diverifikasi dengan database yang ada.</p>
+                </div>
                 
                 <div class="form-container">
                     <form id="registration-form">
-                        <div class="form-group">
-                            <label for="nama-search">Cari Nama Anda:</label>
-                            <input type="text" id="nama-search" placeholder="Ketik nama untuk mencari...">
-                            <div id="search-results" class="search-results"></div>
+                        <div class="search-section">
+                            <div class="form-group">
+                                <label for="nama-search">Cari Nama Anda:</label>
+                                <input type="text" id="nama-search" placeholder="Ketik nama untuk mencari...">
+                                <div id="search-results" class="search-results"></div>
+                                <small class="form-help">Ketik minimal 2 karakter untuk memulai pencarian</small>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nama">Nama Lengkap:</label>
+                                <input type="text" id="nama" name="nama" required readonly>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="satker">Satker Asal:</label>
+                                <select id="satker" name="satker" required>
+                                    <option value="">Pilih Satker Asal</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="status">Status:</label>
+                                <select id="status" name="status" required>
+                                    <option value="">Pilih Status</option>
+                                    <option value="PNS">PNS</option>
+                                    <option value="CPNS">CPNS</option>
+                                    <option value="Tugas belajar">Tugas belajar</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="agama">Agama:</label>
+                                <select id="agama" name="agama" required>
+                                    <option value="">Pilih Agama</option>
+                                    <option value="Kristen Protestan">Kristen Protestan</option>
+                                    <option value="Katolik">Katolik</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="grade">Grade:</label>
+                                <select id="grade" name="grade" required>
+                                    <option value="">Pilih Grade</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="jenis_kelamin">Jenis Kelamin:</label>
+                                <select id="jenis_kelamin" name="jenis_kelamin" required>
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="jabatan">Jabatan:</label>
+                                <select id="jabatan" name="jabatan" required>
+                                    <option value="">Pilih Jabatan</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="pangkat">Pangkat/Golongan:</label>
+                                <select id="pangkat" name="pangkat" required>
+                                    <option value="">Pilih Pangkat/Golongan</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="whatsapp">Nomor WhatsApp:</label>
+                                <input type="tel" id="whatsapp" name="whatsapp" required placeholder="Contoh: 081234567890">
+                                <small class="form-help">Pastikan nomor aktif untuk menerima QR Code</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="konfirmasi_kehadiran">Konfirmasi Kehadiran:</label>
+                                <select id="konfirmasi_kehadiran" name="konfirmasi_kehadiran" required>
+                                    <option value="">Konfirmasi Kehadiran</option>
+                                    <option value="Hadir">Hadir</option>
+                                    <option value="Tidak Hadir">Tidak Hadir</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="jumlah_tamu">Jumlah Tamu:</label>
+                                <input type="number" id="jumlah_tamu" name="jumlah_tamu" min="0" max="10" required>
+                                <small class="form-help">Termasuk diri sendiri</small>
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="data_tamu">Data Tamu (nama tamu):</label>
+                                <textarea id="data_tamu" name="data_tamu" placeholder="Tulis nama tamu yang akan dibawa, dipisahkan dengan koma. Contoh: Budi Santoso, Siti Rahayu"></textarea>
+                                <small class="form-help">Kosongkan jika tidak membawa tamu</small>
+                            </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label for="nama">Nama Lengkap:</label>
-                            <input type="text" id="nama" name="nama" required readonly>
+                        <div class="form-actions">
+                            <button type="submit" class="submit-btn">
+                                <span class="btn-text">Daftar & Dapatkan QR Code</span>
+                                <span class="btn-loading" style="display: none;">Menyimpan...</span>
+                            </button>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="satker">Satker Asal:</label>
-                            <select id="satker" name="satker" required>
-                                <option value="">Pilih Satker Asal</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="status">Status:</label>
-                            <select id="status" name="status" required>
-                                <option value="">Pilih Status</option>
-                                <option value="PNS">PNS</option>
-                                <option value="CPNS">CPNS</option>
-                                <option value="Tugas belajar">Tugas belajar</option>
-                                <option value="Lainnya">Lainnya</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="agama">Agama:</label>
-                            <select id="agama" name="agama" required>
-                                <option value="">Pilih Agama</option>
-                                <option value="Kristen Protestan">Kristen Protestan</option>
-                                <option value="Katolik">Katolik</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="grade">Grade:</label>
-                            <select id="grade" name="grade" required>
-                                <option value="">Pilih Grade</option>
-                                <!-- Options akan diisi oleh JavaScript -->
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="jenis_kelamin">Jenis Kelamin:</label>
-                            <select id="jenis_kelamin" name="jenis_kelamin" required>
-                                <option value="">Pilih Jenis Kelamin</option>
-                                <option value="Laki-laki">Laki-laki</option>
-                                <option value="Perempuan">Perempuan</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="jabatan">Jabatan:</label>
-                            <select id="jabatan" name="jabatan" required>
-                                <option value="">Pilih Jabatan</option>
-                                <!-- Options akan diisi oleh JavaScript -->
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="pangkat">Pangkat/Golongan:</label>
-                            <select id="pangkat" name="pangkat" required>
-                                <option value="">Pilih Pangkat/Golongan</option>
-                                <!-- Options akan diisi oleh JavaScript -->
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="whatsapp">Nomor WhatsApp:</label>
-                            <input type="text" id="whatsapp" name="whatsapp" required placeholder="Contoh: 081234567890">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="konfirmasi_kehadiran">Konfirmasi Kehadiran:</label>
-                            <select id="konfirmasi_kehadiran" name="konfirmasi_kehadiran" required>
-                                <option value="">Konfirmasi Kehadiran</option>
-                                <option value="Hadir">Hadir</option>
-                                <option value="Tidak Hadir">Tidak Hadir</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="jumlah_tamu">Jumlah Tamu:</label>
-                            <input type="number" id="jumlah_tamu" name="jumlah_tamu" min="0" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="data_tamu">Data Tamu (nama tamu):</label>
-                            <textarea id="data_tamu" name="data_tamu" placeholder="Tulis nama tamu yang akan dibawa, dipisahkan dengan koma"></textarea>
-                        </div>
-                        
-                        <button type="submit" class="submit-btn">Daftar & Dapatkan QR Code</button>
                     </form>
                 </div>
                 
                 <div id="qr-container" class="qr-container" style="display: none;">
-                    <h3>QR Code Kehadiran Anda</h3>
-                    <div id="qrcode"></div>
-                    <p>QR Code ini akan dikirim ke WhatsApp Anda dan digunakan untuk check-in di acara.</p>
+                    <div class="qr-header">
+                        <h3>QR Code Kehadiran Anda</h3>
+                        <p>QR Code ini akan digunakan untuk check-in di acara. Simpan atau bagikan ke WhatsApp.</p>
+                    </div>
+                    <div class="qr-content">
+                        <div id="qrcode" class="qrcode-image"></div>
+                        <div class="qr-info">
+                            <p><strong>Status:</strong> <span id="qr-status">Terverifikasi</span></p>
+                            <p><strong>Tanggal Generate:</strong> <span id="qr-date"></span></p>
+                        </div>
+                    </div>
+                    <div class="qr-actions">
+                        <button id="download-qr" class="btn-download">
+                            <span>📥 Download QR Code</span>
+                        </button>
+                        <button id="share-whatsapp" class="btn-whatsapp">
+                            <span>📱 Share ke WhatsApp</span>
+                        </button>
+                        <button id="new-registration" class="btn-new">
+                            <span>🔄 Pendaftaran Baru</span>
+                        </button>
+                    </div>
                 </div>
+
+                <div id="status-message" class="status-message" style="display: none;"></div>
             </div>
         </section>
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Panitia Acara Natal. All rights reserved.</p>
+            <p>&copy; 2023 Panitia Acara Natal. All rights reserved.</p>
         </div>
     </footer>
 
     <!-- QR Code Library -->
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
