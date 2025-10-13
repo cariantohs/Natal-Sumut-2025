@@ -84,6 +84,7 @@ let currentParticipantData = null;
 let qrCodeDataUrl = '';
 let qrCodeInstance = null;
 let isNewRegistration = false;
+let allParticipants = [];
 
 // Hamburger Menu Toggle
 document.addEventListener('DOMContentLoaded', function() {
@@ -106,9 +107,11 @@ document.addEventListener('DOMContentLoaded', function() {
 // Inisialisasi Form Pendaftaran
 function initializeRegistrationForm() {
     console.log('Menginisialisasi form pendaftaran...');
+    showDebugInfo('Menginisialisasi form...');
     
     // Isi dropdown grade
     const gradeSelect = document.getElementById('grade');
+    gradeSelect.innerHTML = '<option value="">Pilih Grade</option>';
     for (let i = 1; i <= 12; i++) {
         const option = document.createElement('option');
         option.value = i;
@@ -118,6 +121,7 @@ function initializeRegistrationForm() {
     
     // Isi dropdown jabatan
     const jabatanSelect = document.getElementById('jabatan');
+    jabatanSelect.innerHTML = '<option value="">Pilih Jabatan</option>';
     jabatanOptions.forEach(jabatan => {
         const option = document.createElement('option');
         option.value = jabatan;
@@ -127,6 +131,7 @@ function initializeRegistrationForm() {
     
     // Isi dropdown pangkat
     const pangkatSelect = document.getElementById('pangkat');
+    pangkatSelect.innerHTML = '<option value="">Pilih Pangkat/Golongan</option>';
     pangkatOptions.forEach(pangkat => {
         const option = document.createElement('option');
         option.value = pangkat;
@@ -134,8 +139,8 @@ function initializeRegistrationForm() {
         pangkatSelect.appendChild(option);
     });
     
-    // Load data Satker dari Google Sheets
-    loadSatkerData();
+    // Load data dari Google Sheets
+    loadAllData();
     
     // Setup pencarian nama
     setupNameSearch();
@@ -150,45 +155,20 @@ function initializeRegistrationForm() {
     setupManualEntry();
     
     console.log('Form pendaftaran siap digunakan');
+    showDebugInfo('Form siap digunakan');
 }
 
-// Setup manual entry untuk nama yang belum terdaftar
+// Setup manual entry
 function setupManualEntry() {
-    const namaField = document.getElementById('nama');
-    
-    // Ketika user mengetik di field nama secara manual
-    namaField.addEventListener('input', function() {
-        if (this.value.trim() !== '') {
-            isNewRegistration = true;
-            // Enable semua field untuk diisi manual
-            enableFormFields();
-        }
-    });
-    
-    // Tombol untuk mode manual entry
-    const manualEntryBtn = document.createElement('button');
-    manualEntryBtn.type = 'button';
-    manualEntryBtn.className = 'btn-manual';
-    manualEntryBtn.innerHTML = '📝 Isi Data Manual (Nama belum terdaftar)';
-    manualEntryBtn.style.marginTop = '10px';
-    manualEntryBtn.style.width = '100%';
-    manualEntryBtn.style.padding = '10px';
-    manualEntryBtn.style.backgroundColor = '#ffc107';
-    manualEntryBtn.style.color = '#000';
-    manualEntryBtn.style.border = 'none';
-    manualEntryBtn.style.borderRadius = '5px';
-    manualEntryBtn.style.cursor = 'pointer';
+    const manualEntryBtn = document.getElementById('manual-entry-btn');
     
     manualEntryBtn.addEventListener('click', function() {
         isNewRegistration = true;
         enableFormFields();
         document.getElementById('nama').focus();
         showStatusMessage('Silakan isi data Anda secara manual. Pastikan semua field terisi dengan benar.', 'info');
+        showDebugInfo('Mode manual entry diaktifkan');
     });
-    
-    // Tambahkan tombol manual entry setelah search section
-    const searchSection = document.querySelector('.search-section');
-    searchSection.appendChild(manualEntryBtn);
 }
 
 // Enable semua field form untuk diisi manual
@@ -211,18 +191,15 @@ function enableFormFields() {
     if (!document.getElementById('konfirmasi_kehadiran').value) {
         document.getElementById('konfirmasi_kehadiran').value = 'Hadir';
     }
-    if (!document.getElementById('jumlah_tamu').value) {
-        document.getElementById('jumlah_tamu').value = '0';
-    }
 }
 
-// Load data Satker dari Google Sheets
-async function loadSatkerData() {
+// Load semua data dari Google Sheets
+async function loadAllData() {
     try {
-        console.log('Memuat data Satker...');
-        showStatusMessage('Memuat data Satker...', 'info');
+        console.log('Memuat data dari Google Sheets...');
+        showDebugInfo('Memuat data dari Google Sheets...');
+        showStatusMessage('Memuat data...', 'info');
         
-        // Menggunakan Google Sheets API v4
         const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`);
         
         if (!response.ok) {
@@ -230,54 +207,63 @@ async function loadSatkerData() {
         }
         
         const data = await response.json();
+        console.log('Data diterima dari Google Sheets:', data);
         
         if (data.values && data.values.length > 1) {
-            const satkerSet = new Set();
+            allParticipants = data.values.slice(1); // Exclude header row
+            console.log('Total peserta ditemukan:', allParticipants.length);
+            showDebugInfo(`Data loaded: ${allParticipants.length} peserta ditemukan`);
             
-            // PERBAIKAN: Handle data yang tidak lengkap dengan lebih baik
-            for (let i = 1; i < data.values.length; i++) {
-                const row = data.values[i];
-                // Pastikan row ada dan memiliki setidaknya 2 kolom
-                if (row && row.length > 1) {
-                    // Gunakan toString() dan cek jika undefined/null
-                    const satkerValue = row[1] ? row[1].toString().trim() : '';
-                    if (satkerValue !== '') {
-                        satkerSet.add(satkerValue);
-                    }
-                }
-            }
+            // Load Satker data
+            loadSatkerData(data.values);
             
-            // Urutkan dan isi dropdown
-            const satkerArray = Array.from(satkerSet).sort();
-            const satkerSelect = document.getElementById('satker');
-            
-            // Hapus opsi loading jika ada
-            satkerSelect.innerHTML = '<option value="">Pilih Satker Asal</option>';
-            
-            satkerArray.forEach(satker => {
-                const option = document.createElement('option');
-                option.value = satker;
-                option.textContent = satker;
-                satkerSelect.appendChild(option);
-            });
-            
-            console.log(`Data Satker berhasil dimuat: ${satkerArray.length} item`);
             hideStatusMessage();
         } else {
             throw new Error('Data tidak ditemukan atau format tidak sesuai');
         }
     } catch (error) {
-        console.error('Error loading Satker data:', error);
-        showStatusMessage('Gagal memuat data Satker. Silakan refresh halaman.', 'error');
+        console.error('Error loading data:', error);
+        showStatusMessage('Gagal memuat data. Silakan refresh halaman.', 'error');
+        showDebugInfo(`Error: ${error.message}`);
     }
 }
 
-// Setup pencarian nama - VERSI DIPERBAIKI
+// Load data Satker
+function loadSatkerData(data) {
+    const satkerSet = new Set();
+    
+    // Ambil semua nilai dari kolom Satker Asal (indeks 1)
+    for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        if (row && row.length > 1 && row[1]) {
+            const satkerValue = row[1].toString().trim();
+            if (satkerValue !== '') {
+                satkerSet.add(satkerValue);
+            }
+        }
+    }
+    
+    // Urutkan dan isi dropdown
+    const satkerArray = Array.from(satkerSet).sort();
+    const satkerSelect = document.getElementById('satker');
+    
+    satkerSelect.innerHTML = '<option value="">Pilih Satker Asal</option>';
+    satkerArray.forEach(satker => {
+        const option = document.createElement('option');
+        option.value = satker;
+        option.textContent = satker;
+        satkerSelect.appendChild(option);
+    });
+    
+    console.log(`Data Satker berhasil dimuat: ${satkerArray.length} item`);
+}
+
+// Setup pencarian nama - VERSI SEDERHANA
 function setupNameSearch() {
     const searchInput = document.getElementById('nama-search');
     const searchResults = document.getElementById('search-results');
     
-    searchInput.addEventListener('input', debounce(async function() {
+    searchInput.addEventListener('input', function() {
         const searchTerm = this.value.trim();
         
         if (searchTerm.length < 2) {
@@ -285,47 +271,18 @@ function setupNameSearch() {
             return;
         }
         
-        try {
-            console.log(`Mencari nama: ${searchTerm}`);
-            showStatusMessage('Mencari data...', 'info');
-            
-            const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.values && data.values.length > 1) {
-                const matches = [];
-                const headers = data.values[0];
-                
-                // PERBAIKAN: Handle data yang tidak lengkap dengan lebih baik
-                for (let i = 1; i < data.values.length; i++) {
-                    const row = data.values[i];
-                    // Pastikan row ada dan memiliki kolom nama
-                    if (row && row.length > 0) {
-                        // Gunakan toString() dan cek jika undefined/null
-                        const nama = row[0] ? row[0].toString().trim() : '';
-                        if (nama && nama.toLowerCase().includes(searchTerm.toLowerCase())) {
-                            matches.push({
-                                nama: nama,
-                                rowIndex: i,
-                                data: row
-                            });
-                        }
-                    }
-                }
-                
-                displaySearchResults(matches, headers);
-                hideStatusMessage();
-            }
-        } catch (error) {
-            console.error('Error searching names:', error);
-            showStatusMessage('Gagal mencari data. Silakan coba lagi.', 'error');
-        }
-    }, 300));
+        console.log(`Mencari: "${searchTerm}"`);
+        showDebugInfo(`Mencari: "${searchTerm}"`);
+        
+        // Cari di data yang sudah dimuat
+        const matches = allParticipants.filter(participant => {
+            const nama = participant[0] ? participant[0].toString().toLowerCase() : '';
+            return nama.includes(searchTerm.toLowerCase());
+        });
+        
+        console.log('Hasil pencarian:', matches);
+        displaySearchResults(matches);
+    });
     
     // Sembunyikan hasil pencarian ketika klik di luar
     document.addEventListener('click', function(e) {
@@ -335,21 +292,8 @@ function setupNameSearch() {
     });
 }
 
-// Debounce function untuk optimasi pencarian
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
 // Tampilkan hasil pencarian
-function displaySearchResults(matches, headers) {
+function displaySearchResults(matches) {
     const searchResults = document.getElementById('search-results');
     searchResults.innerHTML = '';
     
@@ -371,15 +315,16 @@ function displaySearchResults(matches, headers) {
         
         searchResults.appendChild(noResult);
     } else {
-        matches.forEach(match => {
+        matches.forEach(participant => {
+            const nama = participant[0] || '';
             const resultItem = document.createElement('div');
             resultItem.className = 'search-result-item';
-            resultItem.textContent = match.nama;
+            resultItem.textContent = nama;
             
             resultItem.addEventListener('click', function() {
-                fillFormWithData(match, headers);
+                fillFormWithData(participant);
                 searchResults.style.display = 'none';
-                document.getElementById('nama-search').value = match.nama;
+                document.getElementById('nama-search').value = nama;
             });
             
             searchResults.appendChild(resultItem);
@@ -389,61 +334,50 @@ function displaySearchResults(matches, headers) {
     searchResults.style.display = 'block';
 }
 
-// Isi form dengan data yang dipilih - VERSI DIPERBAIKI
-function fillFormWithData(match, headers) {
-    const row = match.data;
-    currentParticipantData = {
-        rowIndex: match.rowIndex,
-        originalData: row
-    };
-    
+// Isi form dengan data yang dipilih
+function fillFormWithData(participant) {
+    currentParticipantData = participant;
     isNewRegistration = false;
     
-    // Map data ke form fields dengan handling data yang tidak lengkap
+    // Map kolom berdasarkan struktur data Anda
     const fieldMap = {
-        'nama': 0,
-        'satker': 1,
-        'status': 2,
-        'agama': 3,
-        'grade': 4,
-        'jenis_kelamin': 5,
-        'jabatan': 6,
-        'pangkat': 7,
-        'whatsapp': 8,
-        'konfirmasi_kehadiran': 9,
-        'jumlah_tamu': 10,
-        'data_tamu': 11
+        'nama': 0,        // Nama
+        'satker': 1,      // Satker Asal
+        'status': 2,      // Status
+        'agama': 3,       // Agama
+        'grade': 4,       // Grade
+        'jenis_kelamin': 5, // Jenis Kelamin
+        'jabatan': 6,     // Jabatan
+        'pangkat': 7,     // Pangkat/Golongan
+        'whatsapp': 8,    // WhatsApp
+        'konfirmasi_kehadiran': 9, // Konfirmasi Kehadiran
+        'jumlah_tamu': 10, // Jumlah Tamu
+        'data_tamu': 11   // Data Tamu
     };
     
+    // Isi semua field
     Object.keys(fieldMap).forEach(field => {
         const element = document.getElementById(field);
         if (element) {
             const colIndex = fieldMap[field];
-            // PERBAIKAN: Pastikan row memiliki data di kolom tersebut
-            let value = '';
-            if (row && row.length > colIndex && row[colIndex] !== undefined && row[colIndex] !== null) {
-                value = row[colIndex].toString();
-            }
+            const value = (participant[colIndex] !== undefined && participant[colIndex] !== null) 
+                ? participant[colIndex].toString() 
+                : '';
             element.value = value;
-            
-            // Trigger change event untuk update UI
-            const event = new Event('change', { bubbles: true });
-            element.dispatchEvent(event);
         }
     });
     
-    // Set default konfirmasi kehadiran jika kosong
+    // Set default values
     if (!document.getElementById('konfirmasi_kehadiran').value) {
         document.getElementById('konfirmasi_kehadiran').value = 'Hadir';
     }
-    
-    // Set jumlah tamu default jika kosong
     if (!document.getElementById('jumlah_tamu').value) {
         document.getElementById('jumlah_tamu').value = '0';
     }
     
-    console.log('Form berhasil diisi dengan data:', match.nama);
-    showStatusMessage(`Data ${match.nama} berhasil dimuat. Silakan perbarui informasi yang diperlukan.`, 'success');
+    console.log('Form berhasil diisi dengan data:', participant[0]);
+    showStatusMessage(`Data ${participant[0]} berhasil dimuat. Silakan perbarui informasi yang diperlukan.`, 'success');
+    showDebugInfo(`Data loaded: ${participant[0]}`);
 }
 
 // Handle form submission
@@ -482,16 +416,14 @@ async function handleFormSubmit(e) {
     data.whatsapp = whatsapp;
     
     try {
-        console.log('Mengirim data ke server:', data);
+        console.log('Mengirim data:', data);
+        showDebugInfo('Mengirim data ke server...');
         showStatusMessage('Menyimpan data...', 'info');
         
-        // Tentukan apakah ini update atau pendaftaran baru
-        const isUpdate = !isNewRegistration && currentParticipantData;
+        // Simpan data
+        const saveResult = await saveToGoogleSheets(data);
         
-        // Update data ke Google Sheets via Web App
-        const updateResult = await updateGoogleSheets(data, isUpdate);
-        
-        if (updateResult.success) {
+        if (saveResult.success) {
             showStatusMessage('Data berhasil disimpan! Membuat QR Code...', 'success');
             
             // Generate QR Code
@@ -506,19 +438,21 @@ async function handleFormSubmit(e) {
                 block: 'center'
             });
             
-            const message = isUpdate ? 
-                'Data berhasil diperbarui! QR Code telah dibuat.' : 
-                'Pendaftaran berhasil! QR Code telah dibuat.';
+            const message = isNewRegistration ? 
+                'Pendaftaran berhasil! QR Code telah dibuat.' : 
+                'Data berhasil diperbarui! QR Code telah dibuat.';
                 
             showStatusMessage(message, 'success');
+            showDebugInfo('Data berhasil disimpan dan QR Code dibuat');
             
         } else {
-            throw new Error(updateResult.message || 'Gagal mengupdate data');
+            throw new Error(saveResult.message || 'Gagal menyimpan data');
         }
         
     } catch (error) {
         console.error('Error submitting form:', error);
-        showStatusMessage('Terjadi kesalahan saat mendaftar: ' + error.message, 'error');
+        showStatusMessage('Terjadi kesalahan: ' + error.message, 'error');
+        showDebugInfo(`Error: ${error.message}`);
     } finally {
         // Reset button state
         btnText.style.display = 'inline';
@@ -568,85 +502,40 @@ function getFieldLabel(field) {
     return labels[field] || field;
 }
 
-// Update Google Sheets via Web App - VERSI DIPERBAIKI untuk CORS
-async function updateGoogleSheets(data, isUpdate = false) {
-    if (!WEB_APP_URL || WEB_APP_URL === 'YOUR_WEB_APP_URL') {
-        // Fallback: Simpan di localStorage untuk testing
-        console.warn('Web App URL belum dikonfigurasi. Menyimpan di localStorage...');
-        const submissions = JSON.parse(localStorage.getItem('natalRegistrations') || '[]');
-        submissions.push({
-            ...data,
-            timestamp: new Date().toISOString(),
-            qrGenerated: true,
-            isUpdate: isUpdate
-        });
-        localStorage.setItem('natalRegistrations', JSON.stringify(submissions));
-        return { success: true, message: 'Data disimpan di localStorage (testing mode)' };
-    }
+// Simpan ke Google Sheets
+async function saveToGoogleSheets(data) {
+    // Untuk testing, simpan di localStorage
+    console.log('Menyimpan data:', data);
     
-    try {
-        // Tambahkan flag apakah ini update atau pendaftaran baru
-        const payload = {
-            ...data,
-            isNewRegistration: !isUpdate,
-            originalNama: isUpdate ? currentParticipantData?.originalData[0] : null
-        };
-        
-        // PERBAIKAN CORS: Gunakan mode 'cors' dan handle error dengan baik
-        const response = await fetch(WEB_APP_URL, {
-            method: 'POST',
-            mode: 'cors', // Explicitly set CORS mode
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        return result;
-    } catch (error) {
-        console.error('Error updating Google Sheets:', error);
-        
-        // Fallback ke localStorage jika gagal
-        console.warn('Menggunakan fallback ke localStorage...');
-        const submissions = JSON.parse(localStorage.getItem('natalRegistrations') || '[]');
-        submissions.push({
-            ...data,
-            timestamp: new Date().toISOString(),
-            qrGenerated: true,
-            isUpdate: isUpdate,
-            error: error.message
-        });
-        localStorage.setItem('natalRegistrations', JSON.stringify(submissions));
-        
-        return { 
-            success: true, 
-            message: 'Data disimpan secara lokal (koneksi server gagal)' 
-        };
-    }
+    const submissions = JSON.parse(localStorage.getItem('natalRegistrations') || '[]');
+    submissions.push({
+        ...data,
+        timestamp: new Date().toISOString(),
+        isNewRegistration: isNewRegistration
+    });
+    localStorage.setItem('natalRegistrations', JSON.stringify(submissions));
+    
+    return { 
+        success: true, 
+        message: 'Data disimpan di localStorage (testing mode)' 
+    };
 }
 
-// Generate QR Code dengan data yang lebih lengkap
+// Generate QR Code
 function generateQRCode(data) {
     return new Promise((resolve) => {
         const qrContainer = document.getElementById('qrcode');
         qrContainer.innerHTML = '';
         
-        // Buat data untuk QR Code (lebih lengkap untuk keperluan check-in)
+        // Buat data untuk QR Code
         const qrData = JSON.stringify({
             id: generateUniqueId(),
             nama: data.nama,
             satker: data.satker,
             whatsapp: data.whatsapp,
             jumlah_tamu: data.jumlah_tamu,
-            data_tamu: data.data_tamu,
             timestamp: new Date().toISOString(),
-            event: 'Acara Natal 2023',
-            isNewRegistration: isNewRegistration
+            event: 'Acara Natal 2023'
         });
         
         // Generate QR Code
@@ -669,16 +558,14 @@ function generateQRCode(data) {
             minute: '2-digit'
         });
         
-        // Update status berdasarkan tipe pendaftaran
+        document.getElementById('qr-nama').textContent = data.nama;
         document.getElementById('qr-status').textContent = isNewRegistration ? 'Pendaftaran Baru' : 'Update Data';
         
-        // Tunggu sampai QR Code selesai digenerate, lalu ambil data URL
+        // Setup tombol download dan share
         setTimeout(() => {
             const canvas = qrContainer.querySelector('canvas');
             if (canvas) {
                 qrCodeDataUrl = canvas.toDataURL('image/png');
-                
-                // Setup tombol download dan share
                 setupQRCodeButtons(data);
             }
             resolve();
@@ -703,29 +590,18 @@ function setupQRCodeButtons(data) {
             link.download = `QR-Code-${data.nama.replace(/\s+/g, '-')}.png`;
             link.href = qrCodeDataUrl;
             link.click();
-            
-            // Track download
-            console.log('QR Code downloaded for:', data.nama);
         };
     }
     
     // Tombol Share via WhatsApp
     if (whatsappBtn) {
         whatsappBtn.onclick = function() {
-            shareToWhatsApp(data);
+            const message = `Halo ${data.nama},\n\n*QR CODE ACARA NATAL*\n\nBerikut adalah QR Code untuk acara Natal:\n\n📅 Tanggal: 25 Desember 2023\n⏰ Waktu: 18:00 - 22:00 WIB\n📍 Tempat: Aula Utama Gedung Serbaguna\n\n*Informasi:*\n- Nama: ${data.nama}\n- Satker: ${data.satker}\n- Jumlah Tamu: ${data.jumlah_tamu}\n\n*Silakan tunjukkan QR Code ini saat check-in.*\n\nTerima kasih! 🎄`;
+            
+            const whatsappUrl = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
         };
     }
-}
-
-// Share QR Code ke WhatsApp
-function shareToWhatsApp(data) {
-    const message = `Halo ${data.nama},\n\n*QR CODE ACARA NATAL*\n\nBerikut adalah QR Code untuk acara Natal yang akan diselenggarakan:\n\n📅 *Tanggal:* 25 Desember 2023\n⏰ *Waktu:* 18:00 - 22:00 WIB\n📍 *Tempat:* Aula Utama Gedung Serbaguna\n\n*Informasi Pendaftaran:*\n- Nama: ${data.nama}\n- Satker: ${data.satker}\n- Jumlah Tamu: ${data.jumlah_tamu}\n\n*Silakan simpan QR Code ini dan tunjukkan saat check-in di lokasi acara.*\n\n_QR Code ini bersifat pribadi dan hanya dapat digunakan sekali._\n\nTerima kasih! 🎄`;
-    
-    const whatsappUrl = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-    
-    // Track share
-    console.log('QR Code shared via WhatsApp to:', data.whatsapp);
 }
 
 // Reset form untuk pendaftaran baru
@@ -737,7 +613,7 @@ function resetForm() {
     qrCodeDataUrl = '';
     isNewRegistration = false;
     
-    // Reset form fields ke state awal
+    // Reset form fields
     const resetFields = ['nama', 'satker', 'status', 'agama', 'grade', 'jenis_kelamin', 'jabatan', 'pangkat', 'whatsapp', 'konfirmasi_kehadiran', 'jumlah_tamu', 'data_tamu'];
     resetFields.forEach(field => {
         const element = document.getElementById(field);
@@ -755,9 +631,8 @@ function resetForm() {
     // Scroll ke atas
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    showStatusMessage('Form telah direset. Silakan cari nama Anda atau isi data manual untuk pendaftaran baru.', 'info');
-    
-    console.log('Form reset untuk pendaftaran baru');
+    showStatusMessage('Form telah direset. Silakan cari nama Anda atau isi data manual.', 'info');
+    showDebugInfo('Form direset');
 }
 
 // Show status message
@@ -775,24 +650,18 @@ function showStatusMessage(message, type = 'info') {
     }
 }
 
+// Show debug info
+function showDebugInfo(message) {
+    const debugElement = document.getElementById('debug-text');
+    const debugContainer = document.querySelector('.debug-info');
+    if (debugElement && debugContainer) {
+        debugElement.textContent = message;
+        debugContainer.style.display = 'block';
+    }
+}
+
 // Hide status message
 function hideStatusMessage() {
     const statusElement = document.getElementById('status-message');
     statusElement.style.display = 'none';
 }
-
-// Error handling global
-window.addEventListener('error', function(e) {
-    console.error('Global error:', e.error);
-    showStatusMessage('Terjadi kesalahan sistem. Silakan refresh halaman.', 'error');
-});
-
-// Offline handling
-window.addEventListener('online', function() {
-    showStatusMessage('Koneksi internet pulih.', 'success');
-    setTimeout(hideStatusMessage, 3000);
-});
-
-window.addEventListener('offline', function() {
-    showStatusMessage('Anda sedang offline. Beberapa fitur mungkin tidak berfungsi.', 'warning');
-});
