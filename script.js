@@ -1,6 +1,7 @@
 // Google Sheets Configuration
 const SHEET_ID = '10G7c_jfQ9_wr8wjs3BnOgcCn4DDeomJFrKEgkCT3ZZ8';
 const API_KEY = 'AIzaSyAB28UliPqPfO27zWdcKsI39DMWVcwryiY'; // Ganti dengan API Key Anda
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoQU_2eU8bqduOybvWRv9DyTf8T7WgHE-gXTzQqrNcB_urV3xG72Hlc-W6vT7wJT9JWQ/exec'; // Ganti dengan URL Web App dari Google Apps Script
 
 // Data untuk dropdown
 const jabatanOptions = [
@@ -78,6 +79,10 @@ const pangkatOptions = [
     'Pembina Madya/IVd',
     'Pembina Utama/IVe'
 ];
+
+// Global variables
+let currentParticipantData = null;
+let qrCodeDataUrl = '';
 
 // Hamburger Menu Toggle
 document.addEventListener('DOMContentLoaded', function() {
@@ -248,6 +253,10 @@ function displaySearchResults(matches, headers) {
 // Isi form dengan data yang dipilih
 function fillFormWithData(match, headers) {
     const row = match.data;
+    currentParticipantData = {
+        rowIndex: match.rowIndex,
+        originalData: row
+    };
     
     document.getElementById('nama').value = row[headers.indexOf('Nama')] || '';
     document.getElementById('satker').value = row[headers.indexOf('Satker Asal')] || '';
@@ -258,8 +267,8 @@ function fillFormWithData(match, headers) {
     document.getElementById('jabatan').value = row[headers.indexOf('Jabatan')] || '';
     document.getElementById('pangkat').value = row[headers.indexOf('Pangkat/Golongan')] || '';
     document.getElementById('whatsapp').value = row[headers.indexOf('WhatsApp')] || '';
-    document.getElementById('konfirmasi_kehadiran').value = row[headers.indexOf('Konfirmasi Kehadiran')] || '';
-    document.getElementById('jumlah_tamu').value = row[headers.indexOf('Jumlah Tamu')] || '';
+    document.getElementById('konfirmasi_kehadiran').value = row[headers.indexOf('Konfirmasi Kehadiran')] || 'Hadir';
+    document.getElementById('jumlah_tamu').value = row[headers.indexOf('Jumlah Tamu')] || '0';
     document.getElementById('data_tamu').value = row[headers.indexOf('Data Tamu')] || '';
 }
 
@@ -270,75 +279,123 @@ async function handleFormSubmit(e) {
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
     
+    // Validasi nomor WhatsApp
+    const whatsapp = data.whatsapp.replace(/\D/g, '');
+    if (whatsapp.length < 10) {
+        alert('Nomor WhatsApp tidak valid');
+        return;
+    }
+    data.whatsapp = whatsapp;
+    
     try {
-        // Kirim data ke Google Sheets (menggunakan Google Apps Script sebagai proxy)
-        await updateGoogleSheets(data);
+        // Update data ke Google Sheets via Web App
+        const updateResult = await updateGoogleSheets(data);
         
-        // Generate QR Code
-        generateQRCode(data);
-        
-        // Tampilkan QR Code container
-        document.getElementById('qr-container').style.display = 'block';
-        
-        // Scroll ke QR Code
-        document.getElementById('qr-container').scrollIntoView({ behavior: 'smooth' });
-        
-        alert('Pendaftaran berhasil! QR Code telah dibuat.');
+        if (updateResult.success) {
+            // Generate QR Code
+            await generateQRCode(data);
+            
+            // Tampilkan QR Code container
+            document.getElementById('qr-container').style.display = 'block';
+            
+            // Scroll ke QR Code
+            document.getElementById('qr-container').scrollIntoView({ behavior: 'smooth' });
+            
+            alert('Pendaftaran berhasil! Data telah disimpan dan QR Code telah dibuat.');
+        } else {
+            throw new Error(updateResult.message || 'Gagal mengupdate data');
+        }
         
     } catch (error) {
         console.error('Error submitting form:', error);
-        alert('Terjadi kesalahan saat mendaftar. Silakan coba lagi.');
+        alert('Terjadi kesalahan saat mendaftar: ' + error.message);
     }
 }
 
-// Update Google Sheets dengan data baru
+// Update Google Sheets via Web App
 async function updateGoogleSheets(data) {
-    // Di sini Anda perlu membuat Google Apps Script untuk menangani update data
-    // karena Google Sheets API tidak mengizinkan update langsung dari frontend
-    // tanpa mengungkapkan kredensial
+    if (!WEB_APP_URL || WEB_APP_URL === 'YOUR_WEB_APP_URL') {
+        throw new Error('Web App URL belum dikonfigurasi. Silakan setup Google Apps Script terlebih dahulu.');
+    }
     
-    // Contoh implementasi dengan Google Apps Script:
-    // const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL';
-    // const response = await fetch(scriptURL, {
-    //     method: 'POST',
-    //     body: JSON.stringify(data),
-    //     headers: {
-    //         'Content-Type': 'application/json'
-    //     }
-    // });
-    // 
-    // return await response.json();
-    
-    // Untuk sementara, kita simpan di localStorage
-    const submissions = JSON.parse(localStorage.getItem('natalRegistrations') || '[]');
-    submissions.push({
-        ...data,
-        timestamp: new Date().toISOString()
-    });
-    localStorage.setItem('natalRegistrations', JSON.stringify(submissions));
-    
-    return { success: true };
+    try {
+        const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error updating Google Sheets:', error);
+        throw new Error('Gagal terhubung ke server. Silakan coba lagi.');
+    }
 }
 
-// Generate QR Code
+// Generate QR Code dengan data yang lebih lengkap
 function generateQRCode(data) {
-    const qrContainer = document.getElementById('qrcode');
-    qrContainer.innerHTML = '';
-    
-    // Buat data untuk QR Code
-    const qrData = JSON.stringify({
-        nama: data.nama,
-        whatsapp: data.whatsapp,
-        timestamp: new Date().toISOString()
+    return new Promise((resolve) => {
+        const qrContainer = document.getElementById('qrcode');
+        qrContainer.innerHTML = '';
+        
+        // Buat data untuk QR Code (lebih lengkap untuk keperluan check-in)
+        const qrData = JSON.stringify({
+            nama: data.nama,
+            satker: data.satker,
+            whatsapp: data.whatsapp,
+            jumlah_tamu: data.jumlah_tamu,
+            timestamp: new Date().toISOString(),
+            id: Math.random().toString(36).substr(2, 9) // ID unik untuk QR Code
+        });
+        
+        // Generate QR Code
+        const qrcode = new QRCode(qrContainer, {
+            text: qrData,
+            width: 200,
+            height: 200,
+            colorDark: "#1a472a",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        
+        // Tunggu sampai QR Code selesai digenerate, lalu ambil data URL
+        setTimeout(() => {
+            const canvas = qrContainer.querySelector('canvas');
+            if (canvas) {
+                qrCodeDataUrl = canvas.toDataURL('image/png');
+                
+                // Setup tombol download dan share
+                setupQRCodeButtons(data);
+            }
+            resolve();
+        }, 100);
     });
+}
+
+// Setup tombol download dan share QR Code
+function setupQRCodeButtons(data) {
+    const downloadBtn = document.getElementById('download-qr');
+    const whatsappBtn = document.getElementById('share-whatsapp');
     
-    // Generate QR Code
-    new QRCode(qrContainer, {
-        text: qrData,
-        width: 200,
-        height: 200,
-        colorDark: "#1a472a",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-    });
+    // Tombol Download QR Code
+    if (downloadBtn) {
+        downloadBtn.onclick = function() {
+            const link = document.createElement('a');
+            link.download = `QR-Code-${data.nama.replace(/\s+/g, '-')}.png`;
+            link.href = qrCodeDataUrl;
+            link.click();
+        };
+    }
+    
+    // Tombol Share via WhatsApp
+    if (whatsappBtn) {
+        whatsappBtn.onclick = function() {
+            const message = `Halo ${data.nama},\n\nBerikut adalah QR Code untuk acara Natal. Silakan simpan dan tunjukkan saat check-in.\n\nTerima kasih!`;
+            const whatsappUrl = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        };
+    }
 }
