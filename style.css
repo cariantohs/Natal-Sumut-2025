@@ -377,6 +377,20 @@ body {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
+/* Tombol Manual Entry */
+.btn-manual {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+    border: 2px solid #ffc107 !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-manual:hover {
+    background-color: #e0a800 !important;
+    border-color: #e0a800 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+}
 
 .btn-new {
     background-color: var(--accent-color);
