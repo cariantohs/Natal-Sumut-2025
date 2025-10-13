@@ -36,15 +36,24 @@
                     <p>Silakan isi form berikut untuk mendaftar ke acara natal. Data Anda akan diverifikasi dengan database yang ada.</p>
                 </div>
                 
+                <div class="debug-info" style="display: none; background: #f8f9fa; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                    <strong>Debug Info:</strong> <span id="debug-text"></span>
+                </div>
+                
                 <div class="form-container">
                     <form id="registration-form">
                         <div class="search-section">
                             <div class="form-group">
                                 <label for="nama-search">Cari Nama Anda:</label>
-                                <input type="text" id="nama-search" placeholder="Ketik nama untuk mencari...">
-                                <div id="search-results" class="search-results"></div>
+                                <div style="position: relative;">
+                                    <input type="text" id="nama-search" placeholder="Ketik nama untuk mencari...">
+                                    <div id="search-results" class="search-results"></div>
+                                </div>
                                 <small class="form-help">Ketik minimal 2 karakter untuk memulai pencarian</small>
                             </div>
+                            <button type="button" id="manual-entry-btn" class="btn-manual">
+                                📝 Isi Data Manual (Nama belum terdaftar)
+                            </button>
                         </div>
 
                         <div class="form-grid">
@@ -84,6 +93,7 @@
                                 <label for="grade">Grade:</label>
                                 <select id="grade" name="grade" required>
                                     <option value="">Pilih Grade</option>
+                                    <!-- Options akan diisi oleh JavaScript -->
                                 </select>
                             </div>
                             
@@ -100,6 +110,7 @@
                                 <label for="jabatan">Jabatan:</label>
                                 <select id="jabatan" name="jabatan" required>
                                     <option value="">Pilih Jabatan</option>
+                                    <!-- Options akan diisi oleh JavaScript -->
                                 </select>
                             </div>
                             
@@ -107,6 +118,7 @@
                                 <label for="pangkat">Pangkat/Golongan:</label>
                                 <select id="pangkat" name="pangkat" required>
                                     <option value="">Pilih Pangkat/Golongan</option>
+                                    <!-- Options akan diisi oleh JavaScript -->
                                 </select>
                             </div>
                             
@@ -127,7 +139,7 @@
                             
                             <div class="form-group">
                                 <label for="jumlah_tamu">Jumlah Tamu:</label>
-                                <input type="number" id="jumlah_tamu" name="jumlah_tamu" min="0" max="10" required>
+                                <input type="number" id="jumlah_tamu" name="jumlah_tamu" min="0" max="10" value="0" required>
                                 <small class="form-help">Termasuk diri sendiri</small>
                             </div>
                             
@@ -141,7 +153,9 @@
                         <div class="form-actions">
                             <button type="submit" class="submit-btn">
                                 <span class="btn-text">Daftar & Dapatkan QR Code</span>
-                                <span class="btn-loading" style="display: none;">Menyimpan...</span>
+                                <span class="btn-loading" style="display: none;">
+                                    <span class="loading-spinner"></span> Menyimpan...
+                                </span>
                             </button>
                         </div>
                     </form>
@@ -157,6 +171,7 @@
                         <div class="qr-info">
                             <p><strong>Status:</strong> <span id="qr-status">Terverifikasi</span></p>
                             <p><strong>Tanggal Generate:</strong> <span id="qr-date"></span></p>
+                            <p><strong>Nama:</strong> <span id="qr-nama"></span></p>
                         </div>
                     </div>
                     <div class="qr-actions">
