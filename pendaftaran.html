@@ -3,314 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendaftaran & Update Data Peserta</title>
+    <title>Pendaftaran - Acara Natal</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .name-selection { margin-top: 1rem; }
-        .name-option { padding: 0.8rem; margin-bottom: 0.5rem; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: background-color 0.2s; }
-        .name-option:hover { background-color: #f0f0f0; }
-        form select, form input { width: 100%; padding: 1rem; margin-bottom: 1rem; border-radius: 5px; border: 1px solid #ddd; box-sizing: border-box; background-color: white; }
-        .hidden-section { display: none; }
-        .family-card {
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background-color: #f9f9f9;
-        }
-        .family-card h5 { margin-top: 0; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; }
-        .family-card label { display: block; margin-top: 0.5rem; font-weight: bold; font-size: 0.9em; }
-        .family-card input, .family-card select { padding: 0.5rem; margin-top: 0.25rem; }
-        .disclaimer { font-size: 0.9em; font-style: italic; color: #555; background-color: #f0f8ff; padding: 10px; border-radius: 5px; margin-bottom: 1rem; border-left: 4px solid #1e90ff; }
-    </style>
 </head>
 <body>
-    <header><h1><a href="index.html">🎄 Acara Natal 2025 🎄</a></h1></header>
-    <main class="container">
-        <div class="form-container">
-            <div id="checkNameSection">
-                <h2>Pendaftaran & Update Data</h2>
-                <p>Masukkan nama Anda untuk mendaftar atau memperbarui data.</p>
-                <input type="text" id="searchName" placeholder="Ketik Nama Anda di Sini" required>
-                <button onclick="checkName()">Cari / Daftar dengan Nama Ini</button>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <h2>🎄 Acara Natal</h2>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html" class="nav-link">Acara</a></li>
+                    <li class="nav-item"><a href="pendaftaran.html" class="nav-link active">Pendaftaran</a></li>
+                    <li class="nav-item"><a href="akomodasi.html" class="nav-link">Akomodasi</a></li>
+                    <li class="nav-item"><a href="dokumentasi.html" class="nav-link">Dokumentasi</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
             </div>
-            <div id="checkResult"></div>
+        </nav>
+    </header>
 
-            <form id="regForm" style="display:none;">
-                <h3 id="formTitle">Formulir Pendaftaran</h3>
-                <input type="hidden" id="rowIndex" name="rowIndex">
+    <main class="main-content">
+        <section class="registration-section">
+            <div class="container">
+                <h1>Form Pendaftaran Acara Natal</h1>
+                <p>Silakan isi form berikut untuk mendaftar ke acara natal. Data Anda akan diverifikasi dengan database yang ada.</p>
                 
-                <h4>BAGIAN 1: BIODATA PESERTA</h4>
-                <label for="Nama">Nama Lengkap</label>
-                <input type="text" id="Nama" name="Nama" required>
-
-                <label for="JenisKelamin">Jenis Kelamin</label>
-                <select id="JenisKelamin" name="JenisKelamin" required>
-                    <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
-                    <option value="Laki-laki">Laki-laki</option>
-                    <option value="Perempuan">Perempuan</option>
-                </select>
-                
-                <label for="KabupatenKota">Kabupaten / Kota</label>
-                <select id="KabupatenKota" name="KabupatenKota" required>
-                    <option value="" disabled selected>-- Pilih Kabupaten/Kota --</option>
-                    <option value="Asahan">Asahan</option><option value="Batubara">Batubara</option><option value="Binjai">Binjai (Kota)</option><option value="Dairi">Dairi</option><option value="Deli Serdang">Deli Serdang</option><option value="Gunungsitoli">Gunungsitoli (Kota)</option><option value="Humbang Hasundutan">Humbang Hasundutan</option><option value="Karo">Karo</option><option value="Labuhanbatu">Labuhanbatu</option><option value="Labuhanbatu Selatan">Labuhanbatu Selatan</option><option value="Labuhanbatu Utara">Labuhanbatu Utara</option><option value="Langkat">Langkat</option><option value="Mandailing Natal">Mandailing Natal</option><option value="Medan">Medan (Kota)</option><option value="Nias">Nias</option><option value="Nias Barat">Nias Barat</option><option value="Nias Selatan">Nias Selatan</option><option value="Nias Utara">Nias Utara</option><option value="Padang Lawas">Padang Lawas</option><option value="Padang Lawas Utara">Padang Lawas Utara</option><option value="Padangsidempuan">Padangsidempuan (Kota)</option><option value="Pakpak Bharat">Pakpak Bharat</option><option value="Pematangsiantar">Pematangsiantar (Kota)</option><option value="Samosir">Samosir</option><option value="Serdang Bedagai">Serdang Bedagai</option><option value="Sibolga">Sibolga (Kota)</option><option value="Simalungun">Simalungun</option><option value="Tanjungbalai">Tanjungbalai (Kota)</option><option value="Tapanuli Selatan">Tapanuli Selatan</option><option value="Tapanuli Tengah">Tapanuli Tengah</option><option value="Tapanuli Utara">Tapanuli Utara</option><option value="Tebing Tinggi">Tebing Tinggi (Kota)</option><option value="Toba">Toba</option>
-                </select>
-                
-                <label for="TTL">Tempat, Tanggal Lahir</label>
-                <input type="text" id="TTL" name="TTL" placeholder="Contoh: Medan, 25 Desember 1990" required>
-                
-                <label for="Agama">Agama</label>
-                <select id="Agama" name="Agama" required>
-                    <option value="Kristen Protestan">Kristen Protestan</option><option value="Katolik">Katolik</option>
-                </select>
-                
-                <label for="Jabatan">Jabatan</label>
-                <select id="Jabatan" name="Jabatan" required>
-                    <option value="" disabled selected>-- Pilih Jabatan --</option>
-                    <option value="Kepala BPS Kabupaten/Kota">Kepala BPS Kabupaten/Kota</option><option value="Kepala Bagian Umum">Kepala Bagian Umum</option><option value="Kepala Subbagian Umum">Kepala Subbagian Umum</option><option value="Penata Laksana Barang Mahir">Penata Laksana Barang Mahir</option><option value="Penata Laksana Barang Terampil">Penata Laksana Barang Terampil</option><option value="Analis Pengelola Keuangan APBN Ahli Madya">Analis Pengelola Keuangan APBN Ahli Madya</option><option value="Analis Pengelola Keuangan APBN Ahli Muda">Analis Pengelola Keuangan APBN Ahli Muda</option><option value="Analis Pengelola Keuangan APBN Ahli Pertama">Analis Pengelola Keuangan APBN Ahli Pertama</option><option value="Pranata Keuangan APBN Penyelia">Pranata Keuangan APBN Penyelia</option><option value="Pranata Keuangan APBN Mahir">Pranata Keuangan APBN Mahir</option><option value="Pranata Keuangan APBN Terampil">Pranata Keuangan APBN Terampil</option><option value="Analis Anggaran Ahli Madya">Analis Anggaran Ahli Madya</option><option value="Analis Anggaran Ahli Muda">Analis Anggaran Ahli Muda</option><option value="Analis Anggaran Ahli Pertama">Analis Anggaran Ahli Pertama</option><option value="Analis SDM Aparatur Ahli Muda">Analis SDM Aparatur Ahli Muda</option><option value="Analis SDM Aparatur Ahli Pertama">Analis SDM Aparatur Ahli Pertama</option><option value="Pranata SDM Aparatur Penyelia">Pranata SDM Aparatur Penyelia</option><option value="Pranata SDM Aparatur Mahir">Pranata SDM Aparatur Mahir</option><option value="Pranata SDM Aparatur Terampil">Pranata SDM Aparatur Terampil</option><option value="Arsiparis Ahli Madya">Arsiparis Ahli Madya</option><option value="Arsiparis Ahli Muda">Arsiparis Ahli Muda</option><option value="Arsiparis Ahli Pertama">Arsiparis Ahli Pertama</option><option value="Arsiparis Terampil">Arsiparis Terampil</option><option value="Penyuluh Hukum Ahli Muda">Penyuluh Hukum Ahli Muda</option><option value="Penyuluh Hukum Ahli Pertama">Penyuluh Hukum Ahli Pertama</option><option value="Pranata Humas Ahli Muda">Pranata Humas Ahli Muda</option><option value="Pranata Humas Ahli Pertama">Pranata Humas Ahli Pertama</option><option value="Pustakawan Penyelia">Pustakawan Penyelia</option><option value="Pustakawan Mahir">Pustakawan Mahir</option><option value="Pustakawan Terampil">Pustakawan Terampil</option><option value="Pengolah Data">Pengolah Data</option><option value="Verifikator Keuangan">Verifikator Keuangan</option><option value="Pengelola Surat">Pengelola Surat</option><option value="Pranata Kearsipan">Pranata Kearsipan</option><option value="Pengelola Barang Milik Negara">Pengelola Barang Milik Negara</option><option value="Teknisi Pemeliharaan Sarana dan Prasarana">Teknisi Pemeliharaan Sarana dan Prasarana</option><option value="Pengemudi">Pengemudi</option><option value="Statistisi Ahli Utama">Statistisi Ahli Utama</option><option value="Statistisi Ahli Madya">Statistisi Ahli Madya</option><option value="Statistisi Ahli Muda">Statistisi Ahli Muda</option><option value="Statistisi Ahli Pertama">Statistisi Ahli Pertama</option><option value="Statistisi Penyelia">Statistisi Penyelia</option><option value="Statistisi Mahir">Statistisi Mahir</option><option value="Statistisi Terampil">Statistisi Terampil</option><option value="Pranata Komputer Ahli Utama">Pranata Komputer Ahli Utama</option><option value="Pranata Komputer Ahli Madya">Pranata Komputer Ahli Madya</option><option value="Pranata Komputer Ahli Muda">Pranata Komputer Ahli Muda</option><option value="Pranata Komputer Ahli Pertama">Pranata Komputer Ahli Pertama</option><option value="Pranata Komputer Penyelia">Pranata Komputer Penyelia</option><option value="Pranata Komputer Mahir">Pranata Komputer Mahir</option><option value="Pranata Komputer Terampil">Pranata Komputer Terampil</option><option value="Sekretaris">Sekretaris</option>
-                </select>
-
-                <label for="PangkatGolongan">Pangkat/Golongan</label>
-                <select id="PangkatGolongan" name="PangkatGolongan" required>
-                    <option value="" disabled selected>-- Pilih Pangkat/Golongan --</option>
-                    <option value="Juru Muda/Ia">Juru Muda/Ia</option><option value="Juru Muda Tingkat/Ib">Juru Muda Tingkat/Ib</option><option value="Juru/Ic">Juru/Ic</option><option value="Juru Tingkat I/Id">Juru Tingkat I/Id</option><option value="Pengatur Muda/IIa">Pengatur Muda/IIa</option><option value="Pengatur Muda Tingkat I/IIb">Pengatur Muda Tingkat I/IIb</option><option value="Pengatur/IIc">Pengatur/IIc</option><option value="Pengatur Tingkat I/IId">Pengatur Tingkat I/IId</option><option value="Penata Muda/IIIa">Penata Muda/IIIa</option><option value="Penata Muda Tingkat I/IIIb">Penata Muda Tingkat I/IIIb</option><option value="Penata/IIIc">Penata/IIIc</option><option value="Penata Tingkat I/IIId">Penata Tingkat I/IIId</option><option value="Pembina/IVa">Pembina/IVa</option><option value="Pembina Tingkat I/IVb">Pembina Tingkat I/IVb</option><option value="Pembina Muda/IVc">Pembina Muda/IVc</option><option value="Pembina Madya/IVd">Pembina Madya/IVd</option><option value="Pembina Utama/IVe">Pembina Utama/IVe</option>
-                </select>
-
-                <label for="Grade">Grade</label>
-                <select id="Grade" name="Grade" required>
-                    <option value="" disabled selected>-- Pilih Grade --</option>
-                    <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option>
-                </select>
-
-                <hr style="margin: 2rem 0;">
-
-                <h4>BAGIAN 2: KONFIRMASI KEHADIRAN</h4>
-                <label for="konfirmasiKehadiran">Konfirmasi rencana kehadiran Natal 2025</label>
-                <select id="konfirmasiKehadiran" name="konfirmasiKehadiran" required>
-                    <option value="" disabled selected>-- Pilih Opsi --</option>
-                    <option value="Hadir">Hadir</option>
-                    <option value="Tidak Hadir">Tidak Hadir</option>
-                </select>
-
-                <div id="jumlahKeluargaSection" class="hidden-section">
-                    <label for="jumlahKeluarga">Jumlah keluarga yang akan dibawa (selain Anda)</label>
-                    <select id="jumlahKeluarga" name="jumlahKeluarga">
-                        <option value="0">Tidak membawa keluarga</option>
-                        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
-                    </select>
+                <div class="form-container">
+                    <form id="registration-form">
+                        <div class="form-group">
+                            <label for="nama-search">Cari Nama Anda:</label>
+                            <input type="text" id="nama-search" placeholder="Ketik nama untuk mencari...">
+                            <div id="search-results" class="search-results"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nama">Nama Lengkap:</label>
+                            <input type="text" id="nama" name="nama" required readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="satker">Satker Asal:</label>
+                            <select id="satker" name="satker" required>
+                                <option value="">Pilih Satker Asal</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="status">Status:</label>
+                            <select id="status" name="status" required>
+                                <option value="">Pilih Status</option>
+                                <option value="PNS">PNS</option>
+                                <option value="CPNS">CPNS</option>
+                                <option value="Tugas belajar">Tugas belajar</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="agama">Agama:</label>
+                            <select id="agama" name="agama" required>
+                                <option value="">Pilih Agama</option>
+                                <option value="Kristen Protestan">Kristen Protestan</option>
+                                <option value="Katolik">Katolik</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="grade">Grade:</label>
+                            <select id="grade" name="grade" required>
+                                <option value="">Pilih Grade</option>
+                                <!-- Options akan diisi oleh JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="jenis_kelamin">Jenis Kelamin:</label>
+                            <select id="jenis_kelamin" name="jenis_kelamin" required>
+                                <option value="">Pilih Jenis Kelamin</option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="jabatan">Jabatan:</label>
+                            <select id="jabatan" name="jabatan" required>
+                                <option value="">Pilih Jabatan</option>
+                                <!-- Options akan diisi oleh JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="pangkat">Pangkat/Golongan:</label>
+                            <select id="pangkat" name="pangkat" required>
+                                <option value="">Pilih Pangkat/Golongan</option>
+                                <!-- Options akan diisi oleh JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="whatsapp">Nomor WhatsApp:</label>
+                            <input type="text" id="whatsapp" name="whatsapp" required placeholder="Contoh: 081234567890">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="konfirmasi_kehadiran">Konfirmasi Kehadiran:</label>
+                            <select id="konfirmasi_kehadiran" name="konfirmasi_kehadiran" required>
+                                <option value="">Konfirmasi Kehadiran</option>
+                                <option value="Hadir">Hadir</option>
+                                <option value="Tidak Hadir">Tidak Hadir</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="jumlah_tamu">Jumlah Tamu:</label>
+                            <input type="number" id="jumlah_tamu" name="jumlah_tamu" min="0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="data_tamu">Data Tamu (nama tamu):</label>
+                            <textarea id="data_tamu" name="data_tamu" placeholder="Tulis nama tamu yang akan dibawa, dipisahkan dengan koma"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">Daftar & Dapatkan QR Code</button>
+                    </form>
                 </div>
-
-                <div id="tabelKeluargaSection" class="hidden-section">
-                    <h4>Detail Anggota Keluarga</h4>
-                    <p class="disclaimer"><strong>PENTING:</strong> Jika Keluarga sesama pegawai BPS Se-Provinsi Sumatera Utara, Harap <strong>1 Pegawai saja</strong> yang menambahkan daftar tamu yang akan dibawa untuk menghindari data ganda.</p>
-                    <div id="family-cards-container"></div>
-                </div>
                 
-                <hr style="margin: 2rem 0;">
-                <button type="submit" id="submitBtn">Simpan Data</button>
-            </form>
-            <div id="formResult"></div>
-        </div>
+                <div id="qr-container" class="qr-container" style="display: none;">
+                    <h3>QR Code Kehadiran Anda</h3>
+                    <div id="qrcode"></div>
+                    <p>QR Code ini akan dikirim ke WhatsApp Anda dan digunakan untuk check-in di acara.</p>
+                </div>
+            </div>
+        </section>
     </main>
-    
-    <template id="familyCardTemplate">
-        <div class="family-card">
-            <h5>Anggota Keluarga</h5>
-            <label>Nama</label>
-            <input type="text" class="namaKeluarga" placeholder="Nama anggota keluarga" required>
-            <label>Jenis Kelamin</label>
-            <select class="jenisKelaminKeluarga"><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select>
-            <label>Masih Bersekolah?</label>
-            <select class="bersekolah"><option value="Tidak" selected>Tidak</option><option value="Ya">Ya</option></select>
-            <div class="kelas-container hidden-section">
-                <label>Kelas</label>
-                <select class="kelas">
-                    <option value="" disabled selected>-- Pilih --</option>
-                    <option value="SD Kelas 1">SD Kelas 1</option><option value="SD Kelas 2">SD Kelas 2</option><option value="SD Kelas 3">SD Kelas 3</option><option value="SD Kelas 4">SD Kelas 4</option><option value="SD Kelas 5">SD Kelas 5</option><option value="SD Kelas 6">SD Kelas 6</option><option value="SMP Keatas">SMP Keatas</option>
-                </select>
-            </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Panitia Acara Natal. All rights reserved.</p>
         </div>
-    </template>
+    </footer>
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJYF0oH68JH8Tylp4XOtyQKvNujPyMfT-0q1Qk0QOYLhw9-h7B6ED2xkEhyfHcESgt/exec";
-        
-        const regForm = document.getElementById('regForm');
-        const checkResultDiv = document.getElementById('checkResult');
-        const searchNameInput = document.getElementById('searchName');
-        const konfirmasiSelect = document.getElementById('konfirmasiKehadiran');
-        const jumlahKeluargaSection = document.getElementById('jumlahKeluargaSection');
-        const jumlahKeluargaSelect = document.getElementById('jumlahKeluarga');
-        const tabelKeluargaSection = document.getElementById('tabelKeluargaSection');
-        const familyCardsContainer = document.getElementById('family-cards-container');
-        const familyCardTemplate = document.getElementById('familyCardTemplate');
-        const formResultDiv = document.getElementById('formResult');
-
-        konfirmasiSelect.addEventListener('change', function() {
-            const isHadir = this.value === 'Hadir';
-            jumlahKeluargaSection.style.display = isHadir ? 'block' : 'none';
-            if (!isHadir) {
-                jumlahKeluargaSelect.value = '0';
-                jumlahKeluargaSelect.dispatchEvent(new Event('change'));
-            }
-        });
-
-        jumlahKeluargaSelect.addEventListener('change', function() {
-            const count = parseInt(this.value, 10);
-            tabelKeluargaSection.style.display = (count > 0) ? 'block' : 'none';
-            generateFamilyCards(count);
-        });
-
-        function generateFamilyCards(count) {
-            familyCardsContainer.innerHTML = '';
-            for (let i = 1; i <= count; i++) {
-                const newCard = familyCardTemplate.content.cloneNode(true);
-                newCard.querySelector('h5').textContent = `Anggota Keluarga ${i}`;
-                const bersekolahSelect = newCard.querySelector('.bersekolah');
-                const kelasContainer = newCard.querySelector('.kelas-container');
-                
-                bersekolahSelect.addEventListener('change', function() {
-                    kelasContainer.style.display = (this.value === 'Ya') ? 'block' : 'none';
-                });
-                familyCardsContainer.appendChild(newCard);
-            }
-        }
-
-        function populateFamilyCards(familyData) {
-            if (!familyData || familyData.length === 0) return;
-            generateFamilyCards(familyData.length);
-            const cards = familyCardsContainer.querySelectorAll('.family-card');
-            cards.forEach((card, index) => {
-                const anggota = familyData[index];
-                if (anggota) {
-                    card.querySelector('.namaKeluarga').value = anggota.nama || '';
-                    card.querySelector('.jenisKelaminKeluarga').value = anggota.jenisKelamin || 'Laki-laki';
-                    card.querySelector('.bersekolah').value = anggota.bersekolah || 'Tidak';
-                    if (anggota.bersekolah === 'Ya') {
-                        const kelasContainer = card.querySelector('.kelas-container');
-                        kelasContainer.style.display = 'block';
-                        card.querySelector('.kelas').value = anggota.kelas || '';
-                    }
-                }
-            });
-        }
-        
-        async function checkName() {
-            const nameToCheck = searchNameInput.value;
-            if (nameToCheck.trim().length === 0) { checkResultDiv.innerHTML = `<p style="color: red;">Nama tidak boleh kosong.</p>`; return; }
-            checkResultDiv.innerHTML = `<p>Mencari...</p>`;
-            regForm.style.display = 'none';
-            formResultDiv.innerHTML = '';
-
-            try {
-                const response = await fetch(`${SCRIPT_URL}?action=search&nama=${encodeURIComponent(nameToCheck)}`);
-                const result = await response.json();
-
-                if (result.result === 'found') {
-                    const mainData = result.data.main;
-                    const familyData = result.data.family;
-                    checkResultDiv.innerHTML = `<p style="color: green;">Data ditemukan untuk <b>${mainData.Nama}</b>. Silakan perbarui data Anda di bawah.</p>`;
-                    regForm.style.display = 'block';
-                    document.getElementById('formTitle').innerText = "Formulir Update Data";
-                    document.getElementById('submitBtn').innerText = "Update Data Saya";
-                    
-                    document.getElementById('rowIndex').value = mainData.rowIndex;
-                    document.getElementById('Nama').value = mainData.Nama || '';
-                    document.getElementById('JenisKelamin').value = mainData.JenisKelamin || '';
-                    document.getElementById('KabupatenKota').value = mainData.KabupatenKota || '';
-                    document.getElementById('TTL').value = mainData.TTL || '';
-                    document.getElementById('Agama').value = mainData.Agama || '';
-                    document.getElementById('Jabatan').value = mainData.Jabatan || '';
-                    document.getElementById('PangkatGolongan').value = mainData.PangkatGolongan || '';
-                    document.getElementById('Grade').value = mainData.Grade || '';
-
-                    konfirmasiSelect.value = mainData.konfirmasi || "";
-                    konfirmasiSelect.dispatchEvent(new Event('change'));
-                    setTimeout(() => {
-                        const familyCount = familyData.length > 0 ? familyData.length : (mainData.jumlahKeluarga || 0);
-                        jumlahKeluargaSelect.value = familyCount;
-                        jumlahKeluargaSelect.dispatchEvent(new Event('change'));
-                        if (familyCount > 0) {
-                            populateFamilyCards(familyData);
-                        }
-                    }, 100);
-
-                } else if (result.result === 'not_found') {
-                    checkResultDiv.innerHTML = `<p style="color: blue;">Nama tidak ditemukan. Silakan isi formulir pendaftaran baru di bawah.</p>`;
-                    regForm.style.display = 'block';
-                    document.getElementById('formTitle').innerText = "Formulir Pendaftaran Baru";
-                    document.getElementById('submitBtn').innerText = "Daftar Sekarang";
-                    
-                    regForm.reset(); 
-                    konfirmasiSelect.dispatchEvent(new Event('change'));
-                    document.getElementById('Nama').value = nameToCheck;
-                    document.getElementById('rowIndex').value = '';
-
-                } else {
-                    checkResultDiv.innerHTML = `<p style="color: red;">Error dari Server: ${result.message}</p>`;
-                }
-            } catch (error) {
-                checkResultDiv.innerHTML = `<p style="color: red;">Gagal menghubungi server. Pastikan URL Web App sudah benar dan di-deploy ulang.</p>`;
-            }
-        }
-
-        regForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Menyimpan...";
-            
-            const formData = new FormData(regForm);
-            const payload = {};
-            formData.forEach((value, key) => { payload[key] = value; });
-            
-            const dataKeluarga = [];
-            const cards = familyCardsContainer.querySelectorAll('.family-card');
-            cards.forEach(card => {
-                dataKeluarga.push({
-                    nama: card.querySelector('.namaKeluarga').value,
-                    jenisKelamin: card.querySelector('.jenisKelaminKeluarga').value,
-                    bersekolah: card.querySelector('.bersekolah').value,
-                    kelas: card.querySelector('.kelas').value,
-                });
-            });
-            payload.keluarga = dataKeluarga;
-
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) {
-                    let errorMessage = `HTTP error! status: ${response.status}`;
-                    try {
-                        const errorResult = await response.json();
-                        errorMessage = errorResult.message || errorMessage;
-                    } catch (e) { /* Biarkan error message default */ }
-                    throw new Error(errorMessage);
-                }
-
-                const result = await response.json();
-                
-                if (result.result === "success") {
-                    formResultDiv.innerHTML = `<p style="color: green;">Terima kasih! Data Anda telah berhasil disimpan.</p>`;
-                    regForm.style.display = 'none';
-                    searchNameInput.value = '';
-                    checkResultDiv.innerHTML = '';
-                } else {
-                    throw new Error(result.message);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                formResultDiv.innerHTML = `<p style="color: red;">Terjadi kesalahan: ${error.message}</p>`;
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Simpan Data";
-            }
-        });
-    </script>
+    <!-- QR Code Library -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
