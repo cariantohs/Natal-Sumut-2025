@@ -2,6 +2,7 @@
 const SHEET_ID = '10G7c_jfQ9_wr8wjs3BnOgcCn4DDeomJFrKEgkCT3ZZ8';
 const API_KEY = 'AIzaSyAB28UliPqPfO27zWdcKsI39DMWVcwryiY'; // Ganti dengan API Key Anda
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoQU_2eU8bqduOybvWRv9DyTf8T7WgHE-gXTzQqrNcB_urV3xG72Hlc-W6vT7wJT9JWQ/exec'; // Ganti dengan URL Web App dari Google Apps Script
+
 // Data untuk dropdown
 const jabatanOptions = [
     'Kepala BPS Kabupaten/Kota',
@@ -85,7 +86,7 @@ let qrCodeDataUrl = '';
 let qrCodeInstance = null;
 let isNewRegistration = false;
 let allParticipants = [];
-let participantMap = new Map(); // Untuk pencarian yang lebih cepat
+let searchCache = new Map(); // Cache untuk hasil pencarian
 
 // Hamburger Menu Toggle
 document.addEventListener('DOMContentLoaded', function() {
@@ -215,21 +216,18 @@ async function loadAllData() {
         console.log('Data diterima dari Google Sheets:', data);
         
         if (data.values && data.values.length > 1) {
+            // Simpan header dan data
+            const headers = data.values[0];
             allParticipants = data.values.slice(1); // Exclude header row
             
-            // Build participant map untuk pencarian yang lebih cepat
-            allParticipants.forEach(participant => {
-                const nama = participant[0] ? participant[0].toString().trim() : '';
-                if (nama) {
-                    participantMap.set(nama.toLowerCase(), participant);
-                }
-            });
-            
             console.log('Total peserta ditemukan:', allParticipants.length);
-            console.log('Participant map size:', participantMap.size);
+            console.log('Headers:', headers);
+            
+            // Debug: Tampilkan beberapa data pertama
+            console.log('Sample data (first 5):', allParticipants.slice(0, 5));
             
             // Load Satker data
-            loadSatkerData(data.values);
+            loadSatkerData(allParticipants);
             
             hideStatusMessage();
         } else {
@@ -245,19 +243,18 @@ async function loadAllData() {
 }
 
 // Load data Satker
-function loadSatkerData(data) {
+function loadSatkerData(participants) {
     const satkerSet = new Set();
     
     // Ambil semua nilai dari kolom Satker Asal (indeks 1)
-    for (let i = 1; i < data.length; i++) {
-        const row = data[i];
-        if (row && row.length > 1 && row[1]) {
-            const satkerValue = row[1].toString().trim();
+    participants.forEach(participant => {
+        if (participant && participant.length > 1 && participant[1]) {
+            const satkerValue = participant[1].toString().trim();
             if (satkerValue !== '') {
                 satkerSet.add(satkerValue);
             }
         }
-    }
+    });
     
     // Urutkan dan isi dropdown
     const satkerArray = Array.from(satkerSet).sort();
@@ -274,40 +271,33 @@ function loadSatkerData(data) {
     console.log(`Data Satker berhasil dimuat: ${satkerArray.length} item`);
 }
 
-// Setup pencarian nama - VERSI OPTIMIZED
+// Setup pencarian nama - VERSI YANG DIPERBAIKI
 function setupNameSearch() {
     const searchInput = document.getElementById('nama-search');
     const searchResults = document.getElementById('search-results');
     
-    searchInput.addEventListener('input', debounce(function() {
+    if (!searchInput || !searchResults) {
+        console.error('Element pencarian tidak ditemukan!');
+        return;
+    }
+    
+    searchInput.addEventListener('input', function() {
         const searchTerm = this.value.trim();
         
         if (searchTerm.length < 2) {
             searchResults.style.display = 'none';
+            searchResults.innerHTML = '';
             return;
         }
         
         console.log(`Mencari: "${searchTerm}"`);
         
-        // Cari di participant map untuk performa lebih baik
-        const matches = [];
-        const searchTermLower = searchTerm.toLowerCase();
+        // Cari di data peserta
+        const matches = searchParticipants(searchTerm);
+        console.log('Hasil pencarian:', matches);
         
-        for (let [nama, participant] of participantMap) {
-            if (nama.includes(searchTermLower)) {
-                matches.push({
-                    nama: participant[0] || '',
-                    participant: participant
-                });
-                
-                // Batasi hasil maksimal untuk performa
-                if (matches.length >= 20) break;
-            }
-        }
-        
-        console.log('Hasil pencarian:', matches.length);
-        displaySearchResults(matches);
-    }, 300));
+        displaySearchResults(matches, searchTerm);
+    });
     
     // Sembunyikan hasil pencarian ketika klik di luar
     document.addEventListener('click', function(e) {
@@ -317,79 +307,142 @@ function setupNameSearch() {
     });
 }
 
-// Debounce function untuk optimasi pencarian
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+// Fungsi pencarian yang diperbaiki
+function searchParticipants(searchTerm) {
+    const searchTermLower = searchTerm.toLowerCase();
+    const matches = [];
+    
+    allParticipants.forEach((participant, index) => {
+        // Pastikan participant ada dan memiliki kolom nama
+        if (participant && participant.length > 0 && participant[0]) {
+            const nama = participant[0].toString().trim();
+            const namaLower = nama.toLowerCase();
+            
+            // Cek kecocokan
+            if (namaLower.includes(searchTermLower)) {
+                matches.push({
+                    nama: nama,
+                    index: index,
+                    participant: participant
+                });
+            }
+            
+            // Batasi hasil maksimal untuk performa
+            if (matches.length >= 50) return matches;
+        }
+    });
+    
+    return matches;
 }
 
-// Tampilkan hasil pencarian
-function displaySearchResults(matches) {
+// Tampilkan hasil pencarian - VERSI YANG DIPERBAIKI
+function displaySearchResults(matches, searchTerm) {
     const searchResults = document.getElementById('search-results');
+    const searchInput = document.getElementById('nama-search');
+    
+    if (!searchResults) return;
+    
     searchResults.innerHTML = '';
     
     if (matches.length === 0) {
         const noResult = document.createElement('div');
-        noResult.className = 'search-result-item';
-        noResult.textContent = 'Data tidak ditemukan. Klik untuk mengisi manual.';
-        noResult.style.color = '#666';
-        noResult.style.fontStyle = 'italic';
+        noResult.className = 'search-result-item no-result';
+        noResult.innerHTML = `
+            <div style="padding: 10px; text-align: center;">
+                <strong>Data tidak ditemukan</strong>
+                <div style="font-size: 0.9em; margin-top: 5px;">
+                    Nama "${searchTerm}" tidak ditemukan dalam database.
+                </div>
+                <button type="button" class="btn-manual-small" style="margin-top: 10px;">
+                    📝 Klik untuk mengisi data manual
+                </button>
+            </div>
+        `;
         
-        noResult.addEventListener('click', function() {
+        const manualBtn = noResult.querySelector('.btn-manual-small');
+        manualBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
             isNewRegistration = true;
             enableFormFields();
-            document.getElementById('nama').value = document.getElementById('nama-search').value;
+            document.getElementById('nama').value = searchTerm;
             document.getElementById('nama').focus();
             searchResults.style.display = 'none';
+            searchInput.value = searchTerm;
             showStatusMessage('Silakan lengkapi data Anda secara manual.', 'info');
         });
         
         searchResults.appendChild(noResult);
     } else {
+        // Tampilkan jumlah hasil
+        const countElement = document.createElement('div');
+        countElement.className = 'search-result-count';
+        countElement.style.padding = '8px 12px';
+        countElement.style.background = '#f8f9fa';
+        countElement.style.borderBottom = '1px solid #ddd';
+        countElement.style.fontSize = '0.85em';
+        countElement.style.color = '#666';
+        countElement.textContent = `Ditemukan ${matches.length} hasil`;
+        searchResults.appendChild(countElement);
+        
+        // Tampilkan hasil
         matches.forEach(match => {
             const resultItem = document.createElement('div');
             resultItem.className = 'search-result-item';
             resultItem.textContent = match.nama;
+            resultItem.setAttribute('data-index', match.index);
             
             resultItem.addEventListener('click', function() {
-                fillFormWithData(match.participant);
-                searchResults.style.display = 'none';
-                document.getElementById('nama-search').value = match.nama;
+                const participantIndex = parseInt(this.getAttribute('data-index'));
+                const participant = allParticipants[participantIndex];
+                
+                if (participant) {
+                    fillFormWithData(participant);
+                    searchResults.style.display = 'none';
+                    searchInput.value = match.nama;
+                }
             });
             
             searchResults.appendChild(resultItem);
         });
     }
     
+    // Tampilkan hasil pencarian
     searchResults.style.display = 'block';
+    
+    // Pastikan posisi dan lebar sesuai dengan input
+    const inputRect = searchInput.getBoundingClientRect();
+    searchResults.style.width = inputRect.width + 'px';
+    searchResults.style.left = inputRect.left + 'px';
+    searchResults.style.top = (inputRect.bottom + window.scrollY) + 'px';
 }
 
-// Isi form dengan data yang dipilih
+// Isi form dengan data yang dipilih - VERSI YANG DIPERBAIKI
 function fillFormWithData(participant) {
+    if (!participant) {
+        console.error('Data peserta tidak valid');
+        return;
+    }
+    
     currentParticipantData = participant;
     isNewRegistration = false;
     
+    console.log('Mengisi form dengan data:', participant);
+    
     // Map kolom berdasarkan struktur data Anda
+    // Sesuaikan indeks ini dengan struktur Google Sheets Anda
     const fieldMap = {
-        'nama': 0,        // Nama
-        'satker': 1,      // Satker Asal
-        'status': 2,      // Status
-        'agama': 3,       // Agama
-        'grade': 4,       // Grade
-        'jenis_kelamin': 5, // Jenis Kelamin
-        'jabatan': 6,     // Jabatan
-        'pangkat': 7,     // Pangkat/Golongan
-        'whatsapp': 8,    // WhatsApp
-        'konfirmasi_kehadiran': 9, // Konfirmasi Kehadiran
-        'jumlah_tamu': 10, // Jumlah Tamu
-        'data_tamu': 11   // Data Tamu
+        'nama': 0,        // Kolom A: Nama
+        'satker': 1,      // Kolom B: Satker Asal
+        'status': 2,      // Kolom C: Status
+        'agama': 3,       // Kolom D: Agama
+        'grade': 4,       // Kolom E: Grade
+        'jenis_kelamin': 5, // Kolom F: Jenis Kelamin
+        'jabatan': 6,     // Kolom G: Jabatan
+        'pangkat': 7,     // Kolom H: Pangkat/Golongan
+        'whatsapp': 8,    // Kolom I: WhatsApp
+        'konfirmasi_kehadiran': 9, // Kolom J: Konfirmasi Kehadiran
+        'jumlah_tamu': 10, // Kolom K: Jumlah Tamu
+        'data_tamu': 11   // Kolom L: Data Tamu
     };
     
     // Isi semua field dengan handling data yang mungkin kosong
@@ -399,8 +452,8 @@ function fillFormWithData(participant) {
             const colIndex = fieldMap[field];
             let value = '';
             
-            if (participant && participant.length > colIndex) {
-                value = participant[colIndex] ? participant[colIndex].toString() : '';
+            if (participant.length > colIndex && participant[colIndex] !== undefined && participant[colIndex] !== null) {
+                value = participant[colIndex].toString().trim();
             }
             
             element.value = value;
@@ -420,7 +473,7 @@ function fillFormWithData(participant) {
     }
     
     console.log('Form berhasil diisi dengan data:', participant[0]);
-    showStatusMessage(`Data ${participant[0]} berhasil dimuat. Silakan perbarui informasi yang diperlukan.`, 'success');
+    showStatusMessage(`Data "${participant[0]}" berhasil dimuat. Silakan perbarui informasi yang diperlukan.`, 'success');
 }
 
 // Handle form submission
@@ -581,10 +634,10 @@ function generateQRCode(data) {
         // Data yang dioptimasi untuk QR Code - HANYA data essential
         const qrData = {
             i: generateUniqueId(), // ID unik (disingkat)
-            n: data.nama,          // Nama (disingkat)
-            w: data.whatsapp,      // WhatsApp (disingkat)
+            n: data.nama.substring(0, 30), // Nama (dibatasi 30 karakter)
+            w: data.whatsapp,      // WhatsApp
             t: Date.now(),         // Timestamp
-            j: data.jumlah_tamu    // Jumlah tamu (disingkat)
+            j: data.jumlah_tamu    // Jumlah tamu
         };
         
         // Konversi ke string JSON yang ringkas
@@ -596,11 +649,11 @@ function generateQRCode(data) {
             // Generate QR Code dengan error correction yang lebih rendah untuk mengurangi size
             qrCodeInstance = new QRCode(qrContainer, {
                 text: qrDataString,
-                width: 180,  // Sedikit lebih kecil
-                height: 180,
+                width: 160,  // Lebih kecil
+                height: 160,
                 colorDark: "#1a472a",
                 colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M // Medium error correction
+                correctLevel: QRCode.CorrectLevel.L // Low error correction
             });
             
             // Update QR info
@@ -626,39 +679,11 @@ function generateQRCode(data) {
                 } else {
                     reject(new Error('Canvas tidak ditemukan'));
                 }
-            }, 150);
+            }, 200);
             
         } catch (error) {
             console.error('Error generating QR Code:', error);
-            
-            // Fallback: buat QR code dengan data yang lebih sederhana
-            try {
-                qrContainer.innerHTML = '';
-                const fallbackData = `${data.nama}|${generateUniqueId()}`;
-                
-                qrCodeInstance = new QRCode(qrContainer, {
-                    text: fallbackData,
-                    width: 160,
-                    height: 160,
-                    colorDark: "#1a472a",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.L // Low error correction
-                });
-                
-                setTimeout(() => {
-                    const canvas = qrContainer.querySelector('canvas');
-                    if (canvas) {
-                        qrCodeDataUrl = canvas.toDataURL('image/png');
-                        setupQRCodeButtons(data);
-                        resolve();
-                    } else {
-                        reject(new Error('Fallback canvas tidak ditemukan'));
-                    }
-                }, 150);
-                
-            } catch (fallbackError) {
-                reject(new Error('Gagal membuat QR Code: ' + fallbackError.message));
-            }
+            reject(new Error('Gagal membuat QR Code: ' + error.message));
         }
     });
 }
