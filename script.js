@@ -83,6 +83,7 @@ const pangkatOptions = [
 let currentParticipantData = null;
 let qrCodeDataUrl = '';
 let qrCodeInstance = null;
+let isNewRegistration = false;
 
 // Hamburger Menu Toggle
 document.addEventListener('DOMContentLoaded', function() {
@@ -145,7 +146,75 @@ function initializeRegistrationForm() {
     // Setup tombol pendaftaran baru
     document.getElementById('new-registration').addEventListener('click', resetForm);
     
+    // Setup manual entry
+    setupManualEntry();
+    
     console.log('Form pendaftaran siap digunakan');
+}
+
+// Setup manual entry untuk nama yang belum terdaftar
+function setupManualEntry() {
+    const namaSearch = document.getElementById('nama-search');
+    const namaField = document.getElementById('nama');
+    
+    // Ketika user mengetik di field nama secara manual
+    namaField.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            isNewRegistration = true;
+            // Enable semua field untuk diisi manual
+            enableFormFields();
+        }
+    });
+    
+    // Tombol untuk mode manual entry
+    const manualEntryBtn = document.createElement('button');
+    manualEntryBtn.type = 'button';
+    manualEntryBtn.className = 'btn-manual';
+    manualEntryBtn.innerHTML = '📝 Isi Data Manual (Nama belum terdaftar)';
+    manualEntryBtn.style.marginTop = '10px';
+    manualEntryBtn.style.width = '100%';
+    manualEntryBtn.style.padding = '10px';
+    manualEntryBtn.style.backgroundColor = '#ffc107';
+    manualEntryBtn.style.color = '#000';
+    manualEntryBtn.style.border = 'none';
+    manualEntryBtn.style.borderRadius = '5px';
+    manualEntryBtn.style.cursor = 'pointer';
+    
+    manualEntryBtn.addEventListener('click', function() {
+        isNewRegistration = true;
+        enableFormFields();
+        namaField.focus();
+        showStatusMessage('Silakan isi data Anda secara manual. Pastikan semua field terisi dengan benar.', 'info');
+    });
+    
+    // Tambahkan tombol manual entry setelah search section
+    const searchSection = document.querySelector('.search-section');
+    searchSection.appendChild(manualEntryBtn);
+}
+
+// Enable semua field form untuk diisi manual
+function enableFormFields() {
+    const fields = [
+        'nama', 'satker', 'status', 'agama', 'grade', 
+        'jenis_kelamin', 'jabatan', 'pangkat', 'whatsapp', 
+        'konfirmasi_kehadiran', 'jumlah_tamu', 'data_tamu'
+    ];
+    
+    fields.forEach(field => {
+        const element = document.getElementById(field);
+        if (element) {
+            element.readOnly = false;
+            element.disabled = false;
+        }
+    });
+    
+    // Set default values untuk field yang kosong
+    if (!document.getElementById('konfirmasi_kehadiran').value) {
+        document.getElementById('konfirmasi_kehadiran').value = 'Hadir';
+    }
+    if (!document.getElementById('jumlah_tamu').value) {
+        document.getElementById('jumlah_tamu').value = '0';
+    }
 }
 
 // Load data Satker dari Google Sheets
@@ -167,9 +236,15 @@ async function loadSatkerData() {
             const satkerSet = new Set();
             
             // Ambil semua nilai dari kolom Satker Asal (indeks 1)
+            // PERBAIKAN: Handle data yang tidak lengkap
             for (let i = 1; i < data.values.length; i++) {
-                if (data.values[i][1] && data.values[i][1].trim() !== '') {
-                    satkerSet.add(data.values[i][1].trim());
+                const row = data.values[i];
+                // Pastikan row ada dan memiliki setidaknya 2 kolom
+                if (row && row.length > 1 && row[1]) {
+                    const satkerValue = row[1].toString().trim();
+                    if (satkerValue !== '') {
+                        satkerSet.add(satkerValue);
+                    }
                 }
             }
             
@@ -227,16 +302,19 @@ function setupNameSearch() {
                 const matches = [];
                 const headers = data.values[0];
                 
+                // PERBAIKAN: Handle data yang tidak lengkap
                 for (let i = 1; i < data.values.length; i++) {
                     const row = data.values[i];
-                    const nama = row[0]; // Kolom Nama
-                    
-                    if (nama && nama.toLowerCase().includes(searchTerm.toLowerCase())) {
-                        matches.push({
-                            nama: nama,
-                            rowIndex: i,
-                            data: row
-                        });
+                    // Pastikan row ada dan memiliki kolom nama (indeks 0)
+                    if (row && row.length > 0 && row[0]) {
+                        const nama = row[0].toString().trim();
+                        if (nama && nama.toLowerCase().includes(searchTerm.toLowerCase())) {
+                            matches.push({
+                                nama: nama,
+                                rowIndex: i,
+                                data: row
+                            });
+                        }
                     }
                 }
                 
@@ -276,23 +354,37 @@ function displaySearchResults(matches, headers) {
     searchResults.innerHTML = '';
     
     if (matches.length === 0) {
-        searchResults.style.display = 'none';
-        return;
-    }
-    
-    matches.forEach(match => {
-        const resultItem = document.createElement('div');
-        resultItem.className = 'search-result-item';
-        resultItem.textContent = match.nama;
+        const noResult = document.createElement('div');
+        noResult.className = 'search-result-item';
+        noResult.textContent = 'Data tidak ditemukan. Klik untuk mengisi manual.';
+        noResult.style.color = '#666';
+        noResult.style.fontStyle = 'italic';
         
-        resultItem.addEventListener('click', function() {
-            fillFormWithData(match, headers);
+        noResult.addEventListener('click', function() {
+            isNewRegistration = true;
+            enableFormFields();
+            document.getElementById('nama').value = document.getElementById('nama-search').value;
+            document.getElementById('nama').focus();
             searchResults.style.display = 'none';
-            document.getElementById('nama-search').value = match.nama;
+            showStatusMessage('Silakan lengkapi data Anda secara manual.', 'info');
         });
         
-        searchResults.appendChild(resultItem);
-    });
+        searchResults.appendChild(noResult);
+    } else {
+        matches.forEach(match => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'search-result-item';
+            resultItem.textContent = match.nama;
+            
+            resultItem.addEventListener('click', function() {
+                fillFormWithData(match, headers);
+                searchResults.style.display = 'none';
+                document.getElementById('nama-search').value = match.nama;
+            });
+            
+            searchResults.appendChild(resultItem);
+        });
+    }
     
     searchResults.style.display = 'block';
 }
@@ -305,7 +397,9 @@ function fillFormWithData(match, headers) {
         originalData: row
     };
     
-    // Map data ke form fields
+    isNewRegistration = false;
+    
+    // Map data ke form fields dengan handling data yang tidak lengkap
     const fieldMap = {
         'nama': 0,
         'satker': 1,
@@ -324,7 +418,9 @@ function fillFormWithData(match, headers) {
     Object.keys(fieldMap).forEach(field => {
         const element = document.getElementById(field);
         if (element) {
-            const value = row[fieldMap[field]] || '';
+            const colIndex = fieldMap[field];
+            // PERBAIKAN: Pastikan row memiliki data di kolom tersebut
+            const value = (row && row.length > colIndex && row[colIndex]) ? row[colIndex].toString() : '';
             element.value = value;
             
             // Trigger change event untuk update UI
@@ -336,6 +432,11 @@ function fillFormWithData(match, headers) {
     // Set default konfirmasi kehadiran jika kosong
     if (!document.getElementById('konfirmasi_kehadiran').value) {
         document.getElementById('konfirmasi_kehadiran').value = 'Hadir';
+    }
+    
+    // Set jumlah tamu default jika kosong
+    if (!document.getElementById('jumlah_tamu').value) {
+        document.getElementById('jumlah_tamu').value = '0';
     }
     
     console.log('Form berhasil diisi dengan data:', match.nama);
@@ -381,8 +482,11 @@ async function handleFormSubmit(e) {
         console.log('Mengirim data ke server:', data);
         showStatusMessage('Menyimpan data...', 'info');
         
+        // Tentukan apakah ini update atau pendaftaran baru
+        const isUpdate = !isNewRegistration && currentParticipantData;
+        
         // Update data ke Google Sheets via Web App
-        const updateResult = await updateGoogleSheets(data);
+        const updateResult = await updateGoogleSheets(data, isUpdate);
         
         if (updateResult.success) {
             showStatusMessage('Data berhasil disimpan! Membuat QR Code...', 'success');
@@ -399,13 +503,11 @@ async function handleFormSubmit(e) {
                 block: 'center'
             });
             
-            showStatusMessage('Pendaftaran berhasil! QR Code telah dibuat.', 'success');
-            
-            // Kirim QR Code ke WhatsApp (opsional)
-            setTimeout(() => {
-                // Auto-share ke WhatsApp setelah 3 detik
-                // shareToWhatsApp(data);
-            }, 3000);
+            const message = isUpdate ? 
+                'Data berhasil diperbarui! QR Code telah dibuat.' : 
+                'Pendaftaran berhasil! QR Code telah dibuat.';
+                
+            showStatusMessage(message, 'success');
             
         } else {
             throw new Error(updateResult.message || 'Gagal mengupdate data');
@@ -428,7 +530,7 @@ function validateFormData(data) {
     
     for (const field of requiredFields) {
         if (!data[field] || data[field].trim() === '') {
-            showStatusMessage(`Field ${field} harus diisi`, 'error');
+            showStatusMessage(`Field ${getFieldLabel(field)} harus diisi`, 'error');
             document.getElementById(field).focus();
             return false;
         }
@@ -436,8 +538,9 @@ function validateFormData(data) {
     
     // Validasi nomor WhatsApp
     const whatsappRegex = /^[0-9]{10,15}$/;
-    if (!whatsappRegex.test(data.whatsapp.replace(/\D/g, ''))) {
-        showStatusMessage('Nomor WhatsApp tidak valid', 'error');
+    const cleanWhatsapp = data.whatsapp.replace(/\D/g, '');
+    if (!whatsappRegex.test(cleanWhatsapp)) {
+        showStatusMessage('Nomor WhatsApp tidak valid. Minimal 10 digit angka.', 'error');
         document.getElementById('whatsapp').focus();
         return false;
     }
@@ -445,8 +548,25 @@ function validateFormData(data) {
     return true;
 }
 
+// Helper function untuk mendapatkan label field
+function getFieldLabel(field) {
+    const labels = {
+        'nama': 'Nama Lengkap',
+        'satker': 'Satker Asal',
+        'status': 'Status',
+        'agama': 'Agama',
+        'grade': 'Grade',
+        'jenis_kelamin': 'Jenis Kelamin',
+        'jabatan': 'Jabatan',
+        'pangkat': 'Pangkat/Golongan',
+        'whatsapp': 'Nomor WhatsApp',
+        'konfirmasi_kehadiran': 'Konfirmasi Kehadiran'
+    };
+    return labels[field] || field;
+}
+
 // Update Google Sheets via Web App
-async function updateGoogleSheets(data) {
+async function updateGoogleSheets(data, isUpdate = false) {
     if (!WEB_APP_URL || WEB_APP_URL === 'YOUR_WEB_APP_URL') {
         // Fallback: Simpan di localStorage untuk testing
         console.warn('Web App URL belum dikonfigurasi. Menyimpan di localStorage...');
@@ -454,19 +574,27 @@ async function updateGoogleSheets(data) {
         submissions.push({
             ...data,
             timestamp: new Date().toISOString(),
-            qrGenerated: true
+            qrGenerated: true,
+            isUpdate: isUpdate
         });
         localStorage.setItem('natalRegistrations', JSON.stringify(submissions));
         return { success: true, message: 'Data disimpan di localStorage (testing mode)' };
     }
     
     try {
+        // Tambahkan flag apakah ini update atau pendaftaran baru
+        const payload = {
+            ...data,
+            isNewRegistration: !isUpdate,
+            originalNama: isUpdate ? currentParticipantData?.originalData[0] : null
+        };
+        
         const response = await fetch(WEB_APP_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(payload)
         });
         
         if (!response.ok) {
@@ -496,7 +624,8 @@ function generateQRCode(data) {
             jumlah_tamu: data.jumlah_tamu,
             data_tamu: data.data_tamu,
             timestamp: new Date().toISOString(),
-            event: 'Acara Natal 2023'
+            event: 'Acara Natal 2023',
+            isNewRegistration: isNewRegistration
         });
         
         // Generate QR Code
@@ -518,6 +647,9 @@ function generateQRCode(data) {
             hour: '2-digit',
             minute: '2-digit'
         });
+        
+        // Update status berdasarkan tipe pendaftaran
+        document.getElementById('qr-status').textContent = isNewRegistration ? 'Pendaftaran Baru' : 'Update Data';
         
         // Tunggu sampai QR Code selesai digenerate, lalu ambil data URL
         setTimeout(() => {
@@ -582,6 +714,7 @@ function resetForm() {
     document.getElementById('nama-search').value = '';
     currentParticipantData = null;
     qrCodeDataUrl = '';
+    isNewRegistration = false;
     
     // Reset form fields ke state awal
     const resetFields = ['nama', 'satker', 'status', 'agama', 'grade', 'jenis_kelamin', 'jabatan', 'pangkat', 'whatsapp', 'konfirmasi_kehadiran', 'jumlah_tamu', 'data_tamu'];
@@ -589,6 +722,8 @@ function resetForm() {
         const element = document.getElementById(field);
         if (element) {
             element.value = '';
+            element.readOnly = false;
+            element.disabled = false;
         }
     });
     
@@ -599,7 +734,7 @@ function resetForm() {
     // Scroll ke atas
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    showStatusMessage('Form telah direset. Silakan cari nama Anda untuk memulai pendaftaran baru.', 'info');
+    showStatusMessage('Form telah direset. Silakan cari nama Anda atau isi data manual untuk pendaftaran baru.', 'info');
     
     console.log('Form reset untuk pendaftaran baru');
 }
