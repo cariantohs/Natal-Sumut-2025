@@ -1,7 +1,7 @@
-// Google Sheets Configuration
+// Google Sheets Configuration - USING YOUR CREDENTIALS
 const SHEET_ID = '10G7c_jfQ9_wr8wjs3BnOgcCn4DDeomJFrKEgkCT3ZZ8';
-const API_KEY = 'AIzaSyAB28UliPqPfO27zWdcKsI39DMWVcwryiY'; // Ganti dengan API Key Anda
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoQU_2eU8bqduOybvWRv9DyTf8T7WgHE-gXTzQqrNcB_urV3xG72Hlc-W6vT7wJT9JWQ/exec'; // Ganti dengan URL Web App dari Google Apps Script
+const API_KEY = 'AIzaSyAB28UliPqPfO27zWdcKsI39DMWVcwryiY';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxoQU_2eU8bqduOybvWRv9DyTf8T7WgHE-gXTzQqrNcB_urV3xG72Hlc-W6vT7wJT9JWQ/exec';
 
 // Data untuk dropdown
 const jabatanOptions = [
@@ -86,7 +86,6 @@ let qrCodeDataUrl = '';
 let qrCodeInstance = null;
 let isNewRegistration = false;
 let allParticipants = [];
-let searchCache = new Map(); // Cache untuk hasil pencarian
 
 // Hamburger Menu Toggle
 document.addEventListener('DOMContentLoaded', function() {
@@ -281,6 +280,20 @@ function setupNameSearch() {
         return;
     }
     
+    // Set style untuk search results
+    searchResults.style.position = 'absolute';
+    searchResults.style.background = 'white';
+    searchResults.style.border = '2px solid #ddd';
+    searchResults.style.borderTop = 'none';
+    searchResults.style.borderRadius = '0 0 8px 8px';
+    searchResults.style.maxHeight = '200px';
+    searchResults.style.overflowY = 'auto';
+    searchResults.style.zIndex = '1000';
+    searchResults.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+    searchResults.style.display = 'none';
+    searchResults.style.width = '100%';
+    searchResults.style.left = '0';
+    
     searchInput.addEventListener('input', function() {
         const searchTerm = this.value.trim();
         
@@ -294,7 +307,7 @@ function setupNameSearch() {
         
         // Cari di data peserta
         const matches = searchParticipants(searchTerm);
-        console.log('Hasil pencarian:', matches);
+        console.log('Hasil pencarian:', matches.length, 'hasil');
         
         displaySearchResults(matches, searchTerm);
     });
@@ -316,10 +329,8 @@ function searchParticipants(searchTerm) {
         // Pastikan participant ada dan memiliki kolom nama
         if (participant && participant.length > 0 && participant[0]) {
             const nama = participant[0].toString().trim();
-            const namaLower = nama.toLowerCase();
             
-            // Cek kecocokan
-            if (namaLower.includes(searchTermLower)) {
+            if (nama && nama.toLowerCase().includes(searchTermLower)) {
                 matches.push({
                     nama: nama,
                     index: index,
@@ -346,20 +357,20 @@ function displaySearchResults(matches, searchTerm) {
     
     if (matches.length === 0) {
         const noResult = document.createElement('div');
-        noResult.className = 'search-result-item no-result';
+        noResult.className = 'search-result-item';
+        noResult.style.padding = '15px';
+        noResult.style.textAlign = 'center';
+        noResult.style.color = '#666';
+        noResult.style.fontStyle = 'italic';
+        noResult.style.cursor = 'pointer';
         noResult.innerHTML = `
-            <div style="padding: 10px; text-align: center;">
-                <strong>Data tidak ditemukan</strong>
-                <div style="font-size: 0.9em; margin-top: 5px;">
-                    Nama "${searchTerm}" tidak ditemukan dalam database.
-                </div>
-                <button type="button" class="btn-manual-small" style="margin-top: 10px;">
-                    📝 Klik untuk mengisi data manual
-                </button>
-            </div>
+            <div>Data "${searchTerm}" tidak ditemukan</div>
+            <button type="button" style="margin-top: 10px; padding: 8px 16px; background: #ffc107; border: none; border-radius: 4px; cursor: pointer;">
+                📝 Klik untuk mengisi data manual
+            </button>
         `;
         
-        const manualBtn = noResult.querySelector('.btn-manual-small');
+        const manualBtn = noResult.querySelector('button');
         manualBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             isNewRegistration = true;
@@ -375,25 +386,34 @@ function displaySearchResults(matches, searchTerm) {
     } else {
         // Tampilkan jumlah hasil
         const countElement = document.createElement('div');
-        countElement.className = 'search-result-count';
         countElement.style.padding = '8px 12px';
         countElement.style.background = '#f8f9fa';
         countElement.style.borderBottom = '1px solid #ddd';
         countElement.style.fontSize = '0.85em';
         countElement.style.color = '#666';
-        countElement.textContent = `Ditemukan ${matches.length} hasil`;
+        countElement.textContent = `Ditemukan ${matches.length} hasil untuk "${searchTerm}"`;
         searchResults.appendChild(countElement);
         
         // Tampilkan hasil
         matches.forEach(match => {
             const resultItem = document.createElement('div');
             resultItem.className = 'search-result-item';
+            resultItem.style.padding = '12px 15px';
+            resultItem.style.cursor = 'pointer';
+            resultItem.style.borderBottom = '1px solid #eee';
+            resultItem.style.transition = 'background-color 0.2s ease';
             resultItem.textContent = match.nama;
-            resultItem.setAttribute('data-index', match.index);
+            
+            resultItem.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f8f9fa';
+            });
+            
+            resultItem.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+            });
             
             resultItem.addEventListener('click', function() {
-                const participantIndex = parseInt(this.getAttribute('data-index'));
-                const participant = allParticipants[participantIndex];
+                const participant = match.participant;
                 
                 if (participant) {
                     fillFormWithData(participant);
@@ -409,11 +429,16 @@ function displaySearchResults(matches, searchTerm) {
     // Tampilkan hasil pencarian
     searchResults.style.display = 'block';
     
-    // Pastikan posisi dan lebar sesuai dengan input
-    const inputRect = searchInput.getBoundingClientRect();
-    searchResults.style.width = inputRect.width + 'px';
-    searchResults.style.left = inputRect.left + 'px';
-    searchResults.style.top = (inputRect.bottom + window.scrollY) + 'px';
+    // Atur posisi search results tepat di bawah input
+    const searchInputRect = searchInput.getBoundingClientRect();
+    const searchContainer = searchInput.parentElement;
+    const containerRect = searchContainer.getBoundingClientRect();
+    
+    searchResults.style.position = 'absolute';
+    searchResults.style.top = '100%';
+    searchResults.style.left = '0';
+    searchResults.style.width = '100%';
+    searchResults.style.maxHeight = '200px';
 }
 
 // Isi form dengan data yang dipilih - VERSI YANG DIPERBAIKI
@@ -515,8 +540,8 @@ async function handleFormSubmit(e) {
         console.log('Mengirim data:', data);
         showStatusMessage('Menyimpan data...', 'info');
         
-        // Simpan data (untuk sekarang simpan di localStorage)
-        const saveResult = await saveToLocalStorage(data);
+        // Simpan data ke Google Sheets
+        const saveResult = await saveToGoogleSheets(data);
         
         if (saveResult.success) {
             showStatusMessage('Data berhasil disimpan! Membuat QR Code...', 'success');
@@ -551,6 +576,99 @@ async function handleFormSubmit(e) {
         btnText.style.display = 'inline';
         btnLoading.style.display = 'none';
         submitBtn.disabled = false;
+    }
+}
+
+// Simpan ke Google Sheets - VERSI YANG DIPERBAIKI
+async function saveToGoogleSheets(data) {
+    try {
+        console.log('Mengirim data ke Google Sheets...');
+        
+        // Tentukan apakah ini update atau pendaftaran baru
+        const isUpdate = !isNewRegistration && currentParticipantData;
+        
+        // Persiapkan payload dengan data yang lengkap
+        const payload = {
+            nama: data.nama,
+            satker: data.satker,
+            status: data.status,
+            agama: data.agama,
+            grade: data.grade,
+            jenis_kelamin: data.jenis_kelamin,
+            jabatan: data.jabatan,
+            pangkat: data.pangkat,
+            whatsapp: data.whatsapp,
+            konfirmasi_kehadiran: data.konfirmasi_kehadiran,
+            jumlah_tamu: data.jumlah_tamu,
+            data_tamu: data.data_tamu,
+            isNewRegistration: !isUpdate,
+            originalNama: isUpdate ? currentParticipantData[0] : null
+        };
+        
+        console.log('Payload untuk Google Sheets:', payload);
+        
+        // Kirim ke Google Apps Script dengan error handling yang lebih baik
+        const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Response dari Google Sheets:', result);
+        
+        if (result.success) {
+            return result;
+        } else {
+            throw new Error(result.message || 'Gagal menyimpan data di Google Sheets');
+        }
+        
+    } catch (error) {
+        console.error('Error saving to Google Sheets:', error);
+        
+        // Fallback ke localStorage dengan pesan warning
+        console.warn('Menggunakan fallback ke localStorage karena:', error.message);
+        const localStorageResult = await saveToLocalStorage(data);
+        localStorageResult.message += ' (Google Sheets gagal)';
+        return localStorageResult;
+    }
+}
+
+// Simpan ke localStorage (fallback)
+async function saveToLocalStorage(data) {
+    try {
+        console.log('Menyimpan data ke localStorage:', data);
+        
+        const submissionData = {
+            ...data,
+            id: generateUniqueId(),
+            timestamp: new Date().toISOString(),
+            isNewRegistration: isNewRegistration
+        };
+        
+        const submissions = JSON.parse(localStorage.getItem('natalRegistrations') || '[]');
+        submissions.push(submissionData);
+        localStorage.setItem('natalRegistrations', JSON.stringify(submissions));
+        
+        return { 
+            success: true, 
+            message: 'Data berhasil disimpan di localStorage',
+            data: submissionData
+        };
+    } catch (error) {
+        console.error('Error saving to localStorage:', error);
+        return {
+            success: false,
+            message: 'Gagal menyimpan data: ' + error.message
+        };
     }
 }
 
@@ -593,36 +711,6 @@ function getFieldLabel(field) {
         'konfirmasi_kehadiran': 'Konfirmasi Kehadiran'
     };
     return labels[field] || field;
-}
-
-// Simpan ke localStorage (temporary solution)
-async function saveToLocalStorage(data) {
-    try {
-        console.log('Menyimpan data ke localStorage:', data);
-        
-        const submissionData = {
-            ...data,
-            id: generateUniqueId(),
-            timestamp: new Date().toISOString(),
-            isNewRegistration: isNewRegistration
-        };
-        
-        const submissions = JSON.parse(localStorage.getItem('natalRegistrations') || '[]');
-        submissions.push(submissionData);
-        localStorage.setItem('natalRegistrations', JSON.stringify(submissions));
-        
-        return { 
-            success: true, 
-            message: 'Data berhasil disimpan di localStorage',
-            data: submissionData
-        };
-    } catch (error) {
-        console.error('Error saving to localStorage:', error);
-        return {
-            success: false,
-            message: 'Gagal menyimpan data: ' + error.message
-        };
-    }
 }
 
 // Generate QR Code dengan data yang dioptimasi
