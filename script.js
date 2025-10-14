@@ -1,7 +1,8 @@
 // Configuration
 const SHEET_ID = '10G7c_jfQ9_wr8wjs3BnOgcCn4DDeomJFrKEgkCT3ZZ8';
 const API_KEY = 'AIzaSyAB28UliPqPfO27zWdcKsI39DMWVcwryiY';
-const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwYourNewDeploymentURL/exec'; // GANTI DENGAN URL BARU
+// URL TELAH DIPERBARUI DENGAN URL BARU ANDA
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwMn03PKO4XnU8_TJ5YntVIOpNguLbISzq-I54Iz2el-pEkOs01NfnFP1x8yW9mAjiRwQ/exec';
 
 // Data untuk dropdown
 const jabatanOptions = [
@@ -468,11 +469,13 @@ function fillFormWithData(participant) {
         document.getElementById('jumlah_tamu').value = '0';
     }
     
+    document.getElementById('nama').readOnly = true; // Nama tidak boleh diubah untuk data yang sudah ada
+
     console.log('Form berhasil diisi dengan data:', participant[0]);
     showStatusMessage(`Data "${participant[0]}" berhasil dimuat. Silakan perbarui informasi yang diperlukan.`, 'success');
 }
 
-// Handle form submission - MENGGUNAKAN GOOGLE APPS SCRIPT
+// Handle form submission
 async function handleFormSubmit(e) {
     e.preventDefault();
     
@@ -510,10 +513,11 @@ async function handleFormSubmit(e) {
         
         const saveResult = await saveViaGoogleAppsScript(data);
         
-        if (saveResult.success) {
+        if (saveResult && saveResult.success) {
             showStatusMessage('Data berhasil disimpan! Membuat QR Code...', 'success');
             await generateQRCode(data);
             
+            document.getElementById('registration-form').style.display = 'none';
             document.getElementById('qr-container').style.display = 'block';
             document.getElementById('qr-container').scrollIntoView({ 
                 behavior: 'smooth',
@@ -527,12 +531,15 @@ async function handleFormSubmit(e) {
             showStatusMessage(message, 'success');
             
         } else {
-            throw new Error(saveResult.message || 'Gagal menyimpan data');
+            throw new Error(saveResult.message || 'Gagal menyimpan data. Respons server tidak valid.');
         }
         
     } catch (error) {
         console.error('Error submitting form:', error);
         showStatusMessage('Terjadi kesalahan: ' + error.message, 'error');
+        // Fallback simpan ke local storage jika ada error
+        await saveToLocalStorage(data);
+        showStatusMessage('Gagal terhubung ke server. Data disimpan sementara di perangkat Anda.', 'warning');
     } finally {
         btnText.style.display = 'inline';
         btnLoading.style.display = 'none';
@@ -540,34 +547,33 @@ async function handleFormSubmit(e) {
     }
 }
 
-// SIMPAN VIA GOOGLE APPS SCRIPT - SOLUSI UTAMA
+// SIMPAN VIA GOOGLE APPS SCRIPT
 async function saveViaGoogleAppsScript(data) {
     try {
         console.log('Mengirim data ke Google Apps Script...');
         
         const isUpdate = !isNewRegistration && currentParticipantData;
         
-        // Format data untuk Google Apps Script
+        // Format payload sesuai dengan header di Google Sheet
         const payload = {
-            Nama: data.nama,
+            'Nama': data.nama,
             'Satker Asal': data.satker,
-            Status: data.status,
-            Agama: data.agama,
-            Grade: data.grade,
+            'Status': data.status,
+            'Agama': data.agama,
+            'Grade': data.grade,
             'Jenis Kelamin': data.jenis_kelamin,
-            Jabatan: data.jabatan,
+            'Jabatan': data.jabatan,
             'Pangkat/Golongan': data.pangkat,
-            WhatsApp: data.whatsapp,
+            'WhatsApp': data.whatsapp,
             'Konfirmasi Kehadiran': data.konfirmasi_kehadiran,
             'Jumlah Tamu': data.jumlah_tamu,
             'Data Tamu': data.data_tamu,
-            isNewRegistration: !isUpdate,
-            originalNama: isUpdate ? currentParticipantData[0] : null
+            'isNewRegistration': isNewRegistration,
+            'originalNama': isUpdate ? currentParticipantData[0] : null
         };
         
         console.log('Payload untuk GAS:', payload);
         
-        // Kirim ke Google Apps Script
         const response = await fetch(GAS_WEB_APP_URL, {
             method: 'POST',
             headers: {
@@ -576,10 +582,10 @@ async function saveViaGoogleAppsScript(data) {
             body: JSON.stringify(payload)
         });
         
-        console.log('Response status:', response.status);
-        
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+           const errorText = await response.text();
+           console.error('Server response error:', errorText);
+           throw new Error(`Gagal menyimpan data. Status: ${response.status}. Pesan: ${errorText}`);
         }
         
         const result = await response.json();
@@ -589,16 +595,14 @@ async function saveViaGoogleAppsScript(data) {
         
     } catch (error) {
         console.error('Error saving via Google Apps Script:', error);
-        
-        // Fallback ke localStorage
-        return await saveToLocalStorage(data);
+        throw error; // Lemparkan error agar bisa ditangkap di handleFormSubmit
     }
 }
 
 // Simpan ke localStorage (fallback)
 async function saveToLocalStorage(data) {
     try {
-        console.log('Menyimpan data ke localStorage:', data);
+        console.log('Menyimpan data ke localStorage (fallback):', data);
         
         const submissionData = {
             ...data,
@@ -631,7 +635,7 @@ function validateFormData(data) {
     
     for (const field of requiredFields) {
         if (!data[field] || data[field].trim() === '') {
-            showStatusMessage(`Field ${getFieldLabel(field)} harus diisi`, 'error');
+            showStatusMessage(`Field "${getFieldLabel(field)}" harus diisi`, 'error');
             document.getElementById(field).focus();
             return false;
         }
@@ -712,9 +716,16 @@ function generateQRCode(data) {
                     setupQRCodeButtons(data);
                     resolve();
                 } else {
-                    reject(new Error('Canvas tidak ditemukan'));
+                    const img = qrContainer.querySelector('img');
+                    if(img){
+                         qrCodeDataUrl = img.src;
+                         setupQRCodeButtons(data);
+                         resolve();
+                    } else {
+                       reject(new Error('Elemen QR Code (canvas/img) tidak ditemukan'));
+                    }
                 }
-            }, 200);
+            }, 500);
             
         } catch (error) {
             console.error('Error generating QR Code:', error);
@@ -751,7 +762,7 @@ function setupQRCodeButtons(data) {
     if (whatsappBtn) {
         whatsappBtn.onclick = function() {
             try {
-                const message = `Halo ${data.nama},\n\n*QR CODE ACARA NATAL*\n\nBerikut adalah QR Code untuk acara Natal:\n\n📅 Tanggal: 25 Desember 2024\n⏰ Waktu: 18:00 - 22:00 WIB\n📍 Tempat: Aula Utama Gedung Serbaguna\n\n*Informasi:*\n- Nama: ${data.nama}\n- Satker: ${data.satker}\n- Jumlah Tamu: ${data.jumlah_tamu}\n\n*Silakan tunjukkan QR Code ini saat check-in.*\n\nTerima kasih! 🎄`;
+                const message = `Halo ${data.nama},\n\n*QR CODE ACARA NATAL*\n\nBerikut adalah QR Code untuk acara Natal BPS Sumut. Mohon tunjukkan QR Code ini saat check-in.\n\nTerima kasih! 🎄`;
                 
                 const whatsappUrl = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
@@ -768,27 +779,27 @@ function setupQRCodeButtons(data) {
 function resetForm() {
     document.getElementById('registration-form').reset();
     document.getElementById('qr-container').style.display = 'none';
+    document.getElementById('registration-form').style.display = 'block';
     document.getElementById('nama-search').value = '';
     currentParticipantData = null;
     qrCodeDataUrl = '';
     isNewRegistration = false;
     
-    const resetFields = ['nama', 'satker', 'status', 'agama', 'grade', 'jenis_kelamin', 'jabatan', 'pangkat', 'whatsapp', 'konfirmasi_kehadiran', 'jumlah_tamu', 'data_tamu'];
-    resetFields.forEach(field => {
-        const element = document.getElementById(field);
-        if (element) {
-            element.value = '';
-            element.readOnly = false;
-            element.disabled = false;
-        }
+    const allFields = document.querySelectorAll('#registration-form input, #registration-form select, #registration-form textarea');
+    allFields.forEach(field => {
+        field.readOnly = false;
+        field.disabled = false;
     });
-    
+
+    document.getElementById('nama').readOnly = true; // Balikkan ke readonly sampai nama dicari/dipilih
+
     document.getElementById('konfirmasi_kehadiran').value = 'Hadir';
     document.getElementById('jumlah_tamu').value = '0';
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
     showStatusMessage('Form telah direset. Silakan cari nama Anda atau isi data manual.', 'info');
+    initializeRegistrationForm(); // Inisialisasi ulang
 }
 
 // Show status message
@@ -799,9 +810,11 @@ function showStatusMessage(message, type = 'info') {
         statusElement.className = `status-message ${type}`;
         statusElement.style.display = 'block';
         
-        if (type === 'success' || type === 'info') {
+        if (type !== 'error' && type !== 'warning') {
             setTimeout(() => {
-                statusElement.style.display = 'none';
+                if (statusElement.textContent === message) {
+                   statusElement.style.display = 'none';
+                }
             }, 5000);
         }
     }
@@ -815,7 +828,7 @@ function hideStatusMessage() {
     }
 }
 
-// Error handling global
+// Global error handling
 window.addEventListener('error', function(e) {
     console.error('Global error:', e.error);
     showStatusMessage('Terjadi kesalahan sistem. Silakan refresh halaman.', 'error');
@@ -824,7 +837,6 @@ window.addEventListener('error', function(e) {
 // Offline handling
 window.addEventListener('online', function() {
     showStatusMessage('Koneksi internet pulih.', 'success');
-    setTimeout(hideStatusMessage, 3000);
 });
 
 window.addEventListener('offline', function() {
