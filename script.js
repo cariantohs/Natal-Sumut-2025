@@ -1,7 +1,7 @@
-// Google Sheets Configuration
+// Configuration
 const SHEET_ID = '10G7c_jfQ9_wr8wjs3BnOgcCn4DDeomJFrKEgkCT3ZZ8';
-const CLIENT_ID = '549342366211-e40bs9po80ef2cticjp2m4094t08eu5f.apps.googleusercontent.com';
 const API_KEY = 'AIzaSyAB28UliPqPfO27zWdcKsI39DMWVcwryiY';
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwYourNewDeploymentURL/exec'; // GANTI DENGAN URL BARU
 
 // Data untuk dropdown
 const jabatanOptions = [
@@ -86,48 +86,9 @@ let qrCodeDataUrl = '';
 let qrCodeInstance = null;
 let isNewRegistration = false;
 let allParticipants = [];
-let gapiInited = false;
-let gisInited = false;
-
-// Initialize Google API
-function initializeGapi() {
-    return new Promise((resolve, reject) => {
-        if (window.gapi) {
-            gapi.load('client', async () => {
-                try {
-                    await gapi.client.init({
-                        apiKey: API_KEY,
-                        discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
-                    });
-                    gapiInited = true;
-                    console.log('Google API initialized');
-                    resolve();
-                } catch (error) {
-                    console.error('Error initializing Google API:', error);
-                    reject(error);
-                }
-            });
-        } else {
-            reject(new Error('Google API not loaded'));
-        }
-    });
-}
-
-// Initialize Google Identity Services
-function initializeGis() {
-    return new Promise((resolve, reject) => {
-        if (window.google) {
-            gisInited = true;
-            console.log('Google Identity Services initialized');
-            resolve();
-        } else {
-            reject(new Error('Google Identity Services not loaded'));
-        }
-    });
-}
 
 // Hamburger Menu Toggle
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
     
@@ -138,17 +99,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     
-    // Initialize Google APIs jika di halaman pendaftaran
+    // Inisialisasi form pendaftaran jika ada
     if (document.getElementById('registration-form')) {
-        try {
-            await initializeGapi();
-            await initializeGis();
-            console.log('All Google APIs initialized successfully');
-        } catch (error) {
-            console.error('Failed to initialize Google APIs:', error);
-            showStatusMessage('Gagal menginisialisasi Google APIs. Beberapa fitur mungkin tidak berfungsi.', 'warning');
-        }
-        
         initializeRegistrationForm();
     }
 });
@@ -246,37 +198,19 @@ function enableFormFields() {
     });
 }
 
-// Load semua data dari Google Sheets
+// Load semua data dari Google Sheets - MENGGUNAKAN FETCH API SAJA
 async function loadAllData() {
     try {
         console.log('Memuat data dari Google Sheets...');
         showStatusMessage('Memuat data...', 'info');
         
-        let data;
+        const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`);
         
-        // Coba menggunakan Google API Client dulu
-        if (gapiInited) {
-            try {
-                const response = await gapi.client.sheets.spreadsheets.values.get({
-                    spreadsheetId: SHEET_ID,
-                    range: 'Sheet1',
-                });
-                data = response.result;
-            } catch (gapiError) {
-                console.warn('GAPI failed, trying fetch API:', gapiError);
-                throw gapiError;
-            }
-        } else {
-            // Fallback ke fetch API
-            const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            data = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
         
+        const data = await response.json();
         console.log('Data diterima dari Google Sheets:', data);
         
         if (data.values && data.values.length > 1) {
@@ -538,7 +472,7 @@ function fillFormWithData(participant) {
     showStatusMessage(`Data "${participant[0]}" berhasil dimuat. Silakan perbarui informasi yang diperlukan.`, 'success');
 }
 
-// Handle form submission
+// Handle form submission - MENGGUNAKAN GOOGLE APPS SCRIPT
 async function handleFormSubmit(e) {
     e.preventDefault();
     
@@ -574,7 +508,7 @@ async function handleFormSubmit(e) {
         console.log('Mengirim data:', data);
         showStatusMessage('Menyimpan data...', 'info');
         
-        const saveResult = await saveToGoogleSheetsDirect(data);
+        const saveResult = await saveViaGoogleAppsScript(data);
         
         if (saveResult.success) {
             showStatusMessage('Data berhasil disimpan! Membuat QR Code...', 'success');
@@ -606,183 +540,58 @@ async function handleFormSubmit(e) {
     }
 }
 
-// SIMPAN KE GOOGLE SHEETS LANGSUNG - FUNGSI UTAMA
-async function saveToGoogleSheetsDirect(data) {
+// SIMPAN VIA GOOGLE APPS SCRIPT - SOLUSI UTAMA
+async function saveViaGoogleAppsScript(data) {
     try {
-        console.log('Menyimpan langsung ke Google Sheets...');
+        console.log('Mengirim data ke Google Apps Script...');
         
         const isUpdate = !isNewRegistration && currentParticipantData;
         
-        // Siapkan data dalam format baris
-        const rowData = [
-            data.nama,
-            data.satker,
-            data.status,
-            data.agama,
-            data.grade,
-            data.jenis_kelamin,
-            data.jabatan,
-            data.pangkat,
-            data.whatsapp,
-            data.konfirmasi_kehadiran,
-            data.jumlah_tamu,
-            data.data_tamu,
-            new Date().toISOString() // Timestamp
-        ];
+        // Format data untuk Google Apps Script
+        const payload = {
+            Nama: data.nama,
+            'Satker Asal': data.satker,
+            Status: data.status,
+            Agama: data.agama,
+            Grade: data.grade,
+            'Jenis Kelamin': data.jenis_kelamin,
+            Jabatan: data.jabatan,
+            'Pangkat/Golongan': data.pangkat,
+            WhatsApp: data.whatsapp,
+            'Konfirmasi Kehadiran': data.konfirmasi_kehadiran,
+            'Jumlah Tamu': data.jumlah_tamu,
+            'Data Tamu': data.data_tamu,
+            isNewRegistration: !isUpdate,
+            originalNama: isUpdate ? currentParticipantData[0] : null
+        };
         
-        if (isUpdate && currentParticipantData) {
-            // UPDATE DATA EXISTING
-            console.log('Mode: UPDATE data existing');
-            
-            // Cari baris yang akan diupdate
-            const findResponse = await gapi.client.sheets.spreadsheets.values.get({
-                spreadsheetId: SHEET_ID,
-                range: 'Sheet1!A:A',
-            });
-            
-            const namaValues = findResponse.result.values;
-            let rowIndex = -1;
-            
-            for (let i = 0; i < namaValues.length; i++) {
-                if (namaValues[i] && namaValues[i][0] && 
-                    namaValues[i][0].toString().trim() === currentParticipantData[0].toString().trim()) {
-                    rowIndex = i + 1;
-                    break;
-                }
-            }
-            
-            if (rowIndex !== -1) {
-                // Update baris yang ditemukan
-                const range = `Sheet1!A${rowIndex}:M${rowIndex}`;
-                
-                await gapi.client.sheets.spreadsheets.values.update({
-                    spreadsheetId: SHEET_ID,
-                    range: range,
-                    valueInputOption: 'RAW',
-                    resource: {
-                        values: [rowData]
-                    }
-                });
-                
-                return { 
-                    success: true, 
-                    message: 'Data berhasil diupdate di Google Sheets' 
-                };
-            } else {
-                throw new Error('Data tidak ditemukan untuk diupdate');
-            }
-            
-        } else {
-            // TAMBAH DATA BARU
-            console.log('Mode: TAMBAH data baru');
-            
-            await gapi.client.sheets.spreadsheets.values.append({
-                spreadsheetId: SHEET_ID,
-                range: 'Sheet1!A:M',
-                valueInputOption: 'RAW',
-                resource: {
-                    values: [rowData]
-                }
-            });
-            
-            return { 
-                success: true, 
-                message: 'Data baru berhasil ditambahkan ke Google Sheets' 
-            };
-        }
+        console.log('Payload untuk GAS:', payload);
         
-    } catch (error) {
-        console.error('Error saving directly to sheets:', error);
-        
-        // Fallback: coba dengan fetch API
-        try {
-            console.log('Mencoba fallback dengan fetch API...');
-            return await saveWithFetchAPI(data);
-        } catch (fallbackError) {
-            console.error('Fallback juga gagal:', fallbackError);
-            
-            // Final fallback: localStorage
-            return await saveToLocalStorage(data);
-        }
-    }
-}
-
-// Fallback dengan Fetch API
-async function saveWithFetchAPI(data) {
-    const isUpdate = !isNewRegistration && currentParticipantData;
-    const rowData = [
-        data.nama,
-        data.satker,
-        data.status,
-        data.agama,
-        data.grade,
-        data.jenis_kelamin,
-        data.jabatan,
-        data.pangkat,
-        data.whatsapp,
-        data.konfirmasi_kehadiran,
-        data.jumlah_tamu,
-        data.data_tamu,
-        new Date().toISOString()
-    ];
-    
-    if (isUpdate && currentParticipantData) {
-        // Untuk update dengan fetch API, kita perlu mencari baris terlebih dahulu
-        const findResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1!A:A?key=${API_KEY}`);
-        
-        if (!findResponse.ok) {
-            throw new Error(`HTTP error! status: ${findResponse.status}`);
-        }
-        
-        const findData = await findResponse.json();
-        const namaValues = findData.values;
-        let rowIndex = -1;
-        
-        for (let i = 0; i < namaValues.length; i++) {
-            if (namaValues[i] && namaValues[i][0] && 
-                namaValues[i][0].toString().trim() === currentParticipantData[0].toString().trim()) {
-                rowIndex = i + 1;
-                break;
-            }
-        }
-        
-        if (rowIndex !== -1) {
-            const range = `Sheet1!A${rowIndex}:M${rowIndex}`;
-            const updateResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?valueInputOption=RAW&key=${API_KEY}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    values: [rowData]
-                })
-            });
-            
-            if (!updateResponse.ok) {
-                throw new Error(`HTTP error! status: ${updateResponse.status}`);
-            }
-            
-            return { success: true, message: 'Data berhasil diupdate (fetch API)' };
-        } else {
-            throw new Error('Data tidak ditemukan untuk diupdate');
-        }
-    } else {
-        // Append data baru
-        const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1!A:M:append?valueInputOption=RAW&key=${API_KEY}`, {
+        // Kirim ke Google Apps Script
+        const response = await fetch(GAS_WEB_APP_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                values: [rowData]
-            })
+            body: JSON.stringify(payload)
         });
+        
+        console.log('Response status:', response.status);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        return { success: true, message: 'Data berhasil disimpan (fetch API)' };
+        const result = await response.json();
+        console.log('Response dari GAS:', result);
+        
+        return result;
+        
+    } catch (error) {
+        console.error('Error saving via Google Apps Script:', error);
+        
+        // Fallback ke localStorage
+        return await saveToLocalStorage(data);
     }
 }
 
@@ -804,7 +613,7 @@ async function saveToLocalStorage(data) {
         
         return { 
             success: true, 
-            message: 'Data berhasil disimpan di localStorage',
+            message: 'Data berhasil disimpan di localStorage (Google Sheets gagal)',
             data: submissionData
         };
     } catch (error) {
