@@ -1,11 +1,84 @@
 // Google Sheets Configuration
 const SHEET_ID = '10G7c_jfQ9_wr8wjs3BnOgcCn4DDeomJFrKEgkCT3ZZ8';
-const CLIENT_ID = '549342366211-e40bs9po80ef2cticjp2m4094t08eu5f.apps.googleusercontent.com'; // Ganti dengan Client ID dari Google Cloud Console
+const CLIENT_ID = '549342366211-e40bs9po80ef2cticjp2m4094t08eu5f.apps.googleusercontent.com';
 const API_KEY = 'AIzaSyAB28UliPqPfO27zWdcKsI39DMWVcwryiY';
 
-// Data untuk dropdown (tetap sama)
-const jabatanOptions = [/* ... tetap sama ... */];
-const pangkatOptions = [/* ... tetap sama ... */];
+// Data untuk dropdown
+const jabatanOptions = [
+    'Kepala BPS Kabupaten/Kota',
+    'Kepala Bagian Umum',
+    'Kepala Subbagian Umum',
+    'Penata Laksana Barang Mahir',
+    'Penata Laksana Barang Terampil',
+    'Analis Pengelola Keuangan APBN Ahli Madya',
+    'Analis Pengelola Keuangan APBN Ahli Muda',
+    'Analis Pengelola Keuangan APBN Ahli Pertama',
+    'Pranata Keuangan APBN Penyelia',
+    'Pranata Keuangan APBN Mahir',
+    'Pranata Keuangan APBN Terampil',
+    'Analis Anggaran Ahli Madya',
+    'Analis Anggaran Ahli Muda',
+    'Analis Anggaran Ahli Pertama',
+    'Analis SDM Aparatur Ahli Muda',
+    'Analis SDM Aparatur Ahli Pertama',
+    'Pranata SDM Aparatur Penyelia',
+    'Pranata SDM Aparatur Mahir',
+    'Pranata SDM Aparatur Terampil',
+    'Arsiparis Ahli Madya',
+    'Arsiparis Ahli Muda',
+    'Arsiparis Ahli Pertama',
+    'Arsiparis Terampil',
+    'Penyuluh Hukum Ahli Muda',
+    'Penyuluh Hukum Ahli Pertama',
+    'Pranata Humas Ahli Muda',
+    'Pranata Humas Ahli Pertama',
+    'Pustakawan Penyelia',
+    'Pustakawan Mahir',
+    'Pustakawan Terampil',
+    'Pengolah Data',
+    'Verifikator Keuangan',
+    'Pengelola Surat',
+    'Pranata Kearsipan',
+    'Pengelola Barang Milik Negara',
+    'Teknisi Pemeliharaan Sarana dan Prasarana',
+    'Pengemudi',
+    'Statistisi Ahli Utama',
+    'Statistisi Ahli Madya',
+    'Statistisi Ahli Muda',
+    'Statistisi Ahli Pertama',
+    'Statistisi Penyelia',
+    'Statistisi Mahir',
+    'Statistisi Terampil',
+    'Pranata Komputer Ahli Utama',
+    'Pranata Komputer Ahli Madya',
+    'Pranata Komputer Ahli Muda',
+    'Pranata Komputer Ahli Pertama',
+    'Pranata Komputer Penyelia',
+    'Pranata Komputer Mahir',
+    'Pranata Komputer Terampil',
+    'Pengolah Data',
+    'Sekretaris'
+];
+
+const pangkatOptions = [
+    'Juru Muda/Ia',
+    'Juru Muda Tingkat/Ib',
+    'Juru/Ic',
+    'Juru Tingkat I/Id',
+    'Pengatur Muda/IIa',
+    'Pengatur Muda Tingkat I/IIb',
+    'Pengatur/IIc',
+    'Pengatur Tingkat I/IId',
+    'Penata Muda/IIIa',
+    'Penata Muda Tingkat I/IIIb',
+    'Penata/IIIc',
+    'Penata Tingkat I/IIId',
+    'Pembina/IVa',
+    'Pembina Tingkat I/IVb',
+    'Pembina Muda/IVc',
+    'Pembina Madya/IVd',
+    'Pembina Utama/IVe'
+];
 
 // Global variables
 let currentParticipantData = null;
@@ -19,9 +92,7 @@ let gisInited = false;
 // Initialize Google API
 function initializeGapi() {
     return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://apis.google.com/js/api.js';
-        script.onload = () => {
+        if (window.gapi) {
             gapi.load('client', async () => {
                 try {
                     await gapi.client.init({
@@ -36,29 +107,26 @@ function initializeGapi() {
                     reject(error);
                 }
             });
-        };
-        script.onerror = reject;
-        document.head.appendChild(script);
+        } else {
+            reject(new Error('Google API not loaded'));
+        }
     });
 }
 
 // Initialize Google Identity Services
 function initializeGis() {
     return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.onload = () => {
-            // We'll handle auth separately
+        if (window.google) {
             gisInited = true;
             console.log('Google Identity Services initialized');
             resolve();
-        };
-        script.onerror = reject;
-        document.head.appendChild(script);
+        } else {
+            reject(new Error('Google Identity Services not loaded'));
+        }
     });
 }
 
-// Hamburger Menu Toggle (tetap sama)
+// Hamburger Menu Toggle
 document.addEventListener('DOMContentLoaded', async function() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
@@ -70,24 +138,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
     
-    try {
-        // Initialize Google APIs
-        await initializeGapi();
-        await initializeGis();
-        
-        console.log('All Google APIs initialized successfully');
-    } catch (error) {
-        console.error('Failed to initialize Google APIs:', error);
-        showStatusMessage('Gagal menginisialisasi Google APIs. Beberapa fitur mungkin tidak berfungsi.', 'warning');
-    }
-    
-    // Inisialisasi form pendaftaran jika ada
+    // Initialize Google APIs jika di halaman pendaftaran
     if (document.getElementById('registration-form')) {
+        try {
+            await initializeGapi();
+            await initializeGis();
+            console.log('All Google APIs initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize Google APIs:', error);
+            showStatusMessage('Gagal menginisialisasi Google APIs. Beberapa fitur mungkin tidak berfungsi.', 'warning');
+        }
+        
         initializeRegistrationForm();
     }
 });
 
-// Inisialisasi Form Pendaftaran (tetap sama)
+// Inisialisasi Form Pendaftaran
 function initializeRegistrationForm() {
     console.log('Menginisialisasi form pendaftaran...');
     
@@ -143,7 +209,7 @@ function initializeRegistrationForm() {
     console.log('Form pendaftaran siap digunakan');
 }
 
-// Setup manual entry (tetap sama)
+// Setup manual entry
 function setupManualEntry() {
     const manualEntryBtn = document.getElementById('manual-entry-btn');
     const namaField = document.getElementById('nama');
@@ -163,7 +229,7 @@ function setupManualEntry() {
     });
 }
 
-// Enable semua field form untuk diisi manual (tetap sama)
+// Enable semua field form untuk diisi manual
 function enableFormFields() {
     const fields = [
         'nama', 'satker', 'status', 'agama', 'grade', 
@@ -180,26 +246,42 @@ function enableFormFields() {
     });
 }
 
-// Load semua data dari Google Sheets - VERSI DIPERBAIKI
+// Load semua data dari Google Sheets
 async function loadAllData() {
     try {
         console.log('Memuat data dari Google Sheets...');
         showStatusMessage('Memuat data...', 'info');
         
-        if (!gapiInited) {
-            throw new Error('Google API belum terinisialisasi');
+        let data;
+        
+        // Coba menggunakan Google API Client dulu
+        if (gapiInited) {
+            try {
+                const response = await gapi.client.sheets.spreadsheets.values.get({
+                    spreadsheetId: SHEET_ID,
+                    range: 'Sheet1',
+                });
+                data = response.result;
+            } catch (gapiError) {
+                console.warn('GAPI failed, trying fetch API:', gapiError);
+                throw gapiError;
+            }
+        } else {
+            // Fallback ke fetch API
+            const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            data = await response.json();
         }
         
-        const response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: SHEET_ID,
-            range: 'Sheet1',
-        });
+        console.log('Data diterima dari Google Sheets:', data);
         
-        console.log('Data diterima dari Google Sheets:', response);
-        
-        if (response.result.values && response.result.values.length > 1) {
-            const headers = response.result.values[0];
-            allParticipants = response.result.values.slice(1);
+        if (data.values && data.values.length > 1) {
+            const headers = data.values[0];
+            allParticipants = data.values.slice(1);
             
             console.log('Total peserta ditemukan:', allParticipants.length);
             console.log('Headers:', headers);
@@ -213,34 +295,11 @@ async function loadAllData() {
     } catch (error) {
         console.error('Error loading data:', error);
         showStatusMessage('Gagal memuat data. Silakan refresh halaman.', 'error');
-        
-        // Fallback menggunakan fetch API
-        try {
-            console.log('Mencoba fallback dengan fetch API...');
-            const fallbackResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1?key=${API_KEY}`);
-            
-            if (!fallbackResponse.ok) {
-                throw new Error(`HTTP error! status: ${fallbackResponse.status}`);
-            }
-            
-            const data = await fallbackResponse.json();
-            
-            if (data.values && data.values.length > 1) {
-                const headers = data.values[0];
-                allParticipants = data.values.slice(1);
-                
-                console.log('Fallback berhasil. Total peserta:', allParticipants.length);
-                loadSatkerData(allParticipants);
-                hideStatusMessage();
-            }
-        } catch (fallbackError) {
-            console.error('Fallback juga gagal:', fallbackError);
-            enableFormFields();
-        }
+        enableFormFields();
     }
 }
 
-// Load data Satker (tetap sama)
+// Load data Satker
 function loadSatkerData(participants) {
     const satkerSet = new Set();
     
@@ -267,7 +326,7 @@ function loadSatkerData(participants) {
     console.log(`Data Satker berhasil dimuat: ${satkerArray.length} item`);
 }
 
-// Setup pencarian nama (tetap sama)
+// Setup pencarian nama
 function setupNameSearch() {
     const searchInput = document.getElementById('nama-search');
     const searchResults = document.getElementById('search-results');
@@ -310,7 +369,7 @@ function setupNameSearch() {
     });
 }
 
-// Fungsi pencarian (tetap sama)
+// Fungsi pencarian
 function searchParticipants(searchTerm) {
     const searchTermLower = searchTerm.toLowerCase();
     const matches = [];
@@ -334,7 +393,7 @@ function searchParticipants(searchTerm) {
     return matches;
 }
 
-// Tampilkan hasil pencarian (tetap sama)
+// Tampilkan hasil pencarian
 function displaySearchResults(matches, searchTerm) {
     const searchResults = document.getElementById('search-results');
     const searchInput = document.getElementById('nama-search');
@@ -425,7 +484,7 @@ function displaySearchResults(matches, searchTerm) {
     searchResults.style.maxHeight = '200px';
 }
 
-// Isi form dengan data yang dipilih (tetap sama)
+// Isi form dengan data yang dipilih
 function fillFormWithData(participant) {
     if (!participant) {
         console.error('Data peserta tidak valid');
@@ -479,7 +538,7 @@ function fillFormWithData(participant) {
     showStatusMessage(`Data "${participant[0]}" berhasil dimuat. Silakan perbarui informasi yang diperlukan.`, 'success');
 }
 
-// Handle form submission - VERSI BARU DENGAN SHEETS API
+// Handle form submission
 async function handleFormSubmit(e) {
     e.preventDefault();
     
@@ -547,7 +606,7 @@ async function handleFormSubmit(e) {
     }
 }
 
-// SIMPAN KE GOOGLE SHEETS LANGSUNG - FUNGSI UTAMA BARU
+// SIMPAN KE GOOGLE SHEETS LANGSUNG - FUNGSI UTAMA
 async function saveToGoogleSheetsDirect(data) {
     try {
         console.log('Menyimpan langsung ke Google Sheets...');
@@ -578,7 +637,7 @@ async function saveToGoogleSheetsDirect(data) {
             // Cari baris yang akan diupdate
             const findResponse = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: SHEET_ID,
-                range: 'Sheet1!A:A', // Cari di kolom nama
+                range: 'Sheet1!A:A',
             });
             
             const namaValues = findResponse.result.values;
@@ -587,7 +646,7 @@ async function saveToGoogleSheetsDirect(data) {
             for (let i = 0; i < namaValues.length; i++) {
                 if (namaValues[i] && namaValues[i][0] && 
                     namaValues[i][0].toString().trim() === currentParticipantData[0].toString().trim()) {
-                    rowIndex = i + 1; // +1 karena header
+                    rowIndex = i + 1;
                     break;
                 }
             }
@@ -668,8 +727,45 @@ async function saveWithFetchAPI(data) {
     ];
     
     if (isUpdate && currentParticipantData) {
-        // Logic untuk update dengan fetch API
-        // ... (implementasi serupa dengan gapi client)
+        // Untuk update dengan fetch API, kita perlu mencari baris terlebih dahulu
+        const findResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1!A:A?key=${API_KEY}`);
+        
+        if (!findResponse.ok) {
+            throw new Error(`HTTP error! status: ${findResponse.status}`);
+        }
+        
+        const findData = await findResponse.json();
+        const namaValues = findData.values;
+        let rowIndex = -1;
+        
+        for (let i = 0; i < namaValues.length; i++) {
+            if (namaValues[i] && namaValues[i][0] && 
+                namaValues[i][0].toString().trim() === currentParticipantData[0].toString().trim()) {
+                rowIndex = i + 1;
+                break;
+            }
+        }
+        
+        if (rowIndex !== -1) {
+            const range = `Sheet1!A${rowIndex}:M${rowIndex}`;
+            const updateResponse = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?valueInputOption=RAW&key=${API_KEY}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    values: [rowData]
+                })
+            });
+            
+            if (!updateResponse.ok) {
+                throw new Error(`HTTP error! status: ${updateResponse.status}`);
+            }
+            
+            return { success: true, message: 'Data berhasil diupdate (fetch API)' };
+        } else {
+            throw new Error('Data tidak ditemukan untuk diupdate');
+        }
     } else {
         // Append data baru
         const response = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Sheet1!A:M:append?valueInputOption=RAW&key=${API_KEY}`, {
@@ -690,7 +786,7 @@ async function saveWithFetchAPI(data) {
     }
 }
 
-// Fungsi-fungsi bantu (tetap sama)
+// Simpan ke localStorage (fallback)
 async function saveToLocalStorage(data) {
     try {
         console.log('Menyimpan data ke localStorage:', data);
@@ -720,6 +816,7 @@ async function saveToLocalStorage(data) {
     }
 }
 
+// Validasi form data
 function validateFormData(data) {
     const requiredFields = ['nama', 'satker', 'status', 'agama', 'grade', 'jenis_kelamin', 'jabatan', 'pangkat', 'whatsapp', 'konfirmasi_kehadiran'];
     
@@ -742,6 +839,7 @@ function validateFormData(data) {
     return true;
 }
 
+// Helper function untuk mendapatkan label field
 function getFieldLabel(field) {
     const labels = {
         'nama': 'Nama Lengkap',
@@ -758,6 +856,7 @@ function getFieldLabel(field) {
     return labels[field] || field;
 }
 
+// Generate QR Code
 function generateQRCode(data) {
     return new Promise((resolve, reject) => {
         const qrContainer = document.getElementById('qrcode');
@@ -815,10 +914,12 @@ function generateQRCode(data) {
     });
 }
 
+// Generate unique ID untuk QR Code
 function generateUniqueId() {
     return 'N' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5).toUpperCase();
 }
 
+// Setup tombol download dan share QR Code
 function setupQRCodeButtons(data) {
     const downloadBtn = document.getElementById('download-qr');
     const whatsappBtn = document.getElementById('share-whatsapp');
@@ -841,7 +942,7 @@ function setupQRCodeButtons(data) {
     if (whatsappBtn) {
         whatsappBtn.onclick = function() {
             try {
-                const message = `Halo ${data.nama},\n\n*QR CODE ACARA NATAL*\n\nBerikut adalah QR Code untuk acara Natal:\n\n📅 Tanggal: 25 Desember 2023\n⏰ Waktu: 18:00 - 22:00 WIB\n📍 Tempat: Aula Utama Gedung Serbaguna\n\n*Informasi:*\n- Nama: ${data.nama}\n- Satker: ${data.satker}\n- Jumlah Tamu: ${data.jumlah_tamu}\n\n*Silakan tunjukkan QR Code ini saat check-in.*\n\nTerima kasih! 🎄`;
+                const message = `Halo ${data.nama},\n\n*QR CODE ACARA NATAL*\n\nBerikut adalah QR Code untuk acara Natal:\n\n📅 Tanggal: 25 Desember 2024\n⏰ Waktu: 18:00 - 22:00 WIB\n📍 Tempat: Aula Utama Gedung Serbaguna\n\n*Informasi:*\n- Nama: ${data.nama}\n- Satker: ${data.satker}\n- Jumlah Tamu: ${data.jumlah_tamu}\n\n*Silakan tunjukkan QR Code ini saat check-in.*\n\nTerima kasih! 🎄`;
                 
                 const whatsappUrl = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
@@ -854,6 +955,7 @@ function setupQRCodeButtons(data) {
     }
 }
 
+// Reset form untuk pendaftaran baru
 function resetForm() {
     document.getElementById('registration-form').reset();
     document.getElementById('qr-container').style.display = 'none';
@@ -880,6 +982,7 @@ function resetForm() {
     showStatusMessage('Form telah direset. Silakan cari nama Anda atau isi data manual.', 'info');
 }
 
+// Show status message
 function showStatusMessage(message, type = 'info') {
     const statusElement = document.getElementById('status-message');
     if (statusElement) {
@@ -895,6 +998,7 @@ function showStatusMessage(message, type = 'info') {
     }
 }
 
+// Hide status message
 function hideStatusMessage() {
     const statusElement = document.getElementById('status-message');
     if (statusElement) {
@@ -908,6 +1012,7 @@ window.addEventListener('error', function(e) {
     showStatusMessage('Terjadi kesalahan sistem. Silakan refresh halaman.', 'error');
 });
 
+// Offline handling
 window.addEventListener('online', function() {
     showStatusMessage('Koneksi internet pulih.', 'success');
     setTimeout(hideStatusMessage, 3000);
