@@ -3,97 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acara Natal - BPS Sumatera Utara</title>
+    <title>Undangan Natal 2025 - BPS Sumatera Utara</title>
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Google API Client -->
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://accounts.google.com/gsi/client"></script>
-    
-    <!-- QR Code Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-            <div class="nav-container">
-                <div class="nav-logo">
-                    <h2>🎄 Acara Natal BPS Sumut</h2>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Memuat Undangan Natal...</p>
+        </div>
+    </div>
+
+    <!-- Background Elements -->
+    <div class="background-elements">
+        <div class="decorative-circle circle-1"></div>
+        <div class="decorative-circle circle-2"></div>
+        <div class="decorative-circle circle-3"></div>
+        <div class="batak-pattern pattern-1"></div>
+        <div class="batak-pattern pattern-2"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="mainContent">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h1>Perayaan Natal 2025</h1>
                 </div>
-                <ul class="nav-menu">
-                    <li class="nav-item"><a href="index.html" class="nav-link active">Beranda</a></li>
-                    <li class="nav-item"><a href="pendaftaran.html" class="nav-link">Pendaftaran</a></li>
-                    <li class="nav-item"><a href="akomodasi.html" class="nav-link">Akomodasi</a></li>
-                    <li class="nav-item"><a href="dokumentasi.html" class="nav-link">Dokumentasi</a></li>
-                </ul>
-                <div class="hamburger">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
+                <div class="main-title">
+                    <h2>Perayaan Natal Keluarga Besar Korpri</h2>
+                    <h3>Sub Unit Badan Pusat Statistik Provinsi Sumatera Utara</h3>
+                    <div class="year-badge">2025</div>
                 </div>
             </div>
-        </nav>
-    </header>
+        </header>
 
-    <main class="main-content">
+        <!-- Hero Section -->
         <section class="hero">
             <div class="hero-content">
-                <h1>Acara Natal BPS Provinsi Sumatera Utara 2024</h1>
-                <p>Selamat datang dalam perayaan natal bersama keluarga besar BPS Sumatera Utara. Mari kita rayakan sukacita natal dalam kebersamaan dan kasih.</p>
-                <a href="pendaftaran.html" class="cta-button">Daftar Sekarang</a>
-            </div>
-        </section>
-
-        <section class="event-details">
-            <div class="container">
-                <h2>Informasi Acara</h2>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <h3>📅 Tanggal</h3>
-                        <p>25 Desember 2024</p>
+                <div class="theme-section">
+                    <div class="theme-main">
+                        <h4>Tema</h4>
+                        <p>"Allah Hadir untuk Menyelamatkan Keluarga"</p>
+                        <span class="bible-verse">Bdk. Matius 1:21-24</span>
                     </div>
-                    <div class="detail-item">
-                        <h3>⏰ Waktu</h3>
-                        <p>18:00 - 22:00 WIB</p>
-                    </div>
-                    <div class="detail-item">
-                        <h3>📍 Tempat</h3>
-                        <p>Aula Utama Gedung Serbaguna BPS Provinsi Sumatera Utara</p>
-                    </div>
-                    <div class="detail-item">
-                        <h3>👥 Peserta</h3>
-                        <p>Seluruh Pegawai BPS Sumatera Utara dan Keluarga</p>
+                    <div class="theme-sub">
+                        <h5>Sub Tema</h5>
+                        <p>"Melalui Semangat Natal, Keluarga Besar BPS Sumatera Utara Diselamatkan, Diberkati, dan Dikuatkan untuk Bersinergi Menyukseskan Sensus Ekonomi 2026"</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="accommodation-preview">
-            <div class="container">
-                <h2>Informasi Penting</h2>
-                <div class="accommodation-grid">
-                    <div class="accommodation-card">
-                        <h3>📋 Pendaftaran</h3>
-                        <p>Daftarkan diri Anda sebelum 20 Desember 2024 untuk memastikan keikutsertaan dalam acara.</p>
+        <!-- Details Section -->
+        <section class="details">
+            <div class="details-container">
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <i class="fas fa-calendar-alt"></i>
                     </div>
-                    <div class="accommodation-card">
-                        <h3>🎁 Sesi Tukar Kado</h3>
-                        <p>Siapkan kado dengan nilai maksimal Rp 50.000 untuk sesi tukar kado yang menyenangkan.</p>
+                    <div class="detail-content">
+                        <h6>Hari & Tanggal</h6>
+                        <p>Sabtu, 20 Desember 2025</p>
                     </div>
-                    <div class="accommodation-card">
-                        <h3>🍽️ Konsumsi</h3>
-                        <p>Konsumsi akan disediakan untuk semua peserta yang terdaftar.</p>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="detail-content">
+                        <h6>Waktu</h6>
+                        <p>15.00 WIB s/d Selesai</p>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="detail-content">
+                        <h6>Tempat</h6>
+                        <p>Labersa Hotel & Convention Center Samosir</p>
+                        <small>Kapasitas: 700 orang</small>
+                        <p class="address">Jl. Raya Simanindo-Pangururan, Desa Simarmata, Kabupaten Samosir</p>
                     </div>
                 </div>
             </div>
         </section>
-    </main>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Panitia Acara Natal BPS Provinsi Sumatera Utara. All rights reserved.</p>
-        </div>
-    </footer>
+        <!-- Map Section -->
+        <section class="map-section">
+            <div class="map-container">
+                <h4>Lokasi Acara</h4>
+                <div class="map-frame">
+                    <div class="map-placeholder" id="mapPlaceholder">
+                        <i class="fas fa-map"></i>
+                        <p>Klik untuk membuka peta</p>
+                    </div>
+                </div>
+                <a href="https://www.google.com/maps/place/Labersa+Hotel+%26+Convention+Center+Samosir,+Simarmata/@2.7416513,98.7069509,17z/data=!4m9!3m8!1s0x3031c70074a74af3:0x6fd34e6bdf43b7af!5m2!4m1!1i2!8m2!3d2.7416459!4d98.7095258!16s%2Fg%2F11y5sk_61h?entry=ttu&g_ep=EgoyMDI1MTEyMy4xIKXMDSoASAFQAw%3D%3D" 
+                   class="map-button" target="_blank" id="mapLink">
+                    <i class="fas fa-directions"></i>
+                    Dapatkan Petunjuk Arah
+                </a>
+            </div>
+        </section>
+
+        <!-- Additional Info -->
+        <section class="additional-info">
+            <div class="info-grid">
+                <div class="info-card">
+                    <i class="fas fa-tshirt"></i>
+                    <h6>Dress Code</h6>
+                    <p>Mewah Etnik Batak dengan Sentuhan Merah & Emas</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-gift"></i>
+                    <h6>Kado Natal</h6>
+                    <p>Akan disediakan panitia untuk seluruh peserta</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-utensils"></i>
+                    <h6>Jamuan</h6>
+                    <p>Makan malam dan snack akan disediakan</p>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-music"></i>
+                    <h6>Hiburan</h6>
+                    <p>Music performance dan talent show</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Countdown -->
+        <section class="countdown">
+            <h4>Menuju Perayaan Natal</h4>
+            <div class="countdown-timer" id="countdown">
+                <div class="countdown-item">
+                    <span id="days">00</span>
+                    <small>Hari</small>
+                </div>
+                <div class="countdown-item">
+                    <span id="hours">00</span>
+                    <small>Jam</small>
+                </div>
+                <div class="countdown-item">
+                    <span id="minutes">00</span>
+                    <small>Menit</small>
+                </div>
+                <div class="countdown-item">
+                    <span id="seconds">00</span>
+                    <small>Detik</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-church"></i>
+                    <span>Natal 2025</span>
+                </div>
+                <div class="footer-text">
+                    <p>"Sebab anak manusia datang untuk mencari dan menyelamatkan yang hilang" - Lukas 19:10</p>
+                    <p class="copyright">© 2025 BPS Provinsi Sumatera Utara. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Floating Music -->
+    <div class="music-player" id="musicPlayer">
+        <button class="music-toggle" id="musicToggle">
+            <i class="fas fa-music"></i>
+        </button>
+        <audio id="backgroundMusic" loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
+    </div>
 
     <script src="script.js"></script>
 </body>
