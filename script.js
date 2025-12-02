@@ -1,10 +1,13 @@
-// Cover Page Functionality - FIXED VERSION
+// Cover Page Functionality
 document.addEventListener('DOMContentLoaded', function() {
     const coverPage = document.getElementById('coverPage');
     const openInvitationBtn = document.getElementById('openInvitation');
     const loadingScreen = document.getElementById('loadingScreen');
     const mainContent = document.getElementById('mainContent');
     const backgroundMusic = document.getElementById('backgroundMusic');
+    const popupOverlay = document.getElementById('popupOverlay');
+    const closePopupBtn = document.getElementById('closePopup');
+    const popupCloseBtn = document.getElementById('popupCloseBtn');
 
     // Initialize cover page
     function initializeCoverPage() {
@@ -27,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Ensure elements are properly hidden initially
         loadingScreen.style.display = 'none';
         mainContent.style.display = 'none';
+        popupOverlay.style.display = 'none';
         coverPage.style.display = 'flex';
     }
 
@@ -38,8 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing snowflakes
         snowflakesContainer.innerHTML = '';
         
-        // Create 80 snowflakes for cover (more snow!)
-        for (let i = 0; i < 80; i++) {
+        // Create 50 snowflakes for cover
+        for (let i = 0; i < 50; i++) {
             const snowflake = document.createElement('div');
             snowflake.className = 'cover-snowflake';
             snowflake.textContent = snowflakeSymbols[Math.floor(Math.random() * snowflakeSymbols.length)];
@@ -60,8 +64,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear existing snowflakes
         snowflakesContainer.innerHTML = '';
         
-        // Create 120 snowflakes for main content (even more snow!)
-        for (let i = 0; i < 120; i++) {
+        // Create 80 snowflakes for main content
+        for (let i = 0; i < 80; i++) {
             const snowflake = document.createElement('div');
             snowflake.className = 'snowflake';
             snowflake.textContent = snowflakeSymbols[Math.floor(Math.random() * snowflakeSymbols.length)];
@@ -74,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Open invitation function - FIXED
+    // Open invitation function
     openInvitationBtn.addEventListener('click', function() {
         // Add click animation
         this.style.transform = 'scale(0.95)';
@@ -94,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Initialize main content
                 initMainContent();
             }, 800);
-        }, 2500);
+        }, 2000);
     });
 
     // Initialize main content
@@ -110,7 +114,35 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Start countdown
         startCountdown();
+        
+        // Show popup after a short delay
+        setTimeout(() => {
+            showPopup();
+        }, 1000);
     }
+
+    // Show popup
+    function showPopup() {
+        popupOverlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close popup
+    function closePopup() {
+        popupOverlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close popup event listeners
+    closePopupBtn.addEventListener('click', closePopup);
+    popupCloseBtn.addEventListener('click', closePopup);
+    
+    // Close popup when clicking outside the content
+    popupOverlay.addEventListener('click', function(e) {
+        if (e.target === popupOverlay) {
+            closePopup();
+        }
+    });
 
     // Start background music
     function startBackgroundMusic() {
@@ -195,12 +227,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const element = document.getElementById(elementId);
             if (element.textContent !== newValue) {
                 element.style.transform = 'scale(1.2)';
-                element.style.color = '#ffd700';
+                element.style.color = '#2196f3';
                 
                 setTimeout(() => {
                     element.textContent = newValue;
                     element.style.transform = 'scale(1)';
-                    element.style.color = '#d4af37';
+                    element.style.color = '#e62429';
                 }, 150);
             }
         }
@@ -248,9 +280,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Enhanced confetti effect
+    // Enhanced confetti effect with Marvel colors
     function createConfetti() {
-        const colors = ['#b30000', '#d4af37', '#ffffff', '#ffd700', '#8b0000', '#1a7a4c'];
+        const colors = ['#e62429', '#2196f3', '#ffffff', '#d4af37', '#202020'];
         const confettiCount = 30;
         
         for (let i = 0; i < confettiCount; i++) {
@@ -293,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         .event-started {
             text-align: center;
-            color: var(--gold);
+            color: var(--marvel-red);
             padding: 40px;
         }
         
@@ -318,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Parallax effect for background elements
     window.addEventListener('scroll', function() {
         const scrolled = window.pageYOffset;
-        const parallaxElements = document.querySelectorAll('.batak-ornament, .christmas-ornament, .bg-image');
+        const parallaxElements = document.querySelectorAll('.marvel-ornament, .marvel-christmas-ornament');
         
         parallaxElements.forEach(element => {
             const speed = 0.3;
@@ -329,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add interactive ornament clicks
     document.addEventListener('click', function(e) {
-        if (e.target.closest('.christmas-ornament') || e.target.closest('.batak-ornament')) {
+        if (e.target.closest('.marvel-christmas-ornament') || e.target.closest('.marvel-ornament')) {
             createConfetti();
         }
     });
