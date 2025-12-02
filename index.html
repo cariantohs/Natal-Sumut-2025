@@ -5,65 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Undangan Natal 2025 - BPS Sumatera Utara</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <!-- Cover Page -->
     <div class="cover-page" id="coverPage">
-        <div class="cover-background"></div>
-        <div class="cover-content">
-            <div class="cover-logo">
-                <div class="logo-circle">
-                    <i class="fas fa-star-of-bethlehem"></i>
-                </div>
-            </div>
+        <div class="cover-background">
+            <!-- Background Pattern dari base.png -->
+            <div class="background-pattern"></div>
             
-            <div class="cover-invitation-text">
-                <p class="invitation-label">Kamu Diundang Untuk Mengikuti</p>
-                <h1>Perayaan Natal</h1>
-                <h2>Keluarga Besar Korpri</h2>
-                <h3>Sub Unit Badan Pusat Statistik<br>Provinsi Sumatera Utara</h3>
-                <div class="year-badge">2025</div>
-            </div>
-
-            <div class="cover-details">
-                <div class="detail-item">
-                    <i class="fas fa-calendar"></i>
-                    <span>Sabtu, 20 Desember 2025</span>
+            <!-- Overlay untuk kontras -->
+            <div class="pattern-overlay"></div>
+            
+            <!-- Snowflakes -->
+            <div class="cover-snowflakes"></div>
+        </div>
+        
+        <div class="cover-content">
+            <div class="cover-header">
+                <div class="cover-logo">
+                    <div class="logo-circle">
+                        <i class="fas fa-star-of-bethlehem"></i>
+                    </div>
+                </div>
+                
+                <div class="cover-invitation-text">
+                    <p class="invitation-label">Anda Diundang Untuk Hadir</p>
+                    <h1>Perayaan Natal</h1>
+                    <h2>Keluarga Besar Korpri</h2>
+                    <h3>Sub Unit Badan Pusat Statistik<br>Provinsi Sumatera Utara</h3>
+                    <div class="year-badge">2025</div>
                 </div>
             </div>
 
-            <div class="cover-to">
-                <div class="to-header">
-                    <p>Kepada Yth.</p>
-                    <h4>Bpk/Ibu/Saudara/i</h4>
-                    <p>Pegawai Kristiani BPS Se-Provinsi Sumatera<br>beserta keluarga</p>
-                    <p class="to-place">di Tempat</p>
+            <div class="cover-body">
+                <div class="cover-details">
+                    <div class="detail-item">
+                        <i class="fas fa-calendar"></i>
+                        <div class="detail-text">
+                            <p class="detail-title">Hari & Tanggal</p>
+                            <p class="detail-value">Sabtu, 20 Desember 2025</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <button class="cover-button" id="openInvitation">
-                <span class="button-text">Buka Undangan</span>
-                <div class="button-glow"></div>
-                <i class="fas fa-gift button-icon"></i>
-            </button>
+                <div class="cover-to">
+                    <div class="to-header">
+                        <p class="to-label">Kepada Yth.</p>
+                        <h4>Bpk/Ibu/Saudara/i</h4>
+                        <p>Pegawai Kristiani BPS Se-Provinsi Sumatera</p>
+                        <p>beserta keluarga</p>
+                        <p class="to-place">di Tempat</p>
+                    </div>
+                </div>
 
-            <div class="cover-footer">
-                <p>"Allah Hadir untuk Menyelamatkan Keluarga" - Matius 1:21-24</p>
+                <div class="cover-button-container">
+                    <button class="cover-button" id="openInvitation">
+                        <span class="button-text">Buka Undangan</span>
+                        <div class="button-glow"></div>
+                        <i class="fas fa-gift button-icon"></i>
+                    </button>
+                </div>
+
+                <div class="cover-footer">
+                    <p>"Allah Hadir untuk Menyelamatkan Keluarga" - Matius 1:21-24</p>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Popup Modal -->
     <div class="popup-overlay" id="popupOverlay">
-        <div class="popup-container">
-            <button class="close-popup" id="closePopup">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="popup-image-container">
-                <img src="image1.jpg" alt="Popup Image" class="popup-image" id="popupImage">
-            </div>
+        <button class="close-popup" id="closePopup">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="popup-content">
+            <img src="image1.jpg" alt="Welcome Image" class="popup-image" id="popupImage">
         </div>
     </div>
 
@@ -71,20 +90,36 @@
     <div class="container" id="mainContent" style="display: none;">
         <!-- Background Elements -->
         <div class="background-elements">
-            <!-- Background pattern dengan base.png -->
-            <div class="background-pattern"></div>
+            <!-- Background Pattern -->
+            <div class="background-pattern main-pattern"></div>
+            
+            <!-- Christmas Ornaments -->
+            <div class="ornament christmas-tree tree-1"></div>
+            <div class="ornament christmas-tree tree-2"></div>
+            <div class="ornament christmas-star star-1"></div>
+            <div class="ornament christmas-star star-2"></div>
+            <div class="ornament christmas-bell bell-1"></div>
+            <div class="ornament christmas-bell bell-2"></div>
+            <div class="ornament batak-house house-1"></div>
+            <div class="ornament batak-ulos ulos-1"></div>
+            
+            <!-- Snowflakes -->
+            <div class="snowflakes" id="snowflakesContainer"></div>
         </div>
 
         <!-- Header Section -->
         <header class="header">
+            <div class="header-bg-pattern"></div>
             <div class="header-content">
-                <div class="luxury-logo">
-                    <div class="logo-frame">
-                        <div class="logo-inner">
-                            <i class="fas fa-church"></i>
+                <div class="header-logo">
+                    <div class="logo-container">
+                        <div class="logo-frame">
+                            <div class="logo-inner">
+                                <i class="fas fa-church"></i>
+                            </div>
                         </div>
+                        <div class="logo-glow"></div>
                     </div>
-                    <div class="logo-glow"></div>
                 </div>
                 
                 <div class="main-title">
@@ -132,7 +167,8 @@
                 <div class="title-underline"></div>
             </div>
             <div class="details-container">
-                <div class="detail-card luxury-card">
+                <div class="detail-card">
+                    <div class="card-decoration"></div>
                     <div class="detail-icon">
                         <i class="fas fa-calendar-alt"></i>
                     </div>
@@ -142,7 +178,8 @@
                     </div>
                 </div>
 
-                <div class="detail-card luxury-card">
+                <div class="detail-card">
+                    <div class="card-decoration"></div>
                     <div class="detail-icon">
                         <i class="fas fa-clock"></i>
                     </div>
@@ -152,7 +189,8 @@
                     </div>
                 </div>
 
-                <div class="detail-card luxury-card">
+                <div class="detail-card">
+                    <div class="card-decoration"></div>
                     <div class="detail-icon">
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
@@ -173,23 +211,20 @@
                 <div class="title-underline"></div>
             </div>
             <div class="map-container">
-                <div class="map-frame luxury-card">
-                    <!-- Iframe Google Maps -->
-                    <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.123456789012!2d98.7069509!3d2.7416513!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3031c70074a74af3%3A0x6fd34e6bdf43b7af!2sLabersa%20Hotel%20%26%20Convention%20Center%20Samosir!5e0!3m2!1sid!2sid!4v1234567890123!5m2!1sid!2sid" 
-                        width="100%" 
-                        height="300" 
-                        style="border:0;" 
-                        allowfullscreen="" 
-                        loading="lazy" 
-                        referrerpolicy="no-referrer-when-downgrade">
-                    </iframe>
+                <div class="map-frame" id="mapFrame">
+                    <div id="map" class="map-display"></div>
                 </div>
-                <a href="https://www.google.com/maps/place/Labersa+Hotel+%26+Convention+Center+Samosir,+Simarmata/@2.7416513,98.7069509,17z/data=!4m9!3m8!1s0x3031c70074a74af3:0x6fd34e6bdf43b7af!5m2!4m1!1i2!8m2!3d2.7416459!4d98.7095258!16s%2Fg%2F11y5sk_61h?entry=ttu&g_ep=EgoyMDI5MTEyMy4xIKXMDSoASAFQAw%3D%3D" 
-                   class="map-button luxury-btn" target="_blank" id="mapLink">
-                    <i class="fas fa-directions"></i>
-                    Buka di Google Maps
-                </a>
+                <div class="map-actions">
+                    <a href="https://www.google.com/maps/place/Labersa+Hotel+%26+Convention+Center+Samosir,+Simarmata/@2.7416513,98.7069509,17z/data=!4m9!3m8!1s0x3031c70074a74af3:0x6fd34e6bdf43b7af!5m2!4m1!1i2!8m2!3d2.7416459!4d98.7095258!16s%2Fg%2F11y5sk_61h?entry=ttu" 
+                       class="map-button" target="_blank">
+                        <i class="fas fa-external-link-alt"></i>
+                        Buka di Google Maps
+                    </a>
+                    <button class="map-button secondary" id="getDirections">
+                        <i class="fas fa-directions"></i>
+                        Dapatkan Petunjuk Arah
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -200,28 +235,28 @@
                 <div class="title-underline"></div>
             </div>
             <div class="info-grid">
-                <div class="info-card luxury-card">
+                <div class="info-card">
                     <div class="info-icon">
                         <i class="fas fa-tshirt"></i>
                     </div>
                     <h6>Dress Code</h6>
                     <p>Mewah Etnik Batak dengan Sentuhan Merah & Emas</p>
                 </div>
-                <div class="info-card luxury-card">
+                <div class="info-card">
                     <div class="info-icon">
                         <i class="fas fa-gift"></i>
                     </div>
                     <h6>Kado Natal</h6>
                     <p>Akan disediakan panitia untuk seluruh peserta</p>
                 </div>
-                <div class="info-card luxury-card">
+                <div class="info-card">
                     <div class="info-icon">
                         <i class="fas fa-utensils"></i>
                     </div>
                     <h6>Jamuan Makan</h6>
                     <p>Makan malam dan snack spesial Natal</p>
                 </div>
-                <div class="info-card luxury-card">
+                <div class="info-card">
                     <div class="info-icon">
                         <i class="fas fa-music"></i>
                     </div>
@@ -279,7 +314,14 @@
 
     <!-- Music Player -->
     <div class="music-player" id="musicPlayer">
-        <button class="music-toggle luxury-btn" id="musicToggle">
+        <div class="music-visualizer" id="visualizer">
+            <div class="visualizer-bar"></div>
+            <div class="visualizer-bar"></div>
+            <div class="visualizer-bar"></div>
+            <div class="visualizer-bar"></div>
+            <div class="visualizer-bar"></div>
+        </div>
+        <button class="music-toggle" id="musicToggle">
             <i class="fas fa-play" id="musicIcon"></i>
             <span class="music-text">Putar Musik</span>
         </button>
@@ -289,6 +331,7 @@
         </audio>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
