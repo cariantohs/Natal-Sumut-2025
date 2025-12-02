@@ -13,17 +13,18 @@
     <!-- Cover Page -->
     <div class="cover-page" id="coverPage">
         <div class="cover-background">
-            <!-- Background Pattern dari base.png -->
-            <div class="background-pattern"></div>
-            
-            <!-- Overlay untuk kontras -->
-            <div class="pattern-overlay"></div>
-            
             <!-- Snowflakes -->
             <div class="cover-snowflakes"></div>
+            
+            <!-- Ornaments -->
+            <div class="cover-ornament ornament-tree-1"></div>
+            <div class="cover-ornament ornament-tree-2"></div>
+            <div class="cover-ornament ornament-gift-1"></div>
+            <div class="cover-ornament ornament-gift-2"></div>
+            <div class="cover-ornament ornament-santa"></div>
         </div>
         
-        <div class="cover-content">
+        <div class="cover-content gorga-border">
             <div class="cover-header">
                 <div class="cover-logo">
                     <div class="logo-circle">
@@ -81,37 +82,50 @@
         <button class="close-popup" id="closePopup">
             <i class="fas fa-times"></i>
         </button>
-        <div class="popup-content">
+        <div class="popup-content gorga-border">
             <img src="image1.jpg" alt="Welcome Image" class="popup-image" id="popupImage">
         </div>
     </div>
 
     <!-- Main Content -->
     <div class="container" id="mainContent" style="display: none;">
+        <!-- Header Logos -->
+        <div class="header-logos gorga-border">
+            <div class="logo-left">
+                <img src="logo1.png" alt="Logo 1" class="header-logo">
+            </div>
+            <div class="logo-center">
+                <img src="logo2.png" alt="Logo 2" class="header-logo">
+            </div>
+            <div class="logo-right">
+                <img src="logo3.png" alt="Logo 3" class="header-logo">
+            </div>
+        </div>
+
         <!-- Background Elements -->
         <div class="background-elements">
-            <!-- Background Pattern -->
-            <div class="background-pattern main-pattern"></div>
-            
-            <!-- Christmas Ornaments -->
-            <div class="ornament christmas-tree tree-1"></div>
-            <div class="ornament christmas-tree tree-2"></div>
-            <div class="ornament christmas-star star-1"></div>
-            <div class="ornament christmas-star star-2"></div>
-            <div class="ornament christmas-bell bell-1"></div>
-            <div class="ornament christmas-bell bell-2"></div>
-            <div class="ornament batak-house house-1"></div>
-            <div class="ornament batak-ulos ulos-1"></div>
-            
             <!-- Snowflakes -->
             <div class="snowflakes" id="snowflakesContainer"></div>
+            
+            <!-- Ornaments -->
+            <div class="ornament main-tree-1"></div>
+            <div class="ornament main-tree-2"></div>
+            <div class="ornament main-tree-3"></div>
+            <div class="ornament main-tree-4"></div>
+            
+            <div class="ornament main-gift-1"></div>
+            <div class="ornament main-gift-2"></div>
+            <div class="ornament main-gift-3"></div>
+            <div class="ornament main-gift-4"></div>
+            
+            <div class="ornament main-santa-1"></div>
+            <div class="ornament main-santa-2"></div>
         </div>
 
         <!-- Header Section -->
-        <header class="header">
-            <div class="header-bg-pattern"></div>
+        <header class="header gorga-border">
             <div class="header-content">
-                <div class="header-logo">
+                <div class="header-logo-main">
                     <div class="logo-container">
                         <div class="logo-frame">
                             <div class="logo-inner">
@@ -138,7 +152,7 @@
         </header>
 
         <!-- Hero Section -->
-        <section class="hero">
+        <section class="hero gorga-border">
             <div class="hero-content">
                 <div class="theme-section">
                     <div class="theme-main">
@@ -167,7 +181,7 @@
                 <div class="title-underline"></div>
             </div>
             <div class="details-container">
-                <div class="detail-card">
+                <div class="detail-card gorga-border">
                     <div class="card-decoration"></div>
                     <div class="detail-icon">
                         <i class="fas fa-calendar-alt"></i>
@@ -178,7 +192,7 @@
                     </div>
                 </div>
 
-                <div class="detail-card">
+                <div class="detail-card gorga-border">
                     <div class="card-decoration"></div>
                     <div class="detail-icon">
                         <i class="fas fa-clock"></i>
@@ -189,7 +203,7 @@
                     </div>
                 </div>
 
-                <div class="detail-card">
+                <div class="detail-card gorga-border">
                     <div class="card-decoration"></div>
                     <div class="detail-icon">
                         <i class="fas fa-map-marker-alt"></i>
@@ -204,13 +218,62 @@
             </div>
         </section>
 
+        <!-- Rundown Section -->
+        <section class="rundown">
+            <div class="section-title">
+                <h4>Rundown Acara</h4>
+                <div class="title-underline"></div>
+            </div>
+            <div class="rundown-container">
+                <div class="rundown-card gorga-border">
+                    <div class="rundown-time">15.00 – 16.00 WIB</div>
+                    <div class="rundown-event">
+                        <i class="fas fa-user-friends"></i>
+                        <h6>Penerimaan Tamu</h6>
+                    </div>
+                </div>
+                
+                <div class="rundown-card gorga-border">
+                    <div class="rundown-time">16.00 – 18.30 WIB</div>
+                    <div class="rundown-event">
+                        <i class="fas fa-church"></i>
+                        <h6>Acara Ibadah</h6>
+                    </div>
+                </div>
+                
+                <div class="rundown-card gorga-border">
+                    <div class="rundown-time">18.30 – 19.00 WIB</div>
+                    <div class="rundown-event">
+                        <i class="fas fa-utensils"></i>
+                        <h6>Makan Malam Bersama</h6>
+                    </div>
+                </div>
+                
+                <div class="rundown-card gorga-border">
+                    <div class="rundown-time">19.00 – 21.00 WIB</div>
+                    <div class="rundown-event">
+                        <i class="fas fa-star"></i>
+                        <h6>Varia Natal</h6>
+                    </div>
+                </div>
+                
+                <div class="rundown-card gorga-border">
+                    <div class="rundown-time">21.00 – 22.00 WIB</div>
+                    <div class="rundown-event">
+                        <i class="fas fa-water"></i>
+                        <h6>Pertunjukan Waterfront</h6>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Map Section -->
         <section class="map-section">
             <div class="section-title">
                 <h4>Lokasi Acara</h4>
                 <div class="title-underline"></div>
             </div>
-            <div class="map-container">
+            <div class="map-container gorga-border">
                 <div class="map-frame" id="mapFrame">
                     <div id="map" class="map-display"></div>
                 </div>
@@ -235,28 +298,28 @@
                 <div class="title-underline"></div>
             </div>
             <div class="info-grid">
-                <div class="info-card">
+                <div class="info-card gorga-border">
                     <div class="info-icon">
                         <i class="fas fa-tshirt"></i>
                     </div>
                     <h6>Dress Code</h6>
                     <p>Mewah Etnik Batak dengan Sentuhan Merah & Emas</p>
                 </div>
-                <div class="info-card">
+                <div class="info-card gorga-border">
                     <div class="info-icon">
                         <i class="fas fa-gift"></i>
                     </div>
                     <h6>Kado Natal</h6>
                     <p>Akan disediakan panitia untuk seluruh peserta</p>
                 </div>
-                <div class="info-card">
+                <div class="info-card gorga-border">
                     <div class="info-icon">
                         <i class="fas fa-utensils"></i>
                     </div>
                     <h6>Jamuan Makan</h6>
                     <p>Makan malam dan snack spesial Natal</p>
                 </div>
-                <div class="info-card">
+                <div class="info-card gorga-border">
                     <div class="info-icon">
                         <i class="fas fa-music"></i>
                     </div>
@@ -267,25 +330,25 @@
         </section>
 
         <!-- Countdown -->
-        <section class="countdown">
+        <section class="countdown gorga-border">
             <div class="section-title">
                 <h4>Menuju Perayaan Natal</h4>
                 <div class="title-underline"></div>
             </div>
             <div class="countdown-timer" id="countdown">
-                <div class="countdown-item">
+                <div class="countdown-item gorga-border">
                     <span id="days">00</span>
                     <small>Hari</small>
                 </div>
-                <div class="countdown-item">
+                <div class="countdown-item gorga-border">
                     <span id="hours">00</span>
                     <small>Jam</small>
                 </div>
-                <div class="countdown-item">
+                <div class="countdown-item gorga-border">
                     <span id="minutes">00</span>
                     <small>Menit</small>
                 </div>
-                <div class="countdown-item">
+                <div class="countdown-item gorga-border">
                     <span id="seconds">00</span>
                     <small>Detik</small>
                 </div>
@@ -293,7 +356,7 @@
         </section>
 
         <!-- Footer -->
-        <footer class="footer">
+        <footer class="footer gorga-border">
             <div class="footer-content">
                 <div class="footer-logo">
                     <div class="footer-logo-icon">
@@ -304,8 +367,10 @@
                 <div class="footer-text">
                     <p class="bible-verse">"Sebab anak manusia datang untuk mencari dan menyelamatkan yang hilang" - Lukas 19:10</p>
                     <div class="footer-info">
-                        <p>Keluarga Besar BPS Provinsi Sumatera Utara</p>
-                        <p class="copyright">© 2025 Badan Pusat Statistik. All rights reserved.</p>
+                        <p>Panitia Natal Keluarga Besar PD Batara Kanaan</p>
+                        <p>Badan Pusat Statistik</p>
+                        <p>Se-Provinsi Sumatera Utara Tahun 2025</p>
+                        <p class="copyright">© 2025 Badan Pusat Statistik Kabupaten Samosir</p>
                     </div>
                 </div>
             </div>
@@ -313,7 +378,7 @@
     </div>
 
     <!-- Music Player -->
-    <div class="music-player" id="musicPlayer">
+    <div class="music-player gorga-border" id="musicPlayer">
         <div class="music-visualizer" id="visualizer">
             <div class="visualizer-bar"></div>
             <div class="visualizer-bar"></div>
