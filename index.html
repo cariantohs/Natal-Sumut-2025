@@ -2,12 +2,49 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta viewport untuk mencegah zoom dan responsive scaling -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Undangan Natal 2025 - BPS Sumatera Utara</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* CSS inline untuk mencegah responsive behavior */
+        body {
+            min-width: 1200px;
+            overflow-x: auto;
+        }
+        
+        .container {
+            min-width: 1200px;
+            transform-origin: top left;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                transform: scale(0.9);
+                transform-origin: top left;
+                width: 1200px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            body {
+                transform: scale(0.8);
+                transform-origin: top left;
+                width: 1200px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                transform: scale(0.7);
+                transform-origin: top left;
+                width: 1200px;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Cover Page -->
@@ -35,9 +72,9 @@
                 <div class="cover-invitation-text">
                     <p class="invitation-label">Anda Diundang Untuk Hadir</p>
                     <h1>Perayaan Natal</h1>
-                    <h2>Keluarga Besar PD Batara Kanaan</h2>
-                    <h3>Badan Pusat Statistik<br>Se-Provinsi Sumatera Utara</h3>
-                    <div class="year-badge">Tahun 2025</div>
+                    <h2>Keluarga Besar Korpri</h2>
+                    <h3>Sub Unit Badan Pusat Statistik<br>Provinsi Sumatera Utara</h3>
+                    <div class="year-badge">2025</div>
                 </div>
             </div>
 
@@ -92,13 +129,13 @@
         <!-- Header Logos -->
         <div class="header-logos">
             <div class="logo-left">
-                <img src="logo1.png" alt="Logo 1" class="header-logo">
+                <img src="logo1.png" alt="Logo 1" class="header-logo logo-side">
             </div>
             <div class="logo-center">
-                <img src="logo2.png" alt="Logo 2" class="header-logo">
+                <img src="logo2.png" alt="Logo 2" class="header-logo logo-center-img">
             </div>
             <div class="logo-right">
-                <img src="logo3.png" alt="Logo 3" class="header-logo">
+                <img src="logo3.png" alt="Logo 3" class="header-logo logo-side">
             </div>
         </div>
 
@@ -139,10 +176,10 @@
                 <div class="main-title">
                     <div class="title-decoration left"></div>
                     <div class="title-content">
-                        <h2>Perayaan Natal Keluarga Besar PD Batara Kanaan</h2>
-                        <h3>Badan Pusat Statistik Se-Provinsi Sumatera Utara </h3>
+                        <h2>Perayaan Natal Keluarga Besar Korpri</h2>
+                        <h3>Sub Unit Badan Pusat Statistik Provinsi Sumatera Utara</h3>
                         <div class="year-badge">
-                            <span>Tahun 2025</span>
+                            <span>2025</span>
                             <div class="badge-sparkle"></div>
                         </div>
                     </div>
@@ -300,13 +337,6 @@
             <div class="info-grid">
                 <div class="info-card gorga-border">
                     <div class="info-icon">
-                        <i class="fas fa-utensils"></i>
-                    </div>
-                    <h6>Jamuan Makan</h6>
-                    <p>Makan malam dan snack spesial Natal</p>
-                </div>
-                <div class="info-card gorga-border">
-                    <div class="info-icon">
                         <i class="fas fa-music"></i>
                     </div>
                     <h6>Varia Natal</h6>
@@ -326,6 +356,13 @@
                     <h6>Pertunjukan Waterfront</h6>
                     <p>Nikmati pertunjukan Air Mancur Menari (Dancing Fountain) di pemandangan Danau Toba yang indah</p>
                 </div>
+                <a href="https://s.id/NBPS12" target="_blank" class="info-card gorga-border info-card-link">
+                    <div class="info-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <h6>Lainnya</h6>
+                    <p>Informasi lebih lengkap terkait Acara Perayaan Natal Keluarga Besar PD Batara Kanaan Badan Pusat Statistik Se-Provinsi Sumatera Utara <span class="link-text">klik disini</span></p>
+                </a>
             </div>
         </section>
 
@@ -365,7 +402,7 @@
                     <span>Natal 2025</span>
                 </div>
                 <div class="footer-text">
-                    <p class="bible-verse">"Ia akan melahirkan anak laki-laki dan engkau akan menamakan Dia Yesus, karena Dialah yang akan menyelamatkan umat-Nya dari dosa mereka." - Matius 1:21</p>
+                    <p class="bible-verse">"Sebab anak manusia datang untuk mencari dan menyelamatkan yang hilang" - Lukas 19:10</p>
                     <div class="footer-info">
                         <p>Panitia Natal Keluarga Besar PD Batara Kanaan</p>
                         <p>Badan Pusat Statistik</p>
