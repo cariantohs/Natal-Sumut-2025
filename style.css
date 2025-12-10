@@ -26,8 +26,9 @@ body {
     font-family: 'Montserrat', sans-serif;
     background: linear-gradient(135deg, #1a1a1a 0%, var(--primary-dark) 50%, #2a1a1a 100%);
     color: var(--white);
-    overflow-x: hidden;
+    overflow-x: auto;
     min-height: 100vh;
+    min-width: 1200px;
 }
 
 /* Gorga Border - DIUBAH menjadi tipis */
@@ -41,17 +42,18 @@ body {
     z-index: 5;
 }
 
-/* Header Logos */
+/* Header Logos - DIUBAH untuk mobile */
 .header-logos {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
-    padding: 20px;
+    padding: 15px 20px;
     margin-bottom: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     margin: 2px;
+    min-height: 100px;
 }
 
 .logo-left, .logo-center, .logo-right {
@@ -59,24 +61,32 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100px;
 }
 
-.header-logo {
-    max-height: 80px;
+/* Logo dengan ukuran sama untuk kiri dan kanan */
+.header-logo.logo-side {
+    max-height: 70px;
     width: auto;
     object-fit: contain;
 }
 
-.logo-left .header-logo {
-    max-height: 60px;
+/* Logo tengah lebih besar */
+.header-logo.logo-center-img {
+    max-height: 90px;
+    width: auto;
+    object-fit: contain;
+}
+
+.logo-left .header-logo,
+.logo-right .header-logo {
+    max-height: 70px !important;
+    min-height: 70px;
 }
 
 .logo-center .header-logo {
-    max-height: 80px;
-}
-
-.logo-right .header-logo {
-    max-height: 100px;
+    max-height: 90px !important;
+    min-height: 90px;
 }
 
 /* Cover Page */
@@ -88,6 +98,7 @@ body {
     justify-content: center;
     padding: 20px;
     overflow-y: auto;
+    min-width: 1200px;
 }
 
 .cover-background {
@@ -113,6 +124,7 @@ body {
     backdrop-filter: blur(10px);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     margin: 2px;
+    min-width: 800px;
 }
 
 .cover-header {
@@ -649,6 +661,7 @@ body {
     padding: 20px;
     position: relative;
     z-index: 3;
+    min-width: 1200px;
 }
 
 /* Header */
@@ -1198,7 +1211,7 @@ body {
 
 .info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 40px;
 }
 
@@ -1214,6 +1227,10 @@ body {
     transition: all 0.3s ease;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     margin: 2px;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 }
 
 .info-card:hover {
@@ -1222,6 +1239,19 @@ body {
     background: linear-gradient(135deg, 
         rgba(255, 255, 255, 0.15) 0%, 
         rgba(212, 82, 63, 0.2) 100%);
+}
+
+.info-card-link:hover .link-text {
+    color: var(--white);
+    text-decoration: underline;
+}
+
+.link-text {
+    color: var(--secondary-color);
+    font-weight: bold;
+    text-decoration: underline;
+    display: inline-block;
+    margin-top: 10px;
 }
 
 .info-icon {
@@ -1484,8 +1514,24 @@ body {
     font-size: 1.1rem;
 }
 
-/* Responsive Design */
+/* Responsive Design - MODIFIKASI untuk desktop view di mobile */
+@media (max-width: 1400px) {
+    body {
+        transform: scale(0.9);
+        transform-origin: top left;
+        width: 1200px;
+        overflow-x: auto;
+    }
+}
+
 @media (max-width: 1200px) {
+    body {
+        transform: scale(0.85);
+        transform-origin: top left;
+        width: 1200px;
+        overflow-x: auto;
+    }
+    
     .container {
         max-width: 95%;
     }
@@ -1508,18 +1554,39 @@ body {
 }
 
 @media (max-width: 992px) {
+    body {
+        transform: scale(0.8);
+        transform-origin: top left;
+        width: 1200px;
+        overflow-x: auto;
+    }
+    
     .cover-content {
         max-width: 95%;
     }
     
+    /* Header logos tetap sejajar 1 baris */
     .header-logos {
-        flex-direction: column;
-        gap: 20px;
+        flex-direction: row !important;
+        gap: 10px;
+        padding: 10px 15px;
     }
     
     .logo-left, .logo-center, .logo-right {
-        width: 100%;
+        width: auto !important;
         justify-content: center;
+        height: 80px;
+    }
+    
+    .logo-left .header-logo,
+    .logo-right .header-logo {
+        max-height: 60px !important;
+        min-height: 60px;
+    }
+    
+    .logo-center .header-logo {
+        max-height: 80px !important;
+        min-height: 80px;
     }
     
     .main-title {
@@ -1549,8 +1616,17 @@ body {
 }
 
 @media (max-width: 768px) {
+    body {
+        transform: scale(0.7);
+        transform-origin: top left;
+        width: 1200px;
+        overflow-x: auto;
+    }
+    
     .cover-content {
         padding: 30px;
+        transform: scale(0.9);
+        transform-origin: center;
     }
     
     .cover-invitation-text h1 {
@@ -1569,6 +1645,29 @@ body {
         border: 3px solid transparent;
         border-image-width: 5px;
         border-image-slice: 5;
+    }
+    
+    /* Header logos tetap sejajar */
+    .header-logos {
+        flex-direction: row !important;
+        gap: 5px;
+        padding: 8px 10px;
+        min-height: 80px;
+    }
+    
+    .logo-left, .logo-center, .logo-right {
+        height: 70px;
+    }
+    
+    .logo-left .header-logo,
+    .logo-right .header-logo {
+        max-height: 50px !important;
+        min-height: 50px;
+    }
+    
+    .logo-center .header-logo {
+        max-height: 60px !important;
+        min-height: 60px;
     }
     
     .detail-card,
@@ -1636,6 +1735,7 @@ body {
         bottom: 20px;
         right: 20px;
         padding: 12px 20px 12px 12px;
+        transform: scale(0.9);
     }
     
     .music-visualizer {
@@ -1652,8 +1752,17 @@ body {
 }
 
 @media (max-width: 576px) {
+    body {
+        transform: scale(0.6);
+        transform-origin: top left;
+        width: 1200px;
+        overflow-x: auto;
+    }
+    
     .cover-content {
         padding: 20px;
+        transform: scale(0.8);
+        transform-origin: center;
     }
     
     .cover-invitation-text h1 {
@@ -1668,6 +1777,29 @@ body {
         border: 2px solid transparent;
         border-image-width: 4px;
         border-image-slice: 4;
+    }
+    
+    /* Header logos tetap sejajar */
+    .header-logos {
+        flex-direction: row !important;
+        gap: 3px;
+        padding: 5px 8px;
+        min-height: 70px;
+    }
+    
+    .logo-left, .logo-center, .logo-right {
+        height: 60px;
+    }
+    
+    .logo-left .header-logo,
+    .logo-right .header-logo {
+        max-height: 40px !important;
+        min-height: 40px;
+    }
+    
+    .logo-center .header-logo {
+        max-height: 50px !important;
+        min-height: 50px;
     }
     
     .detail-card,
@@ -1772,11 +1904,15 @@ body {
     .container {
         display: block !important;
         position: static;
+        min-width: auto !important;
     }
     
     body {
         background: white;
         color: black;
+        min-width: auto !important;
+        transform: none !important;
+        width: auto !important;
     }
     
     .gorga-border {
